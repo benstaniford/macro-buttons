@@ -3,6 +3,7 @@ using System.Windows.Media;
 using MacroButtons.Helpers;
 using MacroButtons.Models;
 using MacroButtons.Services;
+using Brush = System.Windows.Media.Brush;
 
 namespace MacroButtons.ViewModels;
 

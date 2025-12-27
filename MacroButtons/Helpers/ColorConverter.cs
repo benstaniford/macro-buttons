@@ -1,4 +1,6 @@
 using System.Windows.Media;
+using Brush = System.Windows.Media.Brush;
+using Color = System.Windows.Media.Color;
 
 namespace MacroButtons.Helpers;
 

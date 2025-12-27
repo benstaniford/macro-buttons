@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using MacroButtons.Models;
 using MacroButtons.Services;
 using System.Windows.Media;
+using Brush = System.Windows.Media.Brush;
 
 namespace MacroButtons.ViewModels;
 

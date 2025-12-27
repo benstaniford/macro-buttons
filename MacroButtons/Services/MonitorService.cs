@@ -1,6 +1,3 @@
-using System.Drawing;
-using System.Windows.Forms;
-
 namespace MacroButtons.Services;
 
 /// <summary>
@@ -12,16 +9,16 @@ public class MonitorService
     /// Gets a specific monitor by index.
     /// Returns primary screen if index is invalid.
     /// </summary>
-    public Screen GetMonitorByIndex(int index)
+    public System.Windows.Forms.Screen GetMonitorByIndex(int index)
     {
-        var screens = Screen.AllScreens;
-        return index >= 0 && index < screens.Length ? screens[index] : Screen.PrimaryScreen!;
+        var screens = System.Windows.Forms.Screen.AllScreens;
+        return index >= 0 && index < screens.Length ? screens[index] : System.Windows.Forms.Screen.PrimaryScreen!;
     }
 
     /// <summary>
     /// Gets the bounds (position and size) of a specific monitor.
     /// </summary>
-    public Rectangle GetMonitorBounds(int monitorIndex)
+    public System.Drawing.Rectangle GetMonitorBounds(int monitorIndex)
     {
         var monitor = GetMonitorByIndex(monitorIndex);
         return monitor.Bounds;
@@ -32,6 +29,6 @@ public class MonitorService
     /// </summary>
     public int GetMonitorCount()
     {
-        return Screen.AllScreens.Length;
+        return System.Windows.Forms.Screen.AllScreens.Length;
     }
 }
