@@ -90,6 +90,10 @@ public partial class MainWindow : Window
         // Create context menu
         var contextMenu = new System.Windows.Forms.ContextMenuStrip();
 
+        var editConfigItem = new System.Windows.Forms.ToolStripMenuItem("Edit Config");
+        editConfigItem.Click += (s, e) => OpenConfigFile();
+        contextMenu.Items.Add(editConfigItem);
+
         var reloadItem = new System.Windows.Forms.ToolStripMenuItem("Reload");
         reloadItem.Click += (s, e) => ReloadApplication();
         contextMenu.Items.Add(reloadItem);
@@ -157,6 +161,44 @@ public partial class MainWindow : Window
         _notifyIcon?.Dispose();
         _viewModel?.Dispose();
         System.Windows.Application.Current.Shutdown();
+    }
+
+    private void OpenConfigFile()
+    {
+        try
+        {
+            // Get config file path
+            var configService = new ConfigurationService();
+            var configPath = configService.GetConfigPath();
+
+            // Ensure the file exists
+            if (!System.IO.File.Exists(configPath))
+            {
+                System.Windows.MessageBox.Show(
+                    $"Configuration file not found at:\n{configPath}",
+                    "Config Not Found",
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Warning);
+                return;
+            }
+
+            // Open with default JSON editor
+            var startInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = configPath,
+                UseShellExecute = true
+            };
+
+            System.Diagnostics.Process.Start(startInfo);
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show(
+                $"Failed to open configuration file: {ex.Message}",
+                "Open Config Error",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Error);
+        }
     }
 
     protected override void OnSourceInitialized(EventArgs e)

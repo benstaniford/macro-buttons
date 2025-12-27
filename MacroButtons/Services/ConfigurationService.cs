@@ -21,6 +21,11 @@ public class ConfigurationService
     }
 
     /// <summary>
+    /// Gets the full path to the configuration file.
+    /// </summary>
+    public string GetConfigPath() => _configPath;
+
+    /// <summary>
     /// Loads the configuration from the user's profile directory.
     /// Creates a default configuration if the file doesn't exist.
     /// </summary>
