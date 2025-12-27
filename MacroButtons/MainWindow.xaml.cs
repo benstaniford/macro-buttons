@@ -202,16 +202,23 @@ public partial class MainWindow : Window
             System.Diagnostics.Debug.WriteLine($"Fallback bounds: Left={bounds.Left}, Top={bounds.Top}, Width={bounds.Width}, Height={bounds.Height}");
         }
 
-        // Get DPI scaling for the TARGET monitor (not the current/primary monitor)
-        var (dpiScaleX, dpiScaleY) = GetMonitorDpi(bounds);
-        System.Diagnostics.Debug.WriteLine($"Target monitor DPI scaling: X={dpiScaleX:F2}, Y={dpiScaleY:F2}");
+        // Get DPI scaling for BOTH primary and target monitors
+        // Position coordinates use the system/primary DPI
+        // Size uses the target monitor's DPI
+        var primaryBounds = _monitorService.GetMonitorBounds(0);
+        var (systemDpiX, systemDpiY) = GetMonitorDpi(primaryBounds);
+        var (targetDpiX, targetDpiY) = GetMonitorDpi(bounds);
+
+        System.Diagnostics.Debug.WriteLine($"Primary monitor DPI scaling: X={systemDpiX:F2}, Y={systemDpiY:F2}");
+        System.Diagnostics.Debug.WriteLine($"Target monitor DPI scaling: X={targetDpiX:F2}, Y={targetDpiY:F2}");
 
         // Convert screen coordinates (physical pixels) to WPF logical pixels
-        // Both position AND size need to be scaled by the TARGET monitor's DPI
-        Left = bounds.Left / dpiScaleX;
-        Top = bounds.Top / dpiScaleY;
-        Width = bounds.Width / dpiScaleX;
-        Height = bounds.Height / dpiScaleY;
+        // Position: Scale by system/primary DPI (WPF's coordinate system is based on primary monitor)
+        // Size: Scale by target monitor's DPI (window should fill the target monitor)
+        Left = bounds.Left / systemDpiX;
+        Top = bounds.Top / systemDpiY;
+        Width = bounds.Width / targetDpiX;
+        Height = bounds.Height / targetDpiY;
 
         // Ensure window is topmost
         Topmost = true;
