@@ -89,7 +89,8 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
             return;
 
         // Determine refresh interval (tile override or global)
-        var interval = _config.GetRefreshInterval() ?? globalRefreshInterval;
+        var titleDef = (TitleDefinition)_config.Title;
+        var interval = titleDef.GetRefreshInterval() ?? globalRefreshInterval;
 
         // Initial refresh
         _ = UpdateDynamicTitleAsync();
