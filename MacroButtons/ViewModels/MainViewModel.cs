@@ -9,9 +9,13 @@ namespace MacroButtons.ViewModels;
 /// <summary>
 /// View model for the main window.
 /// </summary>
-public class MainViewModel : ViewModelBase
+public class MainViewModel : ViewModelBase, IDisposable
 {
     private readonly ConfigurationService _configService;
+    private readonly CommandExecutionService _commandService;
+    private readonly KeystrokeService _keystrokeService;
+    private readonly WindowHelper _windowHelper;
+    private DynamicTitleRefreshService? _refreshService;
 
     public ObservableCollection<ButtonTileViewModel> Tiles { get; set; } = new();
     public Brush Foreground { get; private set; } = Brushes.DarkGreen;
@@ -23,7 +27,12 @@ public class MainViewModel : ViewModelBase
     public MainViewModel()
     {
         _configService = new ConfigurationService();
+        _commandService = new CommandExecutionService();
+        _windowHelper = new WindowHelper();
+        _keystrokeService = new KeystrokeService(_windowHelper);
+
         LoadConfiguration();
+        StartDynamicTitleRefresh();
     }
 
     private void LoadConfiguration()
@@ -54,11 +63,19 @@ public class MainViewModel : ViewModelBase
             // Set minimal defaults
             Rows = 3;
             Columns = 4;
-            Tiles.Add(new ButtonTileViewModel(Foreground)
+            var errorTile = new ButtonTileViewModel(Foreground, _commandService, _keystrokeService)
             {
                 DisplayTitle = "Config Error"
-            });
+            };
+            Tiles.Add(errorTile);
         }
+    }
+
+    private void StartDynamicTitleRefresh()
+    {
+        var refreshInterval = Config.Global.GetRefreshInterval();
+        _refreshService = new DynamicTitleRefreshService(Tiles, refreshInterval);
+        _refreshService.Start();
     }
 
     private void CalculateGridLayout(int itemCount)
@@ -87,14 +104,15 @@ public class MainViewModel : ViewModelBase
         // Create tiles for configured items
         for (int i = 0; i < itemCount && i < totalTiles; i++)
         {
-            var tile = new ButtonTileViewModel(Config.Items[i], Foreground);
+            var tile = new ButtonTileViewModel(Config.Items[i], Foreground, _commandService, _keystrokeService);
             Tiles.Add(tile);
         }
 
         // Fill remaining slots with empty tiles
         for (int i = itemCount; i < totalTiles; i++)
         {
-            Tiles.Add(new ButtonTileViewModel(Foreground));
+            var emptyTile = new ButtonTileViewModel(Foreground, _commandService, _keystrokeService);
+            Tiles.Add(emptyTile);
         }
     }
 
@@ -104,5 +122,10 @@ public class MainViewModel : ViewModelBase
     public IEnumerable<ButtonTileViewModel> GetDynamicTiles()
     {
         return Tiles.Where(t => t.IsDynamic);
+    }
+
+    public void Dispose()
+    {
+        _refreshService?.Dispose();
     }
 }
