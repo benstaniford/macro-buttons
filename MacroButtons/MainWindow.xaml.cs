@@ -22,6 +22,23 @@ public partial class MainWindow : Window
     [DllImport("user32.dll")]
     private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
 
+    // Per-monitor DPI awareness APIs
+    [DllImport("user32.dll")]
+    private static extern IntPtr MonitorFromPoint(POINT pt, uint dwFlags);
+
+    [DllImport("shcore.dll")]
+    private static extern int GetDpiForMonitor(IntPtr hmonitor, int dpiType, out uint dpiX, out uint dpiY);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct POINT
+    {
+        public int X;
+        public int Y;
+    }
+
+    private const uint MONITOR_DEFAULTTONEAREST = 2;
+    private const int MDT_EFFECTIVE_DPI = 0;
+
     private readonly MonitorService _monitorService;
     private readonly WindowHelper _windowHelper;
     private readonly MainViewModel _viewModel;
@@ -103,6 +120,51 @@ public partial class MainWindow : Window
         _windowHelper.MakeWindowTopmost(hwnd);
     }
 
+    /// <summary>
+    /// Gets the DPI scaling for a specific monitor using Win32 APIs.
+    /// </summary>
+    private (double scaleX, double scaleY) GetMonitorDpi(System.Drawing.Rectangle monitorBounds)
+    {
+        try
+        {
+            // Get monitor handle from a point in the center of the monitor
+            var point = new POINT
+            {
+                X = monitorBounds.Left + monitorBounds.Width / 2,
+                Y = monitorBounds.Top + monitorBounds.Height / 2
+            };
+
+            IntPtr hMonitor = MonitorFromPoint(point, MONITOR_DEFAULTTONEAREST);
+
+            if (hMonitor != IntPtr.Zero)
+            {
+                int result = GetDpiForMonitor(hMonitor, MDT_EFFECTIVE_DPI, out uint dpiX, out uint dpiY);
+                if (result == 0) // S_OK
+                {
+                    // Standard DPI is 96, so scale factor is actualDpi / 96
+                    double scaleX = dpiX / 96.0;
+                    double scaleY = dpiY / 96.0;
+                    System.Diagnostics.Debug.WriteLine($"Monitor DPI: {dpiX}x{dpiY} (scale: {scaleX:F2}x{scaleY:F2})");
+                    return (scaleX, scaleY);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to get monitor DPI: {ex.Message}");
+        }
+
+        // Fallback to system DPI if per-monitor DPI fails
+        var source = PresentationSource.FromVisual(this);
+        if (source != null)
+        {
+            return (source.CompositionTarget.TransformToDevice.M11,
+                    source.CompositionTarget.TransformToDevice.M22);
+        }
+
+        return (1.0, 1.0);
+    }
+
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
         // Position window on the specified monitor from configuration
@@ -140,20 +202,12 @@ public partial class MainWindow : Window
             System.Diagnostics.Debug.WriteLine($"Fallback bounds: Left={bounds.Left}, Top={bounds.Top}, Width={bounds.Width}, Height={bounds.Height}");
         }
 
-        // Get system DPI to convert physical screen coordinates to WPF logical coordinates
-        var source = PresentationSource.FromVisual(this);
-        double dpiScaleX = 1.0;
-        double dpiScaleY = 1.0;
-
-        if (source != null)
-        {
-            dpiScaleX = source.CompositionTarget.TransformToDevice.M11;
-            dpiScaleY = source.CompositionTarget.TransformToDevice.M22;
-            System.Diagnostics.Debug.WriteLine($"System DPI scaling: X={dpiScaleX}, Y={dpiScaleY}");
-        }
+        // Get DPI scaling for the TARGET monitor (not the current/primary monitor)
+        var (dpiScaleX, dpiScaleY) = GetMonitorDpi(bounds);
+        System.Diagnostics.Debug.WriteLine($"Target monitor DPI scaling: X={dpiScaleX:F2}, Y={dpiScaleY:F2}");
 
         // Convert screen coordinates (physical pixels) to WPF logical pixels
-        // Both position AND size need to be scaled by DPI
+        // Both position AND size need to be scaled by the TARGET monitor's DPI
         Left = bounds.Left / dpiScaleX;
         Top = bounds.Top / dpiScaleY;
         Width = bounds.Width / dpiScaleX;
