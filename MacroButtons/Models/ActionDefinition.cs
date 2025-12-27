@@ -26,7 +26,13 @@ public class ActionDefinition
     /// </summary>
     public ActionType GetActionType()
     {
-        if (!string.IsNullOrEmpty(Keypress)) return ActionType.Keypress;
+        if (!string.IsNullOrEmpty(Keypress))
+        {
+            // Check for special BACK navigation marker
+            if (Keypress == "__NAVIGATE_BACK__")
+                return ActionType.NavigateBack;
+            return ActionType.Keypress;
+        }
         if (Python != null && Python.Count > 0) return ActionType.Python;
         if (!string.IsNullOrEmpty(Exe)) return ActionType.Executable;
         return ActionType.None;
@@ -41,5 +47,6 @@ public enum ActionType
     None,
     Keypress,
     Python,
-    Executable
+    Executable,
+    NavigateBack
 }

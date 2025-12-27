@@ -10,6 +10,24 @@ using ColorConverter = MacroButtons.Helpers.ColorConverter;
 namespace MacroButtons.ViewModels;
 
 /// <summary>
+/// Represents a level in the navigation hierarchy.
+/// Stores the menu items and grid dimensions for a menu level.
+/// </summary>
+internal class NavigationLevel
+{
+    public List<ButtonItem> Items { get; set; }
+    public int Rows { get; set; }
+    public int Columns { get; set; }
+
+    public NavigationLevel(List<ButtonItem> items, int rows, int columns)
+    {
+        Items = items;
+        Rows = rows;
+        Columns = columns;
+    }
+}
+
+/// <summary>
 /// View model for the main window.
 /// </summary>
 public class MainViewModel : ViewModelBase, IDisposable
@@ -19,12 +37,21 @@ public class MainViewModel : ViewModelBase, IDisposable
     private readonly KeystrokeService _keystrokeService;
     private readonly WindowHelper _windowHelper;
 
+    // Navigation state
+    private readonly Stack<NavigationLevel> _navigationStack = new();
+    private List<ButtonItem> _currentItems = new();
+
     public ObservableCollection<ButtonTileViewModel> Tiles { get; set; } = new();
     public Brush Foreground { get; private set; } = Brushes.DarkGreen;
     public Brush Background { get; private set; } = Brushes.Black;
     public int Rows { get; private set; }
     public int Columns { get; private set; }
     public MacroButtonConfig Config { get; private set; } = new();
+
+    /// <summary>
+    /// Returns true if currently at the root menu level.
+    /// </summary>
+    public bool IsAtRootLevel => _navigationStack.Count == 0;
 
     public MainViewModel(WindowHelper? windowHelper = null)
     {
@@ -74,8 +101,11 @@ public class MainViewModel : ViewModelBase, IDisposable
             Foreground = ColorConverter.ParseColor(Config.Theme.Foreground, Brushes.DarkGreen);
             Background = ColorConverter.ParseColor(Config.Theme.Background, Brushes.Black);
 
-            // Calculate grid layout
-            CalculateGridLayout(Config.Items.Count);
+            // Reset to root level (clear navigation stack)
+            ResetToRootLevel();
+
+            // Calculate grid layout for current items
+            CalculateGridLayout(_currentItems.Count);
 
             // Create tiles
             CreateTiles();
@@ -148,13 +178,21 @@ public class MainViewModel : ViewModelBase, IDisposable
         Tiles.Clear();
 
         int totalTiles = Rows * Columns;
-        int itemCount = Config.Items.Count;
+        int itemCount = _currentItems.Count;
         var globalRefreshInterval = Config.Global.GetRefreshInterval();
 
         // Create tiles for configured items
         for (int i = 0; i < itemCount && i < totalTiles; i++)
         {
-            var tile = new ButtonTileViewModel(Config.Items[i], Foreground, globalRefreshInterval, _commandService, _keystrokeService, _windowHelper);
+            var tile = new ButtonTileViewModel(
+                _currentItems[i],
+                Foreground,
+                globalRefreshInterval,
+                _commandService,
+                _keystrokeService,
+                _windowHelper,
+                NavigateToSubmenu,
+                NavigateBack);
             Tiles.Add(tile);
         }
 
@@ -164,6 +202,93 @@ public class MainViewModel : ViewModelBase, IDisposable
             var emptyTile = new ButtonTileViewModel(Foreground, _commandService, _keystrokeService, _windowHelper);
             Tiles.Add(emptyTile);
         }
+    }
+
+    /// <summary>
+    /// Navigates to a submenu by replacing the current grid with submenu items.
+    /// Adds BACK button as first item automatically.
+    /// </summary>
+    public void NavigateToSubmenu(List<ButtonItem> submenuItems)
+    {
+        if (submenuItems == null || submenuItems.Count == 0)
+            return;
+
+        // Dispose current tiles (stops all dynamic refresh timers)
+        DisposeTiles();
+
+        // Save current level to navigation stack
+        var currentLevel = new NavigationLevel(_currentItems, Rows, Columns);
+        _navigationStack.Push(currentLevel);
+
+        // Create BACK button (always first in submenu)
+        var backButton = new ButtonItem
+        {
+            Title = "<- BACK",
+            Action = new ActionDefinition { Keypress = "__NAVIGATE_BACK__" },
+            Items = null
+        };
+
+        // Combine BACK button + submenu items
+        _currentItems = new List<ButtonItem> { backButton };
+        _currentItems.AddRange(submenuItems);
+
+        // Recalculate grid for new item count
+        CalculateGridLayout(_currentItems.Count);
+
+        // Recreate tiles for submenu (starts new dynamic tile timers)
+        CreateTiles();
+    }
+
+    /// <summary>
+    /// Navigates back to the parent menu level.
+    /// </summary>
+    public void NavigateBack()
+    {
+        if (IsAtRootLevel)
+            return; // Already at root, can't go back
+
+        // Dispose current tiles (stops submenu dynamic timers)
+        DisposeTiles();
+
+        // Pop parent level from stack
+        var parentLevel = _navigationStack.Pop();
+
+        // Restore parent items and grid dimensions
+        _currentItems = parentLevel.Items;
+        Rows = parentLevel.Rows;
+        Columns = parentLevel.Columns;
+
+        // Recreate tiles for parent menu (restarts parent dynamic timers)
+        CreateTiles();
+    }
+
+    /// <summary>
+    /// Disposes all current tiles (stops their refresh timers).
+    /// Called before navigation to ensure no orphaned timers.
+    /// </summary>
+    private void DisposeTiles()
+    {
+        foreach (var tile in Tiles)
+        {
+            tile.Dispose(); // Stops DispatcherTimer
+        }
+        Tiles.Clear();
+    }
+
+    /// <summary>
+    /// Resets navigation to root level.
+    /// Called during initialization or configuration reload.
+    /// </summary>
+    private void ResetToRootLevel()
+    {
+        // Dispose any existing tiles
+        DisposeTiles();
+
+        // Clear navigation stack
+        _navigationStack.Clear();
+
+        // Set current items to root config items
+        _currentItems = new List<ButtonItem>(Config.Items);
     }
 
     public void Dispose()

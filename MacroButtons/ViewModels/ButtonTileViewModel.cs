@@ -22,6 +22,10 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
     private readonly WindowHelper _windowHelper;
     private DispatcherTimer? _refreshTimer;
 
+    // Navigation callbacks
+    private readonly Action<List<ButtonItem>>? _onNavigateToSubmenu;
+    private readonly Action? _onNavigateBack;
+
     [ObservableProperty]
     private string _displayTitle = string.Empty;
 
@@ -44,6 +48,8 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         _commandService = commandService;
         _keystrokeService = keystrokeService;
         _windowHelper = windowHelper;
+        _onNavigateToSubmenu = null;
+        _onNavigateBack = null;
         IsEmpty = true;
         IsDynamic = false;
         HasAction = false;
@@ -54,15 +60,25 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
     /// <summary>
     /// Creates a tile from a ButtonItem configuration.
     /// </summary>
-    public ButtonTileViewModel(ButtonItem config, Brush foreground, TimeSpan globalRefreshInterval, CommandExecutionService commandService, KeystrokeService keystrokeService, WindowHelper windowHelper)
+    public ButtonTileViewModel(
+        ButtonItem config,
+        Brush foreground,
+        TimeSpan globalRefreshInterval,
+        CommandExecutionService commandService,
+        KeystrokeService keystrokeService,
+        WindowHelper windowHelper,
+        Action<List<ButtonItem>>? onNavigateToSubmenu = null,
+        Action? onNavigateBack = null)
     {
         _config = config;
         _commandService = commandService;
         _keystrokeService = keystrokeService;
         _windowHelper = windowHelper;
+        _onNavigateToSubmenu = onNavigateToSubmenu;
+        _onNavigateBack = onNavigateBack;
         IsEmpty = false;
         IsDynamic = config.IsDynamicTitle;
-        HasAction = config.HasAction;
+        HasAction = config.HasAction || config.HasSubmenu;  // Include submenu buttons
         Foreground = foreground;
 
         // Set initial title
@@ -110,7 +126,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
     [RelayCommand]
     private async Task ClickAsync()
     {
-        if (!HasAction || _config?.Action == null)
+        if (_config == null)
             return;
 
         // Restore cursor to the position it was before touching the screen
@@ -119,17 +135,37 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
 
         try
         {
-            switch (_config.Action.GetActionType())
+            // PHASE 1: Execute action if present
+            if (_config.HasAction && _config.Action != null)
             {
-                case ActionType.Keypress:
-                    await _keystrokeService.SendKeysAsync(_config.Action.Keypress!);
-                    break;
-                case ActionType.Python:
-                    await _commandService.ExecutePythonAsync(_config.Action.Python!);
-                    break;
-                case ActionType.Executable:
-                    await _commandService.ExecuteAsync(_config.Action.Exe!);
-                    break;
+                var actionType = _config.Action.GetActionType();
+
+                // Handle BACK navigation (exclusive - return immediately)
+                if (actionType == ActionType.NavigateBack)
+                {
+                    _onNavigateBack?.Invoke();
+                    return;
+                }
+
+                // Execute regular action
+                switch (actionType)
+                {
+                    case ActionType.Keypress:
+                        await _keystrokeService.SendKeysAsync(_config.Action.Keypress!);
+                        break;
+                    case ActionType.Python:
+                        await _commandService.ExecutePythonAsync(_config.Action.Python!);
+                        break;
+                    case ActionType.Executable:
+                        await _commandService.ExecuteAsync(_config.Action.Exe!);
+                        break;
+                }
+            }
+
+            // PHASE 2: Navigate to submenu if present (happens AFTER action)
+            if (_config.HasSubmenu && _config.Items != null)
+            {
+                _onNavigateToSubmenu?.Invoke(_config.Items);
             }
         }
         catch (Exception ex)

@@ -96,34 +96,12 @@ public class ConfigurationService
                 config.Global = jObject["global"]!.ToObject<GlobalConfig>() ?? new GlobalConfig();
             }
 
-            // Deserialize items with special handling for Title field
+            // Deserialize items with special handling for Title field and recursive Items
             if (jObject["items"] is JArray itemsArray)
             {
                 foreach (var item in itemsArray)
                 {
-                    var buttonItem = new ButtonItem();
-
-                    // Handle title (can be string or object)
-                    var titleToken = item["title"];
-                    if (titleToken != null)
-                    {
-                        if (titleToken.Type == JTokenType.String)
-                        {
-                            buttonItem.Title = titleToken.Value<string>();
-                        }
-                        else if (titleToken.Type == JTokenType.Object)
-                        {
-                            buttonItem.Title = titleToken.ToObject<TitleDefinition>();
-                        }
-                    }
-
-                    // Handle action (can be null or object)
-                    var actionToken = item["action"];
-                    if (actionToken != null && actionToken.Type != JTokenType.Null)
-                    {
-                        buttonItem.Action = actionToken.ToObject<ActionDefinition>();
-                    }
-
+                    var buttonItem = DeserializeButtonItem(item);
                     config.Items.Add(buttonItem);
                 }
             }
@@ -134,6 +112,51 @@ public class ConfigurationService
         {
             throw new InvalidOperationException($"Failed to parse configuration: {ex.Message}", ex);
         }
+    }
+
+    /// <summary>
+    /// Recursively deserializes a ButtonItem from a JToken.
+    /// Handles polymorphic Title field and nested Items array.
+    /// </summary>
+    private ButtonItem DeserializeButtonItem(JToken itemToken)
+    {
+        var buttonItem = new ButtonItem();
+
+        // Handle title (can be string or object)
+        var titleToken = itemToken["title"];
+        if (titleToken != null)
+        {
+            if (titleToken.Type == JTokenType.String)
+            {
+                buttonItem.Title = titleToken.Value<string>();
+            }
+            else if (titleToken.Type == JTokenType.Object)
+            {
+                buttonItem.Title = titleToken.ToObject<TitleDefinition>();
+            }
+        }
+
+        // Handle action (can be null or object)
+        var actionToken = itemToken["action"];
+        if (actionToken != null && actionToken.Type != JTokenType.Null)
+        {
+            buttonItem.Action = actionToken.ToObject<ActionDefinition>();
+        }
+
+        // Handle nested items (recursive deserialization)
+        var nestedItemsToken = itemToken["items"];
+        if (nestedItemsToken != null && nestedItemsToken.Type == JTokenType.Array)
+        {
+            buttonItem.Items = new List<ButtonItem>();
+            foreach (var nestedItem in (JArray)nestedItemsToken)
+            {
+                // RECURSION: Deserialize nested ButtonItems
+                var nestedButtonItem = DeserializeButtonItem(nestedItem);
+                buttonItem.Items.Add(nestedButtonItem);
+            }
+        }
+
+        return buttonItem;
     }
 
     /// <summary>

@@ -11,6 +11,11 @@ public class ButtonItem
     public ActionDefinition? Action { get; set; }
 
     /// <summary>
+    /// Submenu items for hierarchical navigation (null for non-submenu buttons).
+    /// </summary>
+    public List<ButtonItem>? Items { get; set; }
+
+    /// <summary>
     /// Returns true if the title is a static string.
     /// </summary>
     public bool IsStaticTitle => Title is string;
@@ -24,6 +29,16 @@ public class ButtonItem
     /// Returns true if this button has an action.
     /// </summary>
     public bool HasAction => Action != null;
+
+    /// <summary>
+    /// Returns true if this button has a submenu.
+    /// </summary>
+    public bool HasSubmenu => Items != null && Items.Count > 0;
+
+    /// <summary>
+    /// Returns true if this button has both an action and a submenu.
+    /// </summary>
+    public bool HasActionAndSubmenu => HasAction && HasSubmenu;
 
     /// <summary>
     /// Gets the title as a string (for static titles).
