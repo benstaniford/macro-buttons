@@ -215,7 +215,7 @@ Create `%USERPROFILE%\.macrobuttons.json` with test items:
     },
     {
       "title": "Time Display",
-      "title": { "python": ["python", "-c", "import datetime; print(datetime.datetime.now().strftime('%H:%M:%S'))"] },
+      "title": { "python": ["-c", "import datetime; print(datetime.datetime.now().strftime('%H:%M:%S'))"] },
       "action": null
     },
     {
