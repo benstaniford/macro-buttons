@@ -140,17 +140,31 @@ public partial class MainWindow : Window
             System.Diagnostics.Debug.WriteLine($"Fallback bounds: Left={bounds.Left}, Top={bounds.Top}, Width={bounds.Width}, Height={bounds.Height}");
         }
 
-        // With PerMonitorV2 DPI awareness, WPF handles coordinate conversion automatically
-        // Set position and size directly from monitor bounds
-        Left = bounds.Left;
-        Top = bounds.Top;
+        // Get system DPI to convert physical screen coordinates to WPF logical coordinates
+        var source = PresentationSource.FromVisual(this);
+        double dpiScaleX = 1.0;
+        double dpiScaleY = 1.0;
+
+        if (source != null)
+        {
+            dpiScaleX = source.CompositionTarget.TransformToDevice.M11;
+            dpiScaleY = source.CompositionTarget.TransformToDevice.M22;
+            System.Diagnostics.Debug.WriteLine($"System DPI scaling: X={dpiScaleX}, Y={dpiScaleY}");
+        }
+
+        // Convert screen coordinates (physical pixels) to WPF logical pixels
+        // Position needs to be scaled by system DPI
+        Left = bounds.Left / dpiScaleX;
+        Top = bounds.Top / dpiScaleY;
+
+        // Size: try using physical pixels directly and let WPF handle per-monitor DPI
         Width = bounds.Width;
         Height = bounds.Height;
 
         // Ensure window is topmost
         Topmost = true;
 
-        System.Diagnostics.Debug.WriteLine($"Window positioned (logical): Left={Left}, Top={Top}, Width={Width}, Height={Height}");
+        System.Diagnostics.Debug.WriteLine($"Window positioned: Left={Left}, Top={Top}, Width={Width}, Height={Height}");
     }
 
     protected override void OnActivated(EventArgs e)
