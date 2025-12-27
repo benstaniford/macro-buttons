@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?define ProductVersion="1.0.0.0" ?>
+  <?define ProductName="MacroButtons" ?>
+  <?define Manufacturer="MacroButtons" ?>
+  <?define UpgradeCode="{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}" ?>
+
+  <Product Id="*"
+           Name="$(var.ProductName)"
+           Language="1033"
+           Version="$(var.ProductVersion)"
+           Manufacturer="$(var.Manufacturer)"
+           UpgradeCode="$(var.UpgradeCode)">
+
+    <Package InstallerVersion="200"
+             Compressed="yes"
+             InstallScope="perMachine"
+             Description="$(var.ProductName) Installer"
+             Comments="Touch-screen macro button panel with retro terminal aesthetic" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+
+    <MediaTemplate EmbedCab="yes" />
+
+    <!-- Feature definition -->
+    <Feature Id="ProductFeature" Title="MacroButtons" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentRef Id="ApplicationShortcut" />
+    </Feature>
+
+    <Feature Id="DesktopShortcutFeature" Title="Desktop Shortcut" Level="1">
+      <ComponentRef Id="DesktopShortcut" />
+    </Feature>
+
+    <!-- UI configuration -->
+    <UIRef Id="WixUI_InstallDir" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+
+    <!-- Icon for Add/Remove Programs -->
+    <Icon Id="icon.ico" SourceFile="MacroButtons.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/yourusername/macro-buttons" />
+  </Product>
+
+  <Fragment>
+    <!-- Directory structure -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="INSTALLFOLDER" Name="MacroButtons" />
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="MacroButtons"/>
+      </Directory>
+      <Directory Id="DesktopFolder" Name="Desktop" />
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <!-- Main application files -->
+      <Component Id="MacroButtonsExe" Guid="{B1C2D3E4-F5A6-7890-BCDE-F12345678901}">
+        <File Id="MacroButtonsEXE"
+              Source="$(var.MacroButtons.TargetDir)MacroButtons.exe"
+              KeyPath="yes"
+              Checksum="yes" />
+        <File Id="MacroButtonsDLL"
+              Source="$(var.MacroButtons.TargetDir)MacroButtons.dll" />
+        <File Id="MacroButtonsRuntimeConfigJson"
+              Source="$(var.MacroButtons.TargetDir)MacroButtons.runtimeconfig.json" />
+        <File Id="MacroButtonsDepsJson"
+              Source="$(var.MacroButtons.TargetDir)MacroButtons.deps.json" />
+      </Component>
+
+      <!-- NuGet Dependencies -->
+      <Component Id="NewtonsoftJson" Guid="{C2D3E4F5-A6B7-8901-CDEF-123456789012}">
+        <File Id="NewtonsoftJsonDll"
+              Source="$(var.MacroButtons.TargetDir)Newtonsoft.Json.dll"
+              KeyPath="yes" />
+      </Component>
+
+      <Component Id="InputSimulatorPlus" Guid="{D3E4F5A6-B7C8-9012-DEF1-234567890123}">
+        <File Id="InputSimulatorDll"
+              Source="$(var.MacroButtons.TargetDir)WindowsInput.dll"
+              KeyPath="yes" />
+      </Component>
+
+      <Component Id="CommunityToolkitMvvm" Guid="{E4F5A6B7-C8D9-0123-EF12-345678901234}">
+        <File Id="CommunityToolkitMvvmDll"
+              Source="$(var.MacroButtons.TargetDir)CommunityToolkit.Mvvm.dll"
+              KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- Start Menu Shortcut -->
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="ApplicationShortcut" Guid="{F5A6B7C8-D9E0-1234-F123-456789012345}">
+        <Shortcut Id="ApplicationStartMenuShortcut"
+                  Name="MacroButtons"
+                  Description="Touch-screen macro button panel"
+                  Target="[INSTALLFOLDER]MacroButtons.exe"
+                  WorkingDirectory="INSTALLFOLDER"/>
+        <RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall"/>
+        <RegistryValue Root="HKCU"
+                       Key="Software\MacroButtons"
+                       Name="installed"
+                       Type="integer"
+                       Value="1"
+                       KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
+    <!-- Desktop Shortcut -->
+    <DirectoryRef Id="DesktopFolder">
+      <Component Id="DesktopShortcut" Guid="{A6B7C8D9-E0F1-2345-1234-567890123456}">
+        <Shortcut Id="DesktopShortcutId"
+                  Name="MacroButtons"
+                  Description="Touch-screen macro button panel"
+                  Target="[INSTALLFOLDER]MacroButtons.exe"
+                  WorkingDirectory="INSTALLFOLDER"/>
+        <RegistryValue Root="HKCU"
+                       Key="Software\MacroButtons"
+                       Name="desktopShortcut"
+                       Type="integer"
+                       Value="1"
+                       KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>
