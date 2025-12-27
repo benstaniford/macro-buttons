@@ -38,8 +38,8 @@
     <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
 
     <!-- Icon for Add/Remove Programs -->
-    <!-- Icon Id="icon.ico" SourceFile="MacroButtons.ico"/ -->
-    <!-- Property Id="ARPPRODUCTICON" Value="icon.ico" / -->
+    <Icon Id="icon.ico" SourceFile="MacroButtons.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
     <Property Id="ARPHELPLINK" Value="https://github.com/yourusername/macro-buttons" />
   </Product>
 
