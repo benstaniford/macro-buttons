@@ -31,17 +31,46 @@ public class MainViewModel : ViewModelBase, IDisposable
         _configService = new ConfigurationService();
         _commandService = new CommandExecutionService();
         _windowHelper = windowHelper ?? new WindowHelper();
-        _keystrokeService = new KeystrokeService(_windowHelper);
 
-        LoadConfiguration();
+        try
+        {
+            // Load configuration first to get sendKeysDelay
+            Config = _configService.LoadConfiguration();
+
+            // Create keystroke service with configured delay
+            var sendKeysDelay = Config.Global.GetSendKeysDelay();
+            _keystrokeService = new KeystrokeService(_windowHelper, sendKeysDelay);
+
+            // Now apply the configuration
+            ApplyConfiguration();
+        }
+        catch (Exception ex)
+        {
+            // If config loading fails, create with default delay
+            _keystrokeService = new KeystrokeService(_windowHelper);
+
+            // Show error and use minimal fallback
+            System.Windows.MessageBox.Show(
+                $"Failed to load configuration: {ex.Message}\nUsing default settings.",
+                "Configuration Error",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Warning);
+
+            // Set minimal defaults
+            Rows = 3;
+            Columns = 4;
+            var errorTile = new ButtonTileViewModel(Foreground, _commandService, _keystrokeService, _windowHelper)
+            {
+                DisplayTitle = "Config Error"
+            };
+            Tiles.Add(errorTile);
+        }
     }
 
-    private void LoadConfiguration()
+    private void ApplyConfiguration()
     {
         try
         {
-            Config = _configService.LoadConfiguration();
-
             // Apply theme colors
             Foreground = ColorConverter.ParseColor(Config.Theme.Foreground, Brushes.DarkGreen);
             Background = ColorConverter.ParseColor(Config.Theme.Background, Brushes.Black);
@@ -54,9 +83,9 @@ public class MainViewModel : ViewModelBase, IDisposable
         }
         catch (Exception ex)
         {
-            // If config loading fails, use minimal fallback
+            // If config application fails, use minimal fallback
             System.Windows.MessageBox.Show(
-                $"Failed to load configuration: {ex.Message}\nUsing default settings.",
+                $"Failed to apply configuration: {ex.Message}\nUsing default settings.",
                 "Configuration Error",
                 System.Windows.MessageBoxButton.OK,
                 System.Windows.MessageBoxImage.Warning);

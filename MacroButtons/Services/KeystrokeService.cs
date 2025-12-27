@@ -12,12 +12,14 @@ public class KeystrokeService
     private readonly IInputSimulator _inputSimulator;
     private readonly AutoHotkeyParser _parser;
     private readonly WindowHelper _windowHelper;
+    private readonly TimeSpan _sendKeysDelay;
 
-    public KeystrokeService(WindowHelper windowHelper)
+    public KeystrokeService(WindowHelper windowHelper, TimeSpan? sendKeysDelay = null)
     {
         _inputSimulator = new InputSimulator();
         _parser = new AutoHotkeyParser();
         _windowHelper = windowHelper;
+        _sendKeysDelay = sendKeysDelay ?? TimeSpan.FromMilliseconds(30); // default 30ms
     }
 
     /// <summary>
@@ -39,7 +41,7 @@ public class KeystrokeService
         if (previousWindow != IntPtr.Zero)
         {
             _windowHelper.RestorePreviousWindow(previousWindow);
-            await Task.Delay(50); // Brief delay to ensure window is active
+            await Task.Delay(_sendKeysDelay); // Configurable delay to ensure window is active
         }
 
         // Send the keystrokes
