@@ -25,6 +25,7 @@ public partial class MainWindow : Window
     private readonly MonitorService _monitorService;
     private readonly WindowHelper _windowHelper;
     private readonly MainViewModel _viewModel;
+    private System.Windows.Forms.NotifyIcon? _notifyIcon;
 
     public MainWindow()
     {
@@ -36,6 +37,51 @@ public partial class MainWindow : Window
         // Initialize view model
         _viewModel = new MainViewModel();
         DataContext = _viewModel;
+
+        // Initialize system tray icon
+        InitializeNotifyIcon();
+    }
+
+    private void InitializeNotifyIcon()
+    {
+        _notifyIcon = new System.Windows.Forms.NotifyIcon
+        {
+            Text = "MacroButtons",
+            Visible = true
+        };
+
+        // Try to use the application icon if available
+        var iconPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "MacroButtons.ico");
+        if (System.IO.File.Exists(iconPath))
+        {
+            _notifyIcon.Icon = new System.Drawing.Icon(iconPath);
+        }
+        else
+        {
+            // Fallback to default application icon
+            _notifyIcon.Icon = System.Drawing.SystemIcons.Application;
+        }
+
+        // Create context menu
+        var contextMenu = new System.Windows.Forms.ContextMenuStrip();
+        var quitItem = new System.Windows.Forms.ToolStripMenuItem("Quit");
+        quitItem.Click += (s, e) => QuitApplication();
+        contextMenu.Items.Add(quitItem);
+
+        _notifyIcon.ContextMenuStrip = contextMenu;
+        _notifyIcon.DoubleClick += (s, e) =>
+        {
+            if (WindowState == WindowState.Minimized)
+                WindowState = WindowState.Normal;
+            Activate();
+        };
+    }
+
+    private void QuitApplication()
+    {
+        _notifyIcon?.Dispose();
+        _viewModel?.Dispose();
+        Application.Current.Shutdown();
     }
 
     protected override void OnSourceInitialized(EventArgs e)
@@ -73,5 +119,12 @@ public partial class MainWindow : Window
         // Store the previous window whenever something tries to activate us
         // This will be used when sending keystrokes
         _windowHelper.StorePreviousActiveWindow();
+    }
+
+    protected override void OnClosed(EventArgs e)
+    {
+        base.OnClosed(e);
+        _notifyIcon?.Dispose();
+        _viewModel?.Dispose();
     }
 }

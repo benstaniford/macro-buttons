@@ -136,6 +136,10 @@ public class ConfigurationService
     /// </summary>
     private MacroButtonConfig CreateFallbackConfiguration()
     {
+        // Detect the smallest monitor for default configuration
+        var monitorService = new MonitorService();
+        var smallestMonitorIndex = monitorService.GetSmallestMonitorIndex();
+
         return new MacroButtonConfig
         {
             Items = new List<ButtonItem>
@@ -169,7 +173,7 @@ public class ConfigurationService
             Global = new GlobalConfig
             {
                 Refresh = "30s",
-                MonitorIndex = 0
+                MonitorIndex = smallestMonitorIndex
             }
         };
     }

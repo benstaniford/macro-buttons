@@ -31,4 +31,32 @@ public class MonitorService
     {
         return System.Windows.Forms.Screen.AllScreens.Length;
     }
+
+    /// <summary>
+    /// Gets the index of the smallest monitor by area.
+    /// Useful for automatically selecting a secondary display for macro buttons.
+    /// </summary>
+    public int GetSmallestMonitorIndex()
+    {
+        var screens = System.Windows.Forms.Screen.AllScreens;
+        if (screens.Length == 0)
+            return 0;
+
+        int smallestIndex = 0;
+        int smallestArea = int.MaxValue;
+
+        for (int i = 0; i < screens.Length; i++)
+        {
+            var bounds = screens[i].Bounds;
+            int area = bounds.Width * bounds.Height;
+
+            if (area < smallestArea)
+            {
+                smallestArea = area;
+                smallestIndex = i;
+            }
+        }
+
+        return smallestIndex;
+    }
 }
