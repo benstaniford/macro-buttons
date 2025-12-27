@@ -57,7 +57,7 @@ public class MainViewModel : ViewModelBase, IDisposable
 
             // Set minimal defaults
             Rows = 3;
-            Columns = 4;
+            Columns = 5;
             var errorTile = new ButtonTileViewModel(Foreground, _commandService, _keystrokeService, _windowHelper)
             {
                 DisplayTitle = "Config Error"
@@ -91,7 +91,7 @@ public class MainViewModel : ViewModelBase, IDisposable
 
             // Set minimal defaults
             Rows = 3;
-            Columns = 4;
+            Columns = 5;
             var errorTile = new ButtonTileViewModel(Foreground, _commandService, _keystrokeService, _windowHelper)
             {
                 DisplayTitle = "Config Error"
@@ -103,14 +103,14 @@ public class MainViewModel : ViewModelBase, IDisposable
     private void CalculateGridLayout(int itemCount)
     {
         const int MIN_ROWS = 3;
-        const int MIN_COLS = 4;
-        const int MIN_TILES = MIN_ROWS * MIN_COLS; // 12
+        const int MIN_COLS = 5;
+        const int MIN_TILES = MIN_ROWS * MIN_COLS; // 15
 
         // Ensure we have at least minimum grid
         int totalTiles = Math.Max(itemCount, MIN_TILES);
 
-        // Calculate optimal columns (prefer landscape, 4:3 ratio)
-        Columns = Math.Max(MIN_COLS, (int)Math.Ceiling(Math.Sqrt(totalTiles * 1.33)));
+        // Calculate optimal columns (prefer landscape, 5:3 ratio)
+        Columns = Math.Max(MIN_COLS, (int)Math.Ceiling(Math.Sqrt(totalTiles * 1.67)));
 
         // Calculate required rows
         Rows = Math.Max(MIN_ROWS, (int)Math.Ceiling((double)totalTiles / Columns));
