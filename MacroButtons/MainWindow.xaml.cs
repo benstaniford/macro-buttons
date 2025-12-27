@@ -109,6 +109,15 @@ public partial class MainWindow : Window
         var monitorIndex = _viewModel.Config.Global.MonitorIndex;
         var monitorCount = _monitorService.GetMonitorCount();
 
+        // Debug: Show all monitors
+        System.Diagnostics.Debug.WriteLine($"=== All Monitors ({monitorCount}) ===");
+        for (int i = 0; i < monitorCount; i++)
+        {
+            var screen = _monitorService.GetMonitorByIndex(i);
+            var b = screen.Bounds;
+            System.Diagnostics.Debug.WriteLine($"Monitor {i}: {b.Width}x{b.Height} @ ({b.Left},{b.Top}) - Primary: {screen.Primary}");
+        }
+
         // Clamp monitor index to valid range
         if (monitorIndex < 0 || monitorIndex >= monitorCount)
         {
@@ -118,8 +127,7 @@ public partial class MainWindow : Window
         var bounds = _monitorService.GetMonitorBounds(monitorIndex);
 
         // Debug output
-        System.Diagnostics.Debug.WriteLine($"Monitor count: {monitorCount}");
-        System.Diagnostics.Debug.WriteLine($"Requested monitor index: {_viewModel.Config.Global.MonitorIndex}, Using: {monitorIndex}");
+        System.Diagnostics.Debug.WriteLine($"\nRequested monitor index: {_viewModel.Config.Global.MonitorIndex}, Using: {monitorIndex}");
         System.Diagnostics.Debug.WriteLine($"Monitor bounds: Left={bounds.Left}, Top={bounds.Top}, Width={bounds.Width}, Height={bounds.Height}");
 
         Left = bounds.Left;
