@@ -1,6 +1,5 @@
-using System.Timers;
+using System.Windows.Threading;
 using MacroButtons.ViewModels;
-using Timer = System.Timers.Timer;
 
 namespace MacroButtons.Services;
 
@@ -9,7 +8,7 @@ namespace MacroButtons.Services;
 /// </summary>
 public class DynamicTitleRefreshService : IDisposable
 {
-    private Timer? _timer;
+    private DispatcherTimer? _timer;
     private readonly IEnumerable<ButtonTileViewModel> _dynamicTiles;
     private readonly TimeSpan _refreshInterval;
     private bool _disposed = false;
@@ -29,10 +28,12 @@ public class DynamicTitleRefreshService : IDisposable
         // Initial refresh
         _ = RefreshAllTitlesAsync();
 
-        // Start periodic refresh
-        _timer = new Timer(_refreshInterval.TotalMilliseconds);
-        _timer.Elapsed += async (sender, e) => await RefreshAllTitlesAsync();
-        _timer.AutoReset = true;
+        // Start periodic refresh using DispatcherTimer (runs on UI thread)
+        _timer = new DispatcherTimer
+        {
+            Interval = _refreshInterval
+        };
+        _timer.Tick += async (sender, e) => await RefreshAllTitlesAsync();
         _timer.Start();
     }
 
