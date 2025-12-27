@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Interop;
 using MacroButtons.Helpers;
 using MacroButtons.Services;
+using MacroButtons.ViewModels;
 
 namespace MacroButtons;
 
@@ -23,7 +24,7 @@ public partial class MainWindow : Window
 
     private readonly MonitorService _monitorService;
     private readonly WindowHelper _windowHelper;
-    private int _targetMonitorIndex;
+    private readonly MainViewModel _viewModel;
 
     public MainWindow()
     {
@@ -31,12 +32,10 @@ public partial class MainWindow : Window
 
         _monitorService = new MonitorService();
         _windowHelper = new WindowHelper();
-        _targetMonitorIndex = 0; // Default to first monitor, will be set from config later
-    }
 
-    public void SetTargetMonitor(int monitorIndex)
-    {
-        _targetMonitorIndex = monitorIndex;
+        // Initialize view model
+        _viewModel = new MainViewModel();
+        DataContext = _viewModel;
     }
 
     protected override void OnSourceInitialized(EventArgs e)
@@ -54,8 +53,9 @@ public partial class MainWindow : Window
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        // Position window on the specified monitor
-        var bounds = _monitorService.GetMonitorBounds(_targetMonitorIndex);
+        // Position window on the specified monitor from configuration
+        var monitorIndex = _viewModel.Config.Global.MonitorIndex;
+        var bounds = _monitorService.GetMonitorBounds(monitorIndex);
 
         Left = bounds.Left;
         Top = bounds.Top;

@@ -1,6 +1,7 @@
 <Window x:Class="MacroButtons.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="clr-namespace:MacroButtons.Views"
         Title="MacroButtons"
         WindowStyle="None"
         ResizeMode="NoResize"
@@ -8,12 +9,20 @@
         ShowInTaskbar="False"
         Topmost="True"
         Loaded="Window_Loaded">
-    <Grid Background="Black">
-        <TextBlock Text="MacroButtons"
-                   Foreground="DarkGreen"
-                   FontFamily="Consolas"
-                   FontSize="24"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"/>
+    <Grid Background="{Binding Background}">
+        <ItemsControl ItemsSource="{Binding Tiles}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="{Binding Rows}"
+                                Columns="{Binding Columns}"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <views:ButtonTile/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 </Window>
