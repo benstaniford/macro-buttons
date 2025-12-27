@@ -4,6 +4,8 @@ using MacroButtons.Helpers;
 using MacroButtons.Models;
 using MacroButtons.Services;
 using Brush = System.Windows.Media.Brush;
+using Brushes = System.Windows.Media.Brushes;
+using ColorConverter = MacroButtons.Helpers.ColorConverter;
 
 namespace MacroButtons.ViewModels;
 
