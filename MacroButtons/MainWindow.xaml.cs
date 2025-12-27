@@ -140,23 +140,12 @@ public partial class MainWindow : Window
             System.Diagnostics.Debug.WriteLine($"Fallback bounds: Left={bounds.Left}, Top={bounds.Top}, Width={bounds.Width}, Height={bounds.Height}");
         }
 
-        // Get DPI information
-        var source = PresentationSource.FromVisual(this);
-        double dpiX = 1.0;
-        double dpiY = 1.0;
-
-        if (source != null)
-        {
-            dpiX = source.CompositionTarget.TransformToDevice.M11;
-            dpiY = source.CompositionTarget.TransformToDevice.M22;
-            System.Diagnostics.Debug.WriteLine($"DPI scaling: X={dpiX}, Y={dpiY}");
-        }
-
-        // Convert physical pixels to WPF logical pixels
-        Left = bounds.Left / dpiX;
-        Top = bounds.Top / dpiY;
-        Width = bounds.Width / dpiX;
-        Height = bounds.Height / dpiY;
+        // With PerMonitorV2 DPI awareness, WPF handles coordinate conversion automatically
+        // Set position and size directly from monitor bounds
+        Left = bounds.Left;
+        Top = bounds.Top;
+        Width = bounds.Width;
+        Height = bounds.Height;
 
         // Ensure window is topmost
         Topmost = true;
