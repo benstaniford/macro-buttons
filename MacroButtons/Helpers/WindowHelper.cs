@@ -118,6 +118,7 @@ public class WindowHelper
     /// </summary>
     public bool RestorePreviousCursorPosition()
     {
+        System.Diagnostics.Debug.WriteLine($"Restoring cursor to: ({_previousCursorPosition.X}, {_previousCursorPosition.Y})");
         return SetCursorPos(_previousCursorPosition.X, _previousCursorPosition.Y);
     }
 
@@ -132,6 +133,7 @@ public class WindowHelper
             Y = bounds.Top + bounds.Height / 2
         };
         _ourMonitorHandle = MonitorFromPoint(point, MONITOR_DEFAULTTONULL);
+        System.Diagnostics.Debug.WriteLine($"Our monitor handle set to: {_ourMonitorHandle} (center point: {point.X}, {point.Y})");
     }
 
     /// <summary>
@@ -147,6 +149,7 @@ public class WindowHelper
         if (cursorMonitor != _ourMonitorHandle)
         {
             _previousCursorPosition = currentPos;
+            System.Diagnostics.Debug.WriteLine($"Cursor position saved: ({currentPos.X}, {currentPos.Y})");
         }
     }
 }

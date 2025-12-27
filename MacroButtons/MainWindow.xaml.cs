@@ -230,6 +230,9 @@ public partial class MainWindow : Window
         // Set our monitor bounds for cursor tracking
         _windowHelper.SetOurMonitorBounds(bounds);
 
+        // Initialize cursor position immediately (before timer starts)
+        _windowHelper.UpdateCursorPositionIfNotOnOurMonitor();
+
         // Start cursor tracking timer to continuously track cursor position when it's on other monitors
         _cursorTrackingTimer = new DispatcherTimer
         {
