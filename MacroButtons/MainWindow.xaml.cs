@@ -140,15 +140,28 @@ public partial class MainWindow : Window
             System.Diagnostics.Debug.WriteLine($"Fallback bounds: Left={bounds.Left}, Top={bounds.Top}, Width={bounds.Width}, Height={bounds.Height}");
         }
 
-        Left = bounds.Left;
-        Top = bounds.Top;
-        Width = bounds.Width;
-        Height = bounds.Height;
+        // Get DPI information
+        var source = PresentationSource.FromVisual(this);
+        double dpiX = 1.0;
+        double dpiY = 1.0;
+
+        if (source != null)
+        {
+            dpiX = source.CompositionTarget.TransformToDevice.M11;
+            dpiY = source.CompositionTarget.TransformToDevice.M22;
+            System.Diagnostics.Debug.WriteLine($"DPI scaling: X={dpiX}, Y={dpiY}");
+        }
+
+        // Convert physical pixels to WPF logical pixels
+        Left = bounds.Left / dpiX;
+        Top = bounds.Top / dpiY;
+        Width = bounds.Width / dpiX;
+        Height = bounds.Height / dpiY;
 
         // Ensure window is topmost
         Topmost = true;
 
-        System.Diagnostics.Debug.WriteLine($"Window positioned: Left={Left}, Top={Top}, Width={Width}, Height={Height}");
+        System.Diagnostics.Debug.WriteLine($"Window positioned (logical): Left={Left}, Top={Top}, Width={Width}, Height={Height}");
     }
 
     protected override void OnActivated(EventArgs e)
