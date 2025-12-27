@@ -1,0 +1,28 @@
+{
+  "items": [
+    {
+      "title": "Paste",
+      "action": { "keypress": "^v" }
+    },
+    {
+      "title": "Save",
+      "action": { "keypress": "^s" }
+    },
+    {
+      "title": "Hello World",
+      "action": null
+    },
+    {
+      "title": "Calculator",
+      "action": { "exe": "calc.exe" }
+    }
+  ],
+  "theme": {
+    "foreground": "darkgreen",
+    "background": "black"
+  },
+  "global": {
+    "refresh": "30s",
+    "monitorIndex": 0
+  }
+}
