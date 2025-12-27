@@ -130,6 +130,16 @@ public partial class MainWindow : Window
         System.Diagnostics.Debug.WriteLine($"\nRequested monitor index: {_viewModel.Config.Global.MonitorIndex}, Using: {monitorIndex}");
         System.Diagnostics.Debug.WriteLine($"Monitor bounds: Left={bounds.Left}, Top={bounds.Top}, Width={bounds.Width}, Height={bounds.Height}");
 
+        // Safety check: If coordinates seem unreasonable (likely due to virtual desktop/DPI issues),
+        // fall back to primary monitor
+        if (bounds.Left > 10000 || bounds.Top > 10000 || bounds.Left < -10000 || bounds.Top < -10000)
+        {
+            System.Diagnostics.Debug.WriteLine("WARNING: Monitor bounds appear invalid, falling back to primary monitor");
+            monitorIndex = 0;
+            bounds = _monitorService.GetMonitorBounds(0);
+            System.Diagnostics.Debug.WriteLine($"Fallback bounds: Left={bounds.Left}, Top={bounds.Top}, Width={bounds.Width}, Height={bounds.Height}");
+        }
+
         Left = bounds.Left;
         Top = bounds.Top;
         Width = bounds.Width;

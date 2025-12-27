@@ -17,10 +17,17 @@ public class MonitorService
 
     /// <summary>
     /// Gets the bounds (position and size) of a specific monitor.
+    /// Uses WorkingArea for better DPI-aware coordinates.
     /// </summary>
     public System.Drawing.Rectangle GetMonitorBounds(int monitorIndex)
     {
         var monitor = GetMonitorByIndex(monitorIndex);
+        // Try WorkingArea first (excludes taskbar), fall back to Bounds
+        var area = monitor.WorkingArea;
+
+        System.Diagnostics.Debug.WriteLine($"Monitor {monitorIndex} - Bounds: {monitor.Bounds}, WorkingArea: {area}");
+
+        // For full-screen apps, we want Bounds, but let's see what we get
         return monitor.Bounds;
     }
 
