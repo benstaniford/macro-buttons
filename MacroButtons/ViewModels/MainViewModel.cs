@@ -27,11 +27,11 @@ public class MainViewModel : ViewModelBase, IDisposable
     public int Columns { get; private set; }
     public MacroButtonConfig Config { get; private set; } = new();
 
-    public MainViewModel()
+    public MainViewModel(WindowHelper? windowHelper = null)
     {
         _configService = new ConfigurationService();
         _commandService = new CommandExecutionService();
-        _windowHelper = new WindowHelper();
+        _windowHelper = windowHelper ?? new WindowHelper();
         _keystrokeService = new KeystrokeService(_windowHelper);
 
         LoadConfiguration();

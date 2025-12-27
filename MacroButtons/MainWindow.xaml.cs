@@ -53,8 +53,8 @@ public partial class MainWindow : Window
         _monitorService = new MonitorService();
         _windowHelper = new WindowHelper();
 
-        // Initialize view model
-        _viewModel = new MainViewModel();
+        // Initialize view model with the shared WindowHelper instance
+        _viewModel = new MainViewModel(_windowHelper);
         DataContext = _viewModel;
 
         // Initialize system tray icon
