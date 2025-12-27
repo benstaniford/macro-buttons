@@ -79,6 +79,10 @@ public partial class ButtonTileViewModel : ViewModelBase
         if (!HasAction || _config?.Action == null)
             return;
 
+        // Restore cursor to the position it was before touching the screen
+        // Do this IMMEDIATELY, before executing the action
+        _windowHelper.RestorePreviousCursorPosition();
+
         try
         {
             switch (_config.Action.GetActionType())
@@ -97,11 +101,6 @@ public partial class ButtonTileViewModel : ViewModelBase
         catch (Exception ex)
         {
             DisplayTitle = $"Error: {ex.Message}";
-        }
-        finally
-        {
-            // Restore cursor to the position it was before touching the screen
-            _windowHelper.RestorePreviousCursorPosition();
         }
     }
 

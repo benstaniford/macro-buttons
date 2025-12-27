@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
+using System.Windows.Threading;
 using MacroButtons.Helpers;
 using MacroButtons.Services;
 using MacroButtons.ViewModels;
@@ -43,6 +44,7 @@ public partial class MainWindow : Window
     private readonly WindowHelper _windowHelper;
     private readonly MainViewModel _viewModel;
     private System.Windows.Forms.NotifyIcon? _notifyIcon;
+    private DispatcherTimer? _cursorTrackingTimer;
 
     public MainWindow()
     {
@@ -224,6 +226,17 @@ public partial class MainWindow : Window
         Topmost = true;
 
         System.Diagnostics.Debug.WriteLine($"Window positioned: Left={Left}, Top={Top}, Width={Width}, Height={Height}");
+
+        // Set our monitor bounds for cursor tracking
+        _windowHelper.SetOurMonitorBounds(bounds);
+
+        // Start cursor tracking timer to continuously track cursor position when it's on other monitors
+        _cursorTrackingTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromMilliseconds(100) // Poll every 100ms
+        };
+        _cursorTrackingTimer.Tick += (s, e) => _windowHelper.UpdateCursorPositionIfNotOnOurMonitor();
+        _cursorTrackingTimer.Start();
     }
 
     protected override void OnActivated(EventArgs e)
@@ -238,6 +251,7 @@ public partial class MainWindow : Window
     protected override void OnClosed(EventArgs e)
     {
         base.OnClosed(e);
+        _cursorTrackingTimer?.Stop();
         _notifyIcon?.Dispose();
         _viewModel?.Dispose();
     }

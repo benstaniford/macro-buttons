@@ -32,12 +32,17 @@ public class WindowHelper
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool SetCursorPos(int X, int Y);
 
+    [DllImport("user32.dll")]
+    private static extern IntPtr MonitorFromPoint(POINT pt, uint dwFlags);
+
     private const uint SWP_NOMOVE = 0x0002;
     private const uint SWP_NOSIZE = 0x0001;
     private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
+    private const uint MONITOR_DEFAULTTONULL = 0;
 
     private IntPtr _previousWindow = IntPtr.Zero;
     private POINT _previousCursorPosition;
+    private IntPtr _ourMonitorHandle = IntPtr.Zero;
 
     /// <summary>
     /// Stores the currently active window handle and cursor position for later restoration.
@@ -114,5 +119,34 @@ public class WindowHelper
     public bool RestorePreviousCursorPosition()
     {
         return SetCursorPos(_previousCursorPosition.X, _previousCursorPosition.Y);
+    }
+
+    /// <summary>
+    /// Sets the monitor that our window is on, so we can track cursor position only when it's NOT on our monitor.
+    /// </summary>
+    public void SetOurMonitorBounds(System.Drawing.Rectangle bounds)
+    {
+        var point = new POINT
+        {
+            X = bounds.Left + bounds.Width / 2,
+            Y = bounds.Top + bounds.Height / 2
+        };
+        _ourMonitorHandle = MonitorFromPoint(point, MONITOR_DEFAULTTONULL);
+    }
+
+    /// <summary>
+    /// Updates the stored cursor position if the cursor is not on our monitor.
+    /// Call this periodically to track cursor position on other monitors.
+    /// </summary>
+    public void UpdateCursorPositionIfNotOnOurMonitor()
+    {
+        GetCursorPos(out POINT currentPos);
+        IntPtr cursorMonitor = MonitorFromPoint(currentPos, MONITOR_DEFAULTTONULL);
+
+        // Only save cursor position if it's on a different monitor than ours
+        if (cursorMonitor != _ourMonitorHandle)
+        {
+            _previousCursorPosition = currentPos;
+        }
     }
 }
