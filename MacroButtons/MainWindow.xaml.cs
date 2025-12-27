@@ -120,6 +120,9 @@ public partial class MainWindow : Window
 
         // Make window topmost to occlude start menu
         _windowHelper.MakeWindowTopmost(hwnd);
+
+        // Store our window handle for tracking foreground window
+        _windowHelper.SetOurWindowHandle(hwnd);
     }
 
     /// <summary>
@@ -230,15 +233,20 @@ public partial class MainWindow : Window
         // Set our monitor bounds for cursor tracking
         _windowHelper.SetOurMonitorBounds(bounds);
 
-        // Initialize cursor position immediately (before timer starts)
+        // Initialize cursor and window tracking immediately (before timer starts)
         _windowHelper.UpdateCursorPositionIfNotOnOurMonitor();
+        _windowHelper.UpdatePreviousWindowIfNotUs();
 
-        // Start cursor tracking timer to continuously track cursor position when it's on other monitors
+        // Start tracking timer to continuously track both cursor position and foreground window
         _cursorTrackingTimer = new DispatcherTimer
         {
             Interval = TimeSpan.FromMilliseconds(100) // Poll every 100ms
         };
-        _cursorTrackingTimer.Tick += (s, e) => _windowHelper.UpdateCursorPositionIfNotOnOurMonitor();
+        _cursorTrackingTimer.Tick += (s, e) =>
+        {
+            _windowHelper.UpdateCursorPositionIfNotOnOurMonitor();
+            _windowHelper.UpdatePreviousWindowIfNotUs();
+        };
         _cursorTrackingTimer.Start();
     }
 
@@ -246,8 +254,8 @@ public partial class MainWindow : Window
     {
         base.OnActivated(e);
 
-        // Store the previous window whenever something tries to activate us
-        // This will be used when sending keystrokes
+        // Store the previous window as a fallback (should rarely be called due to WS_EX_NOACTIVATE)
+        // The primary tracking happens via the timer calling UpdatePreviousWindowIfNotUs()
         _windowHelper.StorePreviousActiveWindow();
     }
 

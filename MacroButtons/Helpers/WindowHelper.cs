@@ -43,6 +43,7 @@ public class WindowHelper
     private IntPtr _previousWindow = IntPtr.Zero;
     private POINT _previousCursorPosition;
     private IntPtr _ourMonitorHandle = IntPtr.Zero;
+    private IntPtr _ourWindowHandle = IntPtr.Zero;
 
     /// <summary>
     /// Stores the currently active window handle and cursor position for later restoration.
@@ -122,6 +123,14 @@ public class WindowHelper
     }
 
     /// <summary>
+    /// Sets our window handle so we can track foreground window only when it's NOT our window.
+    /// </summary>
+    public void SetOurWindowHandle(IntPtr hWnd)
+    {
+        _ourWindowHandle = hWnd;
+    }
+
+    /// <summary>
     /// Sets the monitor that our window is on, so we can track cursor position only when it's NOT on our monitor.
     /// </summary>
     public void SetOurMonitorBounds(System.Drawing.Rectangle bounds)
@@ -147,6 +156,21 @@ public class WindowHelper
         if (cursorMonitor != _ourMonitorHandle)
         {
             _previousCursorPosition = currentPos;
+        }
+    }
+
+    /// <summary>
+    /// Updates the stored foreground window if it's not our window.
+    /// Call this periodically to track which window should receive keystrokes.
+    /// </summary>
+    public void UpdatePreviousWindowIfNotUs()
+    {
+        IntPtr currentForeground = GetForegroundWindow();
+
+        // Only save foreground window if it's NOT our window
+        if (currentForeground != IntPtr.Zero && currentForeground != _ourWindowHandle)
+        {
+            _previousWindow = currentForeground;
         }
     }
 }
