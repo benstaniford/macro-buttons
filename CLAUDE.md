@@ -102,11 +102,9 @@ private const int GWL_EXSTYLE = -20;
 {
   "items": [
     {
-      "title": "Static Text" | {
-        "python": [...] | "exe": [...],
-        "refresh": "100ms"  // Optional: per-tile refresh interval (overrides global)
-      },
-      "action": { "keypress": "^v" } | { "python": [...] } | { "exe": "..." } | null
+      "title": "Static Text" | { "python": [...] | "exe": [...] },
+      "action": { "keypress": "^v" } | { "python": [...] } | { "exe": "..." } | null,
+      "refresh": "1s"  // Optional: per-tile refresh interval (overrides global, min 100ms)
     }
   ],
   "theme": {
@@ -218,10 +216,10 @@ Create `%USERPROFILE%\.macrobuttons.json` with test items:
     },
     {
       "title": {
-        "python": ["-c", "import datetime; print(datetime.datetime.now().strftime('%H:%M:%S'))"],
-        "refresh": "1s"
+        "python": ["-c", "import datetime; print(datetime.datetime.now().strftime('%H:%M:%S'))"]
       },
-      "action": null
+      "action": null,
+      "refresh": "1s"
     },
     {
       "title": "Calculator",
