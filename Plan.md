@@ -51,8 +51,8 @@
     <behavior>If keystrokes are specified, autohotkey's keystroke conventions should be used</behavior>
     <behavior>Keystrokes should always be sent to the application that was active prior to this application being used (e.g. the game that was being played)</behavior>
     <behavior>If keystrokes are specified, autohotkey's keystroke conventions should be used</behavior>
-
-    <steps>
+    
+    <steps "After each of these, a commit should take please by running git add -A && git auto">
     <step>Clarify this plan asking any questions needed before we proceed</step>
     <step>Manually create a Windows c#/WPF project with an sln file, since you're running on linux and I'll be testing on windows</step>
     <step>Create the application</step>
