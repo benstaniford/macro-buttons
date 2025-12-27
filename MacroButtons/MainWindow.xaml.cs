@@ -153,13 +153,11 @@ public partial class MainWindow : Window
         }
 
         // Convert screen coordinates (physical pixels) to WPF logical pixels
-        // Position needs to be scaled by system DPI
+        // Both position AND size need to be scaled by DPI
         Left = bounds.Left / dpiScaleX;
         Top = bounds.Top / dpiScaleY;
-
-        // Size: try using physical pixels directly and let WPF handle per-monitor DPI
-        Width = bounds.Width;
-        Height = bounds.Height;
+        Width = bounds.Width / dpiScaleX;
+        Height = bounds.Height / dpiScaleY;
 
         // Ensure window is topmost
         Topmost = true;
