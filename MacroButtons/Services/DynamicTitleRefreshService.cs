@@ -68,7 +68,6 @@ public class DynamicTitleRefreshService : IDisposable
             return;
 
         _timer?.Stop();
-        _timer?.Dispose();
         _timer = null;
 
         _disposed = true;
