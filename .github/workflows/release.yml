@@ -76,10 +76,10 @@ jobs:
           Write-Host "Building WiX installer..."
           msbuild MacroButtons.Installer\MacroButtons.Installer.wixproj /p:Configuration=Release /p:Platform=x64 /v:normal
           if ($LASTEXITCODE -ne 0) {
-            Write-Host "✗ WiX build failed with exit code: $LASTEXITCODE"
+            Write-Host "[ERROR] WiX build failed with exit code: $LASTEXITCODE"
             exit $LASTEXITCODE
           }
-          Write-Host "✓ WiX build completed"
+          Write-Host "[SUCCESS] WiX build completed"
 
       - name: Prepare artifacts
         shell: powershell
