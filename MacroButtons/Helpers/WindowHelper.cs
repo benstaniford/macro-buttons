@@ -37,13 +37,15 @@ public class WindowHelper
     private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
 
     private IntPtr _previousWindow = IntPtr.Zero;
+    private POINT _previousCursorPosition;
 
     /// <summary>
-    /// Stores the currently active window handle for later restoration.
+    /// Stores the currently active window handle and cursor position for later restoration.
     /// </summary>
     public void StorePreviousActiveWindow()
     {
         _previousWindow = GetForegroundWindow();
+        GetCursorPos(out _previousCursorPosition);
     }
 
     /// <summary>
@@ -83,6 +85,14 @@ public class WindowHelper
     }
 
     /// <summary>
+    /// Gets the previously stored cursor position.
+    /// </summary>
+    public POINT GetPreviousCursorPosition()
+    {
+        return _previousCursorPosition;
+    }
+
+    /// <summary>
     /// Sets the cursor position to the specified screen coordinates.
     /// </summary>
     public bool SetCursorPosition(int x, int y)
@@ -96,5 +106,13 @@ public class WindowHelper
     public bool SetCursorPosition(POINT point)
     {
         return SetCursorPos(point.X, point.Y);
+    }
+
+    /// <summary>
+    /// Restores the cursor to the previously stored position.
+    /// </summary>
+    public bool RestorePreviousCursorPosition()
+    {
+        return SetCursorPos(_previousCursorPosition.X, _previousCursorPosition.Y);
     }
 }

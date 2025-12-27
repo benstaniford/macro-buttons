@@ -79,9 +79,6 @@ public partial class ButtonTileViewModel : ViewModelBase
         if (!HasAction || _config?.Action == null)
             return;
 
-        // Capture cursor position before executing action
-        var cursorPosition = _windowHelper.GetCursorPosition();
-
         try
         {
             switch (_config.Action.GetActionType())
@@ -103,8 +100,8 @@ public partial class ButtonTileViewModel : ViewModelBase
         }
         finally
         {
-            // Restore cursor position after action completes
-            _windowHelper.SetCursorPosition(cursorPosition);
+            // Restore cursor to the position it was before touching the screen
+            _windowHelper.RestorePreviousCursorPosition();
         }
     }
 
