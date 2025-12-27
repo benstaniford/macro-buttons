@@ -7,6 +7,13 @@ namespace MacroButtons.Helpers;
 /// </summary>
 public class WindowHelper
 {
+    [StructLayout(LayoutKind.Sequential)]
+    public struct POINT
+    {
+        public int X;
+        public int Y;
+    }
+
     [DllImport("user32.dll")]
     private static extern IntPtr GetForegroundWindow();
 
@@ -16,6 +23,14 @@ public class WindowHelper
 
     [DllImport("user32.dll", SetLastError = true)]
     private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool GetCursorPos(out POINT lpPoint);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SetCursorPos(int X, int Y);
 
     private const uint SWP_NOMOVE = 0x0002;
     private const uint SWP_NOSIZE = 0x0001;
@@ -56,5 +71,30 @@ public class WindowHelper
     public bool MakeWindowTopmost(IntPtr hWnd)
     {
         return SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+    }
+
+    /// <summary>
+    /// Gets the current cursor position in screen coordinates.
+    /// </summary>
+    public POINT GetCursorPosition()
+    {
+        GetCursorPos(out POINT point);
+        return point;
+    }
+
+    /// <summary>
+    /// Sets the cursor position to the specified screen coordinates.
+    /// </summary>
+    public bool SetCursorPosition(int x, int y)
+    {
+        return SetCursorPos(x, y);
+    }
+
+    /// <summary>
+    /// Sets the cursor position to the specified point.
+    /// </summary>
+    public bool SetCursorPosition(POINT point)
+    {
+        return SetCursorPos(point.X, point.Y);
     }
 }

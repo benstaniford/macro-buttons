@@ -66,7 +66,7 @@ public class MainViewModel : ViewModelBase, IDisposable
             // Set minimal defaults
             Rows = 3;
             Columns = 4;
-            var errorTile = new ButtonTileViewModel(Foreground, _commandService, _keystrokeService)
+            var errorTile = new ButtonTileViewModel(Foreground, _commandService, _keystrokeService, _windowHelper)
             {
                 DisplayTitle = "Config Error"
             };
@@ -107,14 +107,14 @@ public class MainViewModel : ViewModelBase, IDisposable
         // Create tiles for configured items
         for (int i = 0; i < itemCount && i < totalTiles; i++)
         {
-            var tile = new ButtonTileViewModel(Config.Items[i], Foreground, _commandService, _keystrokeService);
+            var tile = new ButtonTileViewModel(Config.Items[i], Foreground, _commandService, _keystrokeService, _windowHelper);
             Tiles.Add(tile);
         }
 
         // Fill remaining slots with empty tiles
         for (int i = itemCount; i < totalTiles; i++)
         {
-            var emptyTile = new ButtonTileViewModel(Foreground, _commandService, _keystrokeService);
+            var emptyTile = new ButtonTileViewModel(Foreground, _commandService, _keystrokeService, _windowHelper);
             Tiles.Add(emptyTile);
         }
     }

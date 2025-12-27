@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MacroButtons.Helpers;
 using MacroButtons.Models;
 using MacroButtons.Services;
 using System.Windows.Media;
@@ -16,6 +17,7 @@ public partial class ButtonTileViewModel : ViewModelBase
     private readonly ButtonItem? _config;
     private readonly CommandExecutionService _commandService;
     private readonly KeystrokeService _keystrokeService;
+    private readonly WindowHelper _windowHelper;
 
     [ObservableProperty]
     private string _displayTitle = string.Empty;
@@ -30,11 +32,12 @@ public partial class ButtonTileViewModel : ViewModelBase
     /// <summary>
     /// Creates an empty tile (placeholder).
     /// </summary>
-    public ButtonTileViewModel(Brush foreground, CommandExecutionService commandService, KeystrokeService keystrokeService)
+    public ButtonTileViewModel(Brush foreground, CommandExecutionService commandService, KeystrokeService keystrokeService, WindowHelper windowHelper)
     {
         _config = null;
         _commandService = commandService;
         _keystrokeService = keystrokeService;
+        _windowHelper = windowHelper;
         IsEmpty = true;
         IsDynamic = false;
         HasAction = false;
@@ -45,11 +48,12 @@ public partial class ButtonTileViewModel : ViewModelBase
     /// <summary>
     /// Creates a tile from a ButtonItem configuration.
     /// </summary>
-    public ButtonTileViewModel(ButtonItem config, Brush foreground, CommandExecutionService commandService, KeystrokeService keystrokeService)
+    public ButtonTileViewModel(ButtonItem config, Brush foreground, CommandExecutionService commandService, KeystrokeService keystrokeService, WindowHelper windowHelper)
     {
         _config = config;
         _commandService = commandService;
         _keystrokeService = keystrokeService;
+        _windowHelper = windowHelper;
         IsEmpty = false;
         IsDynamic = config.IsDynamicTitle;
         HasAction = config.HasAction;
@@ -75,6 +79,9 @@ public partial class ButtonTileViewModel : ViewModelBase
         if (!HasAction || _config?.Action == null)
             return;
 
+        // Capture cursor position before executing action
+        var cursorPosition = _windowHelper.GetCursorPosition();
+
         try
         {
             switch (_config.Action.GetActionType())
@@ -93,6 +100,11 @@ public partial class ButtonTileViewModel : ViewModelBase
         catch (Exception ex)
         {
             DisplayTitle = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            // Restore cursor position after action completes
+            _windowHelper.SetCursorPosition(cursorPosition);
         }
     }
 
