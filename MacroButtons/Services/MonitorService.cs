@@ -45,10 +45,14 @@ public class MonitorService
         int smallestIndex = 0;
         int smallestArea = int.MaxValue;
 
+        System.Diagnostics.Debug.WriteLine($"Detecting smallest monitor from {screens.Length} available:");
+
         for (int i = 0; i < screens.Length; i++)
         {
             var bounds = screens[i].Bounds;
             int area = bounds.Width * bounds.Height;
+
+            System.Diagnostics.Debug.WriteLine($"  Monitor {i}: {bounds.Width}x{bounds.Height} = {area} pixels (Primary: {screens[i].Primary})");
 
             if (area < smallestArea)
             {
@@ -57,6 +61,7 @@ public class MonitorService
             }
         }
 
+        System.Diagnostics.Debug.WriteLine($"Selected smallest monitor: {smallestIndex} ({smallestArea} pixels)");
         return smallestIndex;
     }
 }

@@ -50,15 +50,21 @@ public partial class MainWindow : Window
             Visible = true
         };
 
-        // Try to use the application icon if available
-        var iconPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "MacroButtons.ico");
-        if (System.IO.File.Exists(iconPath))
+        // Try to extract icon from the application's executable
+        try
         {
-            _notifyIcon.Icon = new System.Drawing.Icon(iconPath);
+            var exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName;
+            if (!string.IsNullOrEmpty(exePath) && System.IO.File.Exists(exePath))
+            {
+                _notifyIcon.Icon = System.Drawing.Icon.ExtractAssociatedIcon(exePath);
+            }
+            else
+            {
+                _notifyIcon.Icon = System.Drawing.SystemIcons.Application;
+            }
         }
-        else
+        catch
         {
-            // Fallback to default application icon
             _notifyIcon.Icon = System.Drawing.SystemIcons.Application;
         }
 
@@ -101,7 +107,20 @@ public partial class MainWindow : Window
     {
         // Position window on the specified monitor from configuration
         var monitorIndex = _viewModel.Config.Global.MonitorIndex;
+        var monitorCount = _monitorService.GetMonitorCount();
+
+        // Clamp monitor index to valid range
+        if (monitorIndex < 0 || monitorIndex >= monitorCount)
+        {
+            monitorIndex = 0;
+        }
+
         var bounds = _monitorService.GetMonitorBounds(monitorIndex);
+
+        // Debug output
+        System.Diagnostics.Debug.WriteLine($"Monitor count: {monitorCount}");
+        System.Diagnostics.Debug.WriteLine($"Requested monitor index: {_viewModel.Config.Global.MonitorIndex}, Using: {monitorIndex}");
+        System.Diagnostics.Debug.WriteLine($"Monitor bounds: Left={bounds.Left}, Top={bounds.Top}, Width={bounds.Width}, Height={bounds.Height}");
 
         Left = bounds.Left;
         Top = bounds.Top;
@@ -110,6 +129,8 @@ public partial class MainWindow : Window
 
         // Ensure window is topmost
         Topmost = true;
+
+        System.Diagnostics.Debug.WriteLine($"Window positioned: Left={Left}, Top={Top}, Width={Width}, Height={Height}");
     }
 
     protected override void OnActivated(EventArgs e)
