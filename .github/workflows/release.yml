@@ -1,0 +1,168 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 1.0.0)'
+        required: true
+
+permissions:
+  contents: write
+  actions: read
+  packages: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract version
+        id: version
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/v}"
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "NUMERIC_VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Install WiX Toolset
+        shell: powershell
+        run: |
+          choco install wixtoolset --version=3.11.2 -y
+          $env:PATH = "C:\Program Files (x86)\WiX Toolset v3.11\bin;$env:PATH"
+          echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Update version in Product.wxs
+        shell: powershell
+        run: |
+          $productWxs = Get-Content "MacroButtons.Installer\Product.wxs"
+          $productWxs = $productWxs -replace '(?<=<\?define ProductVersion=")[\d\.]*(?=" \?>)', "${{ env.NUMERIC_VERSION }}.0"
+          Set-Content "MacroButtons.Installer\Product.wxs" -Value $productWxs
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build application
+        run: dotnet build -c Release --no-restore
+
+      - name: Publish application
+        run: dotnet publish MacroButtons/MacroButtons.csproj -c Release -o MacroButtons/bin/Release/net8.0-windows/publish
+
+      - name: Build WiX Installer
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"
+          if not exist "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" (
+            call "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\VsDevCmd.bat"
+          )
+          msbuild MacroButtons.Installer\MacroButtons.Installer.wixproj /p:Configuration=Release /p:Platform=x64
+
+      - name: Prepare artifacts
+        shell: powershell
+        run: |
+          $msiPath = Get-ChildItem -Path "MacroButtons.Installer\bin\x64\Release\MacroButtons.msi" -ErrorAction Stop
+          $newName = "MacroButtonsInstaller-v${{ env.VERSION }}-x64.msi"
+          Copy-Item $msiPath.FullName -Destination $newName
+          echo "MSI_PATH=$newName" >> $env:GITHUB_ENV
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macrobuttons-windows
+          path: MacroButtonsInstaller-v${{ env.VERSION }}-x64.msi
+
+  create-release:
+    runs-on: ubuntu-latest
+    needs: build-windows
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/v}"
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+
+      - name: Create release notes
+        run: |
+          cat > release_notes.md << 'EOF'
+          # MacroButtons v${{ env.VERSION }}
+
+          Touch-screen macro button panel with retro terminal aesthetic.
+
+          ## Features
+
+          - Full-screen non-activating window that never steals focus
+          - Grid of customizable tiles for macros and information display
+          - Support for keyboard shortcuts (AutoHotkey syntax)
+          - Execute Python scripts and executables
+          - Dynamic information tiles with periodic refresh
+          - Multi-monitor support
+          - Retro terminal aesthetic with configurable themes
+
+          ## Downloads
+
+          - **Windows (x64)**: MacroButtonsInstaller-v${{ env.VERSION }}-x64.msi
+
+          ## Installation
+
+          1. Download the MSI installer for your platform
+          2. Run the installer and follow the prompts
+          3. Configure your macro buttons by editing `%USERPROFILE%\.macrobuttons.json`
+
+          ## Requirements
+
+          - Windows 10/11
+          - .NET 8 Desktop Runtime
+
+          ---
+          🤖 Generated with Claude Code
+          EOF
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view "v${{ env.VERSION }}" >/dev/null 2>&1; then
+            echo "Release v${{ env.VERSION }} already exists"
+          else
+            gh release create "v${{ env.VERSION }}" \
+              --title "MacroButtons v${{ env.VERSION }}" \
+              --notes-file release_notes.md \
+              --latest
+          fi
+
+      - name: Upload Windows MSI
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "v${{ env.VERSION }}" \
+            "artifacts/macrobuttons-windows/MacroButtonsInstaller-v${{ env.VERSION }}-x64.msi" \
+            --clobber
