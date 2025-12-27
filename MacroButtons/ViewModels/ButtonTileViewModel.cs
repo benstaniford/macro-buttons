@@ -4,6 +4,7 @@ using MacroButtons.Helpers;
 using MacroButtons.Models;
 using MacroButtons.Services;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Brush = System.Windows.Media.Brush;
 using Brushes = System.Windows.Media.Brushes;
 using Newtonsoft.Json.Linq;
@@ -13,12 +14,13 @@ namespace MacroButtons.ViewModels;
 /// <summary>
 /// View model for an individual button tile.
 /// </summary>
-public partial class ButtonTileViewModel : ViewModelBase
+public partial class ButtonTileViewModel : ViewModelBase, IDisposable
 {
     private readonly ButtonItem? _config;
     private readonly CommandExecutionService _commandService;
     private readonly KeystrokeService _keystrokeService;
     private readonly WindowHelper _windowHelper;
+    private DispatcherTimer? _refreshTimer;
 
     [ObservableProperty]
     private string _displayTitle = string.Empty;
@@ -52,7 +54,7 @@ public partial class ButtonTileViewModel : ViewModelBase
     /// <summary>
     /// Creates a tile from a ButtonItem configuration.
     /// </summary>
-    public ButtonTileViewModel(ButtonItem config, Brush foreground, CommandExecutionService commandService, KeystrokeService keystrokeService, WindowHelper windowHelper)
+    public ButtonTileViewModel(ButtonItem config, Brush foreground, TimeSpan globalRefreshInterval, CommandExecutionService commandService, KeystrokeService keystrokeService, WindowHelper windowHelper)
     {
         _config = config;
         _commandService = commandService;
@@ -71,7 +73,35 @@ public partial class ButtonTileViewModel : ViewModelBase
         else if (config.IsDynamicTitle)
         {
             DisplayTitle = "Loading...";
+
+            // Start the refresh timer for dynamic titles
+            StartRefreshTimer(globalRefreshInterval);
         }
+    }
+
+    /// <summary>
+    /// Starts the refresh timer for dynamic titles.
+    /// Uses tile-specific refresh interval if specified, otherwise uses global interval.
+    /// </summary>
+    private void StartRefreshTimer(TimeSpan globalRefreshInterval)
+    {
+        if (!IsDynamic || _config?.Title == null)
+            return;
+
+        // Determine refresh interval (tile override or global)
+        var titleDef = (TitleDefinition)_config.Title;
+        var interval = titleDef.GetRefreshInterval() ?? globalRefreshInterval;
+
+        // Initial refresh
+        _ = UpdateDynamicTitleAsync();
+
+        // Start periodic refresh
+        _refreshTimer = new DispatcherTimer
+        {
+            Interval = interval
+        };
+        _refreshTimer.Tick += async (s, e) => await UpdateDynamicTitleAsync();
+        _refreshTimer.Start();
     }
 
     /// <summary>
@@ -202,5 +232,11 @@ public partial class ButtonTileViewModel : ViewModelBase
             // Not valid JSON or parsing failed - will fall back to plain text
             return false;
         }
+    }
+
+    public void Dispose()
+    {
+        _refreshTimer?.Stop();
+        _refreshTimer = null;
     }
 }

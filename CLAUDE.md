@@ -44,7 +44,7 @@ MacroButtons/
 │   ├── ViewModels/                     # MVVM view models
 │   │   ├── ViewModelBase.cs            # Base class with ObservableObject
 │   │   ├── MainViewModel.cs            # Main window logic, grid calculation
-│   │   └── ButtonTileViewModel.cs      # Individual tile logic, action execution
+│   │   └── ButtonTileViewModel.cs      # Individual tile logic, action execution, per-tile refresh
 │   │
 │   ├── Views/                          # User controls
 │   │   └── ButtonTile.xaml / xaml.cs   # Individual tile UI with retro styling
@@ -53,7 +53,6 @@ MacroButtons/
 │   │   ├── ConfigurationService.cs     # JSON config loading/creation
 │   │   ├── CommandExecutionService.cs  # Silent process execution
 │   │   ├── KeystrokeService.cs         # Keystroke simulation
-│   │   ├── DynamicTitleRefreshService.cs # Periodic title updates
 │   │   └── MonitorService.cs           # Multi-monitor management
 │   │
 │   ├── Helpers/                        # Utility classes
@@ -103,7 +102,10 @@ private const int GWL_EXSTYLE = -20;
 {
   "items": [
     {
-      "title": "Static Text" | { "python": [...] | "exe": [...] },
+      "title": "Static Text" | {
+        "python": [...] | "exe": [...],
+        "refresh": "100ms"  // Optional: per-tile refresh interval (overrides global)
+      },
       "action": { "keypress": "^v" } | { "python": [...] } | { "exe": "..." } | null
     }
   ],
@@ -112,7 +114,7 @@ private const int GWL_EXSTYLE = -20;
     "background": "black"
   },
   "global": {
-    "refresh": "30s",           // Format: \d+[smh] (seconds/minutes/hours)
+    "refresh": "30s",           // Format: \d+(ms|s|m|h) (milliseconds/seconds/minutes/hours)
     "monitorIndex": 0           // 0-based monitor index
   }
 }
@@ -120,6 +122,7 @@ private const int GWL_EXSTYLE = -20;
 
 **Special Handling:**
 - `ButtonItem.Title` can be string OR TitleDefinition (polymorphic deserialization)
+- Each dynamic tile can override the global refresh interval (minimum 100ms)
 - Uses Newtonsoft.Json with JObject parsing for flexible schema
 - Creates default config from embedded resource if file doesn't exist
 - Tilde (~) expansion for paths
@@ -214,8 +217,10 @@ Create `%USERPROFILE%\.macrobuttons.json` with test items:
       "action": { "keypress": "^v" }
     },
     {
-      "title": "Time Display",
-      "title": { "python": ["-c", "import datetime; print(datetime.datetime.now().strftime('%H:%M:%S'))"] },
+      "title": {
+        "python": ["-c", "import datetime; print(datetime.datetime.now().strftime('%H:%M:%S'))"],
+        "refresh": "1s"
+      },
       "action": null
     },
     {
@@ -228,7 +233,7 @@ Create `%USERPROFILE%\.macrobuttons.json` with test items:
     "background": "black"
   },
   "global": {
-    "refresh": "5s",
+    "refresh": "30s",
     "monitorIndex": 0
   }
 }
@@ -260,8 +265,10 @@ Create `%USERPROFILE%\.macrobuttons.json` with test items:
 
 **ButtonTileViewModel.cs** (`MacroButtons/ViewModels/ButtonTileViewModel.cs`)
 - Action execution logic (keypress, python, exe)
-- Dynamic title update logic
+- Dynamic title update logic with per-tile refresh timer
+- Each dynamic tile manages its own DispatcherTimer (supports per-tile refresh intervals)
 - **Error handling:** Displays error in tile if command fails
+- **Important:** Implements IDisposable to stop refresh timer on cleanup
 
 ### Configuration Files
 
@@ -524,15 +531,16 @@ Before tagging a release:
 
 ### Dynamic Title Refresh
 
-- Default: 30 seconds refresh interval
-- All dynamic tiles refresh in parallel (Task.WhenAll)
-- **Recommendation:** Don't set refresh below 5 seconds to avoid excessive CPU usage
+- Default: 30 seconds global refresh interval
+- Each dynamic tile manages its own DispatcherTimer (runs on UI thread)
+- Tiles can override global refresh with per-tile `refresh` setting (minimum 100ms)
+- **Recommendation:** Don't set fast refresh intervals (< 1s) for many tiles to avoid excessive CPU usage
 
 ### Memory Usage
 
 - Minimal memory footprint (~20-30 MB typical)
-- No memory leaks in refresh service (properly disposed)
-- **Monitor:** DynamicTitleRefreshService Dispose() called on exit
+- Each dynamic tile has its own timer (stopped and disposed on exit)
+- **Monitor:** ButtonTileViewModel.Dispose() stops timers when MainViewModel is disposed
 
 ### Startup Time
 

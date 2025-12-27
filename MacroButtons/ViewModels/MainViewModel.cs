@@ -18,7 +18,6 @@ public class MainViewModel : ViewModelBase, IDisposable
     private readonly CommandExecutionService _commandService;
     private readonly KeystrokeService _keystrokeService;
     private readonly WindowHelper _windowHelper;
-    private DynamicTitleRefreshService? _refreshService;
 
     public ObservableCollection<ButtonTileViewModel> Tiles { get; set; } = new();
     public Brush Foreground { get; private set; } = Brushes.DarkGreen;
@@ -35,7 +34,6 @@ public class MainViewModel : ViewModelBase, IDisposable
         _keystrokeService = new KeystrokeService(_windowHelper);
 
         LoadConfiguration();
-        StartDynamicTitleRefresh();
     }
 
     private void LoadConfiguration()
@@ -74,13 +72,6 @@ public class MainViewModel : ViewModelBase, IDisposable
         }
     }
 
-    private void StartDynamicTitleRefresh()
-    {
-        var refreshInterval = Config.Global.GetRefreshInterval();
-        _refreshService = new DynamicTitleRefreshService(Tiles, refreshInterval);
-        _refreshService.Start();
-    }
-
     private void CalculateGridLayout(int itemCount)
     {
         const int MIN_ROWS = 3;
@@ -103,11 +94,12 @@ public class MainViewModel : ViewModelBase, IDisposable
 
         int totalTiles = Rows * Columns;
         int itemCount = Config.Items.Count;
+        var globalRefreshInterval = Config.Global.GetRefreshInterval();
 
         // Create tiles for configured items
         for (int i = 0; i < itemCount && i < totalTiles; i++)
         {
-            var tile = new ButtonTileViewModel(Config.Items[i], Foreground, _commandService, _keystrokeService, _windowHelper);
+            var tile = new ButtonTileViewModel(Config.Items[i], Foreground, globalRefreshInterval, _commandService, _keystrokeService, _windowHelper);
             Tiles.Add(tile);
         }
 
@@ -119,16 +111,12 @@ public class MainViewModel : ViewModelBase, IDisposable
         }
     }
 
-    /// <summary>
-    /// Gets all tiles that have dynamic titles for refresh purposes.
-    /// </summary>
-    public IEnumerable<ButtonTileViewModel> GetDynamicTiles()
-    {
-        return Tiles.Where(t => t.IsDynamic);
-    }
-
     public void Dispose()
     {
-        _refreshService?.Dispose();
+        // Dispose all tiles (stops their refresh timers)
+        foreach (var tile in Tiles)
+        {
+            tile.Dispose();
+        }
     }
 }
