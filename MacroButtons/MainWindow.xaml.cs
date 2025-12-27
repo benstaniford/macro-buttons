@@ -81,7 +81,7 @@ public partial class MainWindow : Window
     {
         _notifyIcon?.Dispose();
         _viewModel?.Dispose();
-        Application.Current.Shutdown();
+        System.Windows.Application.Current.Shutdown();
     }
 
     protected override void OnSourceInitialized(EventArgs e)
