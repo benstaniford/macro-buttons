@@ -29,6 +29,16 @@ public partial class App : Application
         mainWindow.Show();
     }
 
+    /// <summary>
+    /// Releases the single-instance mutex early (used for reload).
+    /// </summary>
+    public void ReleaseSingleInstanceMutex()
+    {
+        _mutex?.ReleaseMutex();
+        _mutex?.Dispose();
+        _mutex = null;
+    }
+
     protected override void OnExit(ExitEventArgs e)
     {
         _mutex?.ReleaseMutex();

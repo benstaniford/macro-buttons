@@ -89,6 +89,11 @@ public partial class MainWindow : Window
 
         // Create context menu
         var contextMenu = new System.Windows.Forms.ContextMenuStrip();
+
+        var reloadItem = new System.Windows.Forms.ToolStripMenuItem("Reload");
+        reloadItem.Click += (s, e) => ReloadApplication();
+        contextMenu.Items.Add(reloadItem);
+
         var quitItem = new System.Windows.Forms.ToolStripMenuItem("Quit");
         quitItem.Click += (s, e) => QuitApplication();
         contextMenu.Items.Add(quitItem);
@@ -100,6 +105,51 @@ public partial class MainWindow : Window
                 WindowState = WindowState.Normal;
             Activate();
         };
+    }
+
+    private async void ReloadApplication()
+    {
+        try
+        {
+            // Get the executable path
+            var exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName;
+            if (!string.IsNullOrEmpty(exePath))
+            {
+                // Dispose resources first
+                _notifyIcon?.Dispose();
+                _viewModel?.Dispose();
+
+                // Release the single-instance mutex so the new instance can start
+                if (System.Windows.Application.Current is App app)
+                {
+                    app.ReleaseSingleInstanceMutex();
+                }
+
+                // Create process start info
+                var startInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = exePath,
+                    UseShellExecute = true
+                };
+
+                // Start the new instance
+                System.Diagnostics.Process.Start(startInfo);
+
+                // Small delay to ensure new process starts before we exit
+                await System.Threading.Tasks.Task.Delay(100);
+
+                // Shutdown the current instance
+                System.Windows.Application.Current.Shutdown();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show(
+                $"Failed to reload application: {ex.Message}",
+                "Reload Error",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Error);
+        }
     }
 
     private void QuitApplication()
