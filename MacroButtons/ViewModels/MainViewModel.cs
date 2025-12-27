@@ -34,19 +34,18 @@ public class MainViewModel : ViewModelBase, IDisposable
 
         try
         {
-            // Load configuration first to get sendKeysDelay
+            // Load configuration first to get sendKeys config
             Config = _configService.LoadConfiguration();
 
-            // Create keystroke service with configured delay
-            var sendKeysDelay = Config.Global.GetSendKeysDelay();
-            _keystrokeService = new KeystrokeService(_windowHelper, sendKeysDelay);
+            // Create keystroke service with configured sendKeys settings
+            _keystrokeService = new KeystrokeService(_windowHelper, Config.Global.SendKeys);
 
             // Now apply the configuration
             ApplyConfiguration();
         }
         catch (Exception ex)
         {
-            // If config loading fails, create with default delay
+            // If config loading fails, create with default settings
             _keystrokeService = new KeystrokeService(_windowHelper);
 
             // Show error and use minimal fallback

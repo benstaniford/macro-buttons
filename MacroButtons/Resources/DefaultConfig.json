@@ -24,6 +24,9 @@
   "global": {
     "refresh": "30s",
     "monitorIndex": 0,
-    "sendKeysDelay": "30ms"
+    "sendKeys": {
+      "delay": "10ms",
+      "duration": "30ms"
+    }
   }
 }

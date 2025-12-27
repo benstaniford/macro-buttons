@@ -173,7 +173,12 @@ public class ConfigurationService
             Global = new GlobalConfig
             {
                 Refresh = "30s",
-                MonitorIndex = smallestMonitorIndex
+                MonitorIndex = smallestMonitorIndex,
+                SendKeys = new SendKeysConfig
+                {
+                    Delay = "10ms",
+                    Duration = "30ms"
+                }
             }
         };
     }

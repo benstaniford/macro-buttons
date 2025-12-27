@@ -1,4 +1,5 @@
 using MacroButtons.Helpers;
+using MacroButtons.Models;
 using WindowsInput;
 using WindowsInput.Native;
 
@@ -12,14 +13,25 @@ public class KeystrokeService
     private readonly IInputSimulator _inputSimulator;
     private readonly AutoHotkeyParser _parser;
     private readonly WindowHelper _windowHelper;
-    private readonly TimeSpan _sendKeysDelay;
+    private readonly TimeSpan _delay;
+    private readonly TimeSpan _duration;
 
-    public KeystrokeService(WindowHelper windowHelper, TimeSpan? sendKeysDelay = null)
+    public KeystrokeService(WindowHelper windowHelper, SendKeysConfig? sendKeysConfig = null)
     {
         _inputSimulator = new InputSimulator();
         _parser = new AutoHotkeyParser();
         _windowHelper = windowHelper;
-        _sendKeysDelay = sendKeysDelay ?? TimeSpan.FromMilliseconds(30); // default 30ms
+
+        if (sendKeysConfig != null)
+        {
+            _delay = sendKeysConfig.GetDelay();
+            _duration = sendKeysConfig.GetDuration();
+        }
+        else
+        {
+            _delay = TimeSpan.FromMilliseconds(10); // default 10ms
+            _duration = TimeSpan.FromMilliseconds(30); // default 30ms
+        }
     }
 
     /// <summary>
@@ -41,21 +53,21 @@ public class KeystrokeService
         if (previousWindow != IntPtr.Zero)
         {
             _windowHelper.RestorePreviousWindow(previousWindow);
-            await Task.Delay(_sendKeysDelay); // Configurable delay to ensure window is active
+            await Task.Delay(_delay); // Configurable delay to ensure window is active
         }
 
         // Send the keystrokes
         foreach (var keyAction in keySequence)
         {
-            ExecuteKeyAction(keyAction);
+            await ExecuteKeyActionAsync(keyAction);
             await Task.Delay(5); // Small delay between key actions for reliability
         }
     }
 
     /// <summary>
-    /// Executes a single key action.
+    /// Executes a single key action with configurable duration for key presses.
     /// </summary>
-    private void ExecuteKeyAction(KeyAction action)
+    private async Task ExecuteKeyActionAsync(KeyAction action)
     {
         switch (action.Type)
         {
@@ -66,7 +78,10 @@ public class KeystrokeService
                 _inputSimulator.Keyboard.KeyUp(action.VirtualKeyCode);
                 break;
             case KeyActionType.KeyPress:
-                _inputSimulator.Keyboard.KeyPress(action.VirtualKeyCode);
+                // Hold key down for configured duration
+                _inputSimulator.Keyboard.KeyDown(action.VirtualKeyCode);
+                await Task.Delay(_duration);
+                _inputSimulator.Keyboard.KeyUp(action.VirtualKeyCode);
                 break;
         }
     }
