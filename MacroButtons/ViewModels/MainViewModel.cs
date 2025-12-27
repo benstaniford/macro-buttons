@@ -106,14 +106,41 @@ public class MainViewModel : ViewModelBase, IDisposable
         const int MIN_COLS = 5;
         const int MIN_TILES = MIN_ROWS * MIN_COLS; // 15
 
-        // Ensure we have at least minimum grid
-        int totalTiles = Math.Max(itemCount, MIN_TILES);
+        // Start with minimum grid
+        if (itemCount <= MIN_TILES)
+        {
+            Rows = MIN_ROWS;
+            Columns = MIN_COLS;
+            return;
+        }
 
-        // Calculate optimal columns (prefer landscape, 5:3 ratio)
-        Columns = Math.Max(MIN_COLS, (int)Math.Ceiling(Math.Sqrt(totalTiles * 1.67)));
+        // Expand preferring rows: add 3 rows before adding 1 column
+        // Pattern: 3×5, 4×5, 5×5, 6×5, 6×6, 7×6, 8×6, 9×6, 9×7, ...
+        int rows = MIN_ROWS;
+        int cols = MIN_COLS;
 
-        // Calculate required rows
-        Rows = Math.Max(MIN_ROWS, (int)Math.Ceiling((double)totalTiles / Columns));
+        while (rows * cols < itemCount)
+        {
+            // Calculate how many rows we've added since the start
+            int rowsAdded = rows - MIN_ROWS;
+
+            // Add 1 column for every 3 rows added
+            int targetCols = MIN_COLS + (rowsAdded / 3);
+
+            if (cols < targetCols)
+            {
+                // Time to add a column
+                cols++;
+            }
+            else
+            {
+                // Add another row
+                rows++;
+            }
+        }
+
+        Rows = rows;
+        Columns = cols;
     }
 
     private void CreateTiles()
