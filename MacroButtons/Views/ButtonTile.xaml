@@ -38,6 +38,7 @@
     </UserControl.Resources>
 
     <Button Command="{Binding ClickCommand}"
+            Background="{Binding Background}"
             BorderBrush="{Binding Foreground}"
             IsEnabled="{Binding HasAction}"
             Style="{StaticResource TileButtonStyle}"

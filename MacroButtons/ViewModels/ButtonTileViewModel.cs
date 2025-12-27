@@ -6,6 +6,7 @@ using MacroButtons.Services;
 using System.Windows.Media;
 using Brush = System.Windows.Media.Brush;
 using Brushes = System.Windows.Media.Brushes;
+using Newtonsoft.Json.Linq;
 
 namespace MacroButtons.ViewModels;
 
@@ -24,6 +25,9 @@ public partial class ButtonTileViewModel : ViewModelBase
 
     [ObservableProperty]
     private Brush _foreground = Brushes.DarkGreen;
+
+    [ObservableProperty]
+    private Brush _background = Brushes.Transparent;
 
     public bool IsEmpty { get; }
     public bool IsDynamic { get; }
@@ -107,6 +111,8 @@ public partial class ButtonTileViewModel : ViewModelBase
     /// <summary>
     /// Updates the dynamic title by executing the title command.
     /// Only applies to tiles with dynamic titles.
+    /// Supports JSON format: {"text": "...", "fg": "#color", "bg": "#color"}
+    /// Falls back to plain text if JSON parsing fails.
     /// </summary>
     public async Task UpdateDynamicTitleAsync()
     {
@@ -131,11 +137,70 @@ public partial class ButtonTileViewModel : ViewModelBase
                 return;
             }
 
-            DisplayTitle = output.Trim();
+            output = output.Trim();
+
+            // Try to parse as JSON first
+            if (TryParseJsonOutput(output, out var text, out var foreground, out var background))
+            {
+                DisplayTitle = text;
+                if (foreground != null)
+                    Foreground = foreground;
+                if (background != null)
+                    Background = background;
+            }
+            else
+            {
+                // Fallback to plain text
+                DisplayTitle = output;
+            }
         }
         catch (Exception ex)
         {
             DisplayTitle = $"Error: {ex.Message}";
+        }
+    }
+
+    /// <summary>
+    /// Attempts to parse JSON output in the format: {"text": "...", "fg": "#color", "bg": "#color"}
+    /// </summary>
+    private bool TryParseJsonOutput(string output, out string text, out Brush? foreground, out Brush? background)
+    {
+        text = string.Empty;
+        foreground = null;
+        background = null;
+
+        if (string.IsNullOrWhiteSpace(output) || !output.TrimStart().StartsWith("{"))
+            return false;
+
+        try
+        {
+            var json = JObject.Parse(output);
+
+            // Extract text (required)
+            text = json["text"]?.ToString() ?? string.Empty;
+            if (string.IsNullOrEmpty(text))
+                return false; // JSON must have "text" field
+
+            // Extract optional foreground color
+            var fgColor = json["fg"]?.ToString();
+            if (!string.IsNullOrWhiteSpace(fgColor))
+            {
+                foreground = Helpers.ColorConverter.ParseColor(fgColor, null);
+            }
+
+            // Extract optional background color
+            var bgColor = json["bg"]?.ToString();
+            if (!string.IsNullOrWhiteSpace(bgColor))
+            {
+                background = Helpers.ColorConverter.ParseColor(bgColor, null);
+            }
+
+            return true;
+        }
+        catch
+        {
+            // Not valid JSON or parsing failed - will fall back to plain text
+            return false;
         }
     }
 }
