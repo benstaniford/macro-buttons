@@ -2,7 +2,7 @@ namespace MacroButtons.Models;
 
 /// <summary>
 /// Defines an action to execute when a button is clicked.
-/// Only one of: Keypress, Python, or Exe should be specified.
+/// Only one of: Keypress, Python, Exe, or Builtin should be specified.
 /// </summary>
 public class ActionDefinition
 {
@@ -22,6 +22,11 @@ public class ActionDefinition
     public string? Exe { get; set; }
 
     /// <summary>
+    /// Builtin command to execute (e.g., "clock()", "quit()").
+    /// </summary>
+    public string? Builtin { get; set; }
+
+    /// <summary>
     /// Gets the type of action defined.
     /// </summary>
     public ActionType GetActionType()
@@ -35,6 +40,7 @@ public class ActionDefinition
         }
         if (Python != null && Python.Count > 0) return ActionType.Python;
         if (!string.IsNullOrEmpty(Exe)) return ActionType.Executable;
+        if (!string.IsNullOrEmpty(Builtin)) return ActionType.Builtin;
         return ActionType.None;
     }
 }
@@ -48,5 +54,6 @@ public enum ActionType
     Keypress,
     Python,
     Executable,
-    NavigateBack
+    NavigateBack,
+    Builtin
 }

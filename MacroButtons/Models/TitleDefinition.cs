@@ -18,6 +18,11 @@ public class TitleDefinition
     public List<string>? Exe { get; set; }
 
     /// <summary>
+    /// Builtin command to execute (e.g., "clock()").
+    /// </summary>
+    public string? Builtin { get; set; }
+
+    /// <summary>
     /// Optional refresh interval override (e.g., "100ms", "1s", "5m").
     /// If not specified, uses global refresh interval.
     /// Minimum is 100ms.
@@ -33,6 +38,11 @@ public class TitleDefinition
     /// Returns true if this is an executable-based dynamic title.
     /// </summary>
     public bool IsExecutable => Exe != null && Exe.Count > 0;
+
+    /// <summary>
+    /// Returns true if this is a builtin-based dynamic title.
+    /// </summary>
+    public bool IsBuiltin => !string.IsNullOrEmpty(Builtin);
 
     /// <summary>
     /// Parses the refresh interval string into a TimeSpan.

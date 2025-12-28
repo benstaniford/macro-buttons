@@ -20,6 +20,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
     private readonly CommandExecutionService _commandService;
     private readonly KeystrokeService _keystrokeService;
     private readonly WindowHelper _windowHelper;
+    private readonly BuiltinService _builtinService;
     private DispatcherTimer? _refreshTimer;
 
     // Navigation callbacks
@@ -48,6 +49,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         _commandService = commandService;
         _keystrokeService = keystrokeService;
         _windowHelper = windowHelper;
+        _builtinService = new BuiltinService();
         _onNavigateToSubmenu = null;
         _onNavigateBack = null;
         IsEmpty = true;
@@ -74,6 +76,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         _commandService = commandService;
         _keystrokeService = keystrokeService;
         _windowHelper = windowHelper;
+        _builtinService = new BuiltinService();
         _onNavigateToSubmenu = onNavigateToSubmenu;
         _onNavigateBack = onNavigateBack;
         IsEmpty = false;
@@ -159,6 +162,9 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
                     case ActionType.Executable:
                         await _commandService.ExecuteAsync(_config.Action.Exe!);
                         break;
+                    case ActionType.Builtin:
+                        _builtinService.ExecuteBuiltin(_config.Action.Builtin!);
+                        break;
                 }
             }
 
@@ -197,6 +203,10 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
             else if (titleDef.IsExecutable)
             {
                 output = await _commandService.ExecuteFromListAsync(titleDef.Exe!, captureOutput: true);
+            }
+            else if (titleDef.IsBuiltin)
+            {
+                output = _builtinService.GetBuiltinTitleValue(titleDef.Builtin!);
             }
             else
             {

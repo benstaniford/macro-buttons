@@ -28,15 +28,15 @@
       "title": "Calculator"
     },
     {
-      "title": ""
+      "action": {
+        "builtin": "quit()"
+      },
+      "title": "Quit"
     },
     {
       "title": {
-        "python": [
-          "-c",
-          "import datetime; import json; print(json.dumps({'text': datetime.datetime.now().strftime('%H:%M:%S'), 'fg': '#00FF00', 'bg': '#003300'}))"
-        ],
-        "refresh": "5s"
+        "builtin": "clock()",
+        "refresh": "1s"
       }
     }
   ],
