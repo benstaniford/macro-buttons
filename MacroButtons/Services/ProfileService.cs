@@ -170,6 +170,66 @@ public class ProfileService
     }
 
     /// <summary>
+    /// Imports a profile from an external file.
+    /// </summary>
+    /// <param name="sourceFilePath">Path to the JSON file to import</param>
+    /// <param name="profileName">Name for the imported profile</param>
+    public void ImportProfile(string sourceFilePath, string profileName)
+    {
+        if (!File.Exists(sourceFilePath))
+        {
+            throw new FileNotFoundException($"Source file '{sourceFilePath}' does not exist.");
+        }
+
+        var profilePath = GetProfilePath(profileName);
+
+        if (File.Exists(profilePath))
+        {
+            throw new InvalidOperationException($"Profile '{profileName}' already exists.");
+        }
+
+        // Read and validate the source file as JSON
+        string json;
+        try
+        {
+            json = File.ReadAllText(sourceFilePath);
+            var jObject = JObject.Parse(json);
+
+            // Update the profile name in the imported config
+            var globalToken = jObject.Properties()
+                .FirstOrDefault(p => p.Name.Equals("global", StringComparison.OrdinalIgnoreCase))?.Value as JObject;
+
+            if (globalToken != null)
+            {
+                var profileNameProp = globalToken.Properties()
+                    .FirstOrDefault(p => p.Name.Equals("profilename", StringComparison.OrdinalIgnoreCase));
+
+                if (profileNameProp != null)
+                {
+                    profileNameProp.Value = profileName;
+                }
+                else
+                {
+                    // Add profileName if it doesn't exist
+                    globalToken["profileName"] = profileName;
+                }
+            }
+            else
+            {
+                // Add global section if it doesn't exist
+                jObject["global"] = new JObject { ["profileName"] = profileName };
+            }
+
+            // Write to profile directory
+            File.WriteAllText(profilePath, jObject.ToString(Formatting.Indented));
+        }
+        catch (JsonException ex)
+        {
+            throw new InvalidOperationException($"Invalid JSON file: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
     /// Renames a profile by renaming the file and updating the ProfileName field in the JSON.
     /// </summary>
     public void RenameProfile(string oldName, string newName)

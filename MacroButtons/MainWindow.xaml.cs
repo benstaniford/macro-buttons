@@ -155,6 +155,11 @@ public partial class MainWindow : Window
         newProfileItem.Click += (s, e) => CreateNewProfile();
         profilesMenuItem.DropDownItems.Add(newProfileItem);
 
+        // Import Profile
+        var importProfileItem = new System.Windows.Forms.ToolStripMenuItem("Import Profile...");
+        importProfileItem.Click += (s, e) => ImportProfile();
+        profilesMenuItem.DropDownItems.Add(importProfileItem);
+
         // Rename Profile
         var renameProfileItem = new System.Windows.Forms.ToolStripMenuItem("Rename Profile...");
         renameProfileItem.Click += (s, e) => RenameCurrentProfile();
@@ -241,6 +246,70 @@ public partial class MainWindow : Window
             System.Windows.MessageBox.Show(
                 $"Failed to create profile: {ex.Message}",
                 "Create Profile Error",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Error);
+        }
+    }
+
+    private void ImportProfile()
+    {
+        // Open file browser to select JSON file
+        var openFileDialog = new Microsoft.Win32.OpenFileDialog
+        {
+            Title = "Select Profile to Import",
+            Filter = "JSON Files (*.json)|*.json|All Files (*.*)|*.*",
+            FilterIndex = 1,
+            Multiselect = false
+        };
+
+        if (openFileDialog.ShowDialog() != true)
+            return;
+
+        var sourceFilePath = openFileDialog.FileName;
+
+        // Extract suggested profile name from filename (without extension)
+        var suggestedName = System.IO.Path.GetFileNameWithoutExtension(sourceFilePath);
+
+        // Show input dialog with suggested name
+        var dialog = new ProfileNameDialog("Import Profile", suggestedName);
+        if (dialog.ShowDialog() != true)
+            return;
+
+        var newProfileName = dialog.ProfileName;
+
+        // Validate
+        if (!_profileService.ValidateProfileName(newProfileName, out var errorMessage))
+        {
+            System.Windows.MessageBox.Show(
+                errorMessage,
+                "Invalid Profile Name",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Warning);
+            return;
+        }
+
+        if (_profileService.ProfileExists(newProfileName))
+        {
+            System.Windows.MessageBox.Show(
+                $"Profile '{newProfileName}' already exists.",
+                "Profile Exists",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Warning);
+            return;
+        }
+
+        try
+        {
+            _profileService.ImportProfile(sourceFilePath, newProfileName);
+
+            // Switch to new profile
+            SwitchToProfile(newProfileName);
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show(
+                $"Failed to import profile: {ex.Message}",
+                "Import Profile Error",
                 System.Windows.MessageBoxButton.OK,
                 System.Windows.MessageBoxImage.Error);
         }
