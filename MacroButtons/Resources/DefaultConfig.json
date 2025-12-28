@@ -24,6 +24,7 @@
   "global": {
     "refresh": "30s",
     "monitorIndex": 0,
+    "profileName": "default",
     "sendKeys": {
       "delay": "10ms",
       "duration": "30ms"

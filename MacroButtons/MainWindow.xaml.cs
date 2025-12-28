@@ -5,6 +5,7 @@ using System.Windows.Threading;
 using MacroButtons.Helpers;
 using MacroButtons.Services;
 using MacroButtons.ViewModels;
+using MacroButtons.Views;
 
 namespace MacroButtons;
 
@@ -42,6 +43,7 @@ public partial class MainWindow : Window
 
     private readonly MonitorService _monitorService;
     private readonly WindowHelper _windowHelper;
+    private readonly ProfileService _profileService;
     private readonly MainViewModel _viewModel;
     private System.Windows.Forms.NotifyIcon? _notifyIcon;
     private DispatcherTimer? _cursorTrackingTimer;
@@ -52,9 +54,10 @@ public partial class MainWindow : Window
 
         _monitorService = new MonitorService();
         _windowHelper = new WindowHelper();
+        _profileService = new ProfileService();
 
-        // Initialize view model with the shared WindowHelper instance
-        _viewModel = new MainViewModel(_windowHelper);
+        // Initialize view model with the shared instances
+        _viewModel = new MainViewModel(_windowHelper, _profileService);
         DataContext = _viewModel;
 
         // Initialize system tray icon
@@ -87,22 +90,9 @@ public partial class MainWindow : Window
             _notifyIcon.Icon = System.Drawing.SystemIcons.Application;
         }
 
-        // Create context menu
-        var contextMenu = new System.Windows.Forms.ContextMenuStrip();
+        // Build context menu
+        BuildTrayContextMenu();
 
-        var editConfigItem = new System.Windows.Forms.ToolStripMenuItem("Edit Config");
-        editConfigItem.Click += (s, e) => OpenConfigFile();
-        contextMenu.Items.Add(editConfigItem);
-
-        var reloadItem = new System.Windows.Forms.ToolStripMenuItem("Reload");
-        reloadItem.Click += (s, e) => ReloadApplication();
-        contextMenu.Items.Add(reloadItem);
-
-        var quitItem = new System.Windows.Forms.ToolStripMenuItem("Quit");
-        quitItem.Click += (s, e) => QuitApplication();
-        contextMenu.Items.Add(quitItem);
-
-        _notifyIcon.ContextMenuStrip = contextMenu;
         _notifyIcon.DoubleClick += (s, e) =>
         {
             if (WindowState == WindowState.Minimized)
@@ -111,46 +101,254 @@ public partial class MainWindow : Window
         };
     }
 
-    private async void ReloadApplication()
+    private void BuildTrayContextMenu()
     {
+        var contextMenu = new System.Windows.Forms.ContextMenuStrip();
+
+        // Profiles submenu
+        var profilesMenuItem = new System.Windows.Forms.ToolStripMenuItem("Profiles");
+        BuildProfilesSubmenu(profilesMenuItem);
+        contextMenu.Items.Add(profilesMenuItem);
+
+        contextMenu.Items.Add(new System.Windows.Forms.ToolStripSeparator());
+
+        // Edit Config
+        var editConfigItem = new System.Windows.Forms.ToolStripMenuItem("Edit Config");
+        editConfigItem.Click += (s, e) => OpenConfigFile();
+        contextMenu.Items.Add(editConfigItem);
+
+        // Reload current profile
+        var reloadItem = new System.Windows.Forms.ToolStripMenuItem("Reload");
+        reloadItem.Click += (s, e) => ReloadCurrentProfile();
+        contextMenu.Items.Add(reloadItem);
+
+        contextMenu.Items.Add(new System.Windows.Forms.ToolStripSeparator());
+
+        // Quit
+        var quitItem = new System.Windows.Forms.ToolStripMenuItem("Quit");
+        quitItem.Click += (s, e) => QuitApplication();
+        contextMenu.Items.Add(quitItem);
+
+        _notifyIcon!.ContextMenuStrip = contextMenu;
+    }
+
+    private void BuildProfilesSubmenu(System.Windows.Forms.ToolStripMenuItem profilesMenuItem)
+    {
+        profilesMenuItem.DropDownItems.Clear();
+
+        var currentProfile = _viewModel.CurrentProfileName;
+        var profiles = _profileService.ListProfiles();
+
+        // Add each profile as a menu item with checkmark for current
+        foreach (var profile in profiles)
+        {
+            var profileItem = new System.Windows.Forms.ToolStripMenuItem(profile);
+            profileItem.Checked = (profile == currentProfile);
+            profileItem.Click += (s, e) => SwitchToProfile(profile);
+            profilesMenuItem.DropDownItems.Add(profileItem);
+        }
+
+        profilesMenuItem.DropDownItems.Add(new System.Windows.Forms.ToolStripSeparator());
+
+        // New Profile
+        var newProfileItem = new System.Windows.Forms.ToolStripMenuItem("New Profile...");
+        newProfileItem.Click += (s, e) => CreateNewProfile();
+        profilesMenuItem.DropDownItems.Add(newProfileItem);
+
+        // Rename Profile
+        var renameProfileItem = new System.Windows.Forms.ToolStripMenuItem("Rename Profile...");
+        renameProfileItem.Click += (s, e) => RenameCurrentProfile();
+        profilesMenuItem.DropDownItems.Add(renameProfileItem);
+
+        // Delete Profile
+        var deleteProfileItem = new System.Windows.Forms.ToolStripMenuItem("Delete Profile...");
+        deleteProfileItem.Click += (s, e) => DeleteCurrentProfile();
+        profilesMenuItem.DropDownItems.Add(deleteProfileItem);
+    }
+
+    private void SwitchToProfile(string profileName)
+    {
+        if (profileName == _viewModel.CurrentProfileName)
+            return; // Already on this profile
+
+        _viewModel.SwitchProfile(profileName);
+
+        // Rebuild tray menu to update checkmarks
+        BuildTrayContextMenu();
+    }
+
+    private void ReloadCurrentProfile()
+    {
+        var currentProfile = _viewModel.CurrentProfileName;
+        _viewModel.SwitchProfile(currentProfile);
+    }
+
+    private void CreateNewProfile()
+    {
+        // Show input dialog
+        var dialog = new ProfileNameDialog("Create New Profile");
+        if (dialog.ShowDialog() != true)
+            return;
+
+        var newProfileName = dialog.ProfileName;
+
+        // Validate
+        if (!_profileService.ValidateProfileName(newProfileName, out var errorMessage))
+        {
+            System.Windows.MessageBox.Show(
+                errorMessage,
+                "Invalid Profile Name",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Warning);
+            return;
+        }
+
+        if (_profileService.ProfileExists(newProfileName))
+        {
+            System.Windows.MessageBox.Show(
+                $"Profile '{newProfileName}' already exists.",
+                "Profile Exists",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Warning);
+            return;
+        }
+
+        // Ask: copy current or use default?
+        var result = System.Windows.MessageBox.Show(
+            "Do you want to copy the current profile settings?\n\nYes = Copy current profile\nNo = Use default settings",
+            "Create Profile",
+            System.Windows.MessageBoxButton.YesNoCancel,
+            System.Windows.MessageBoxImage.Question);
+
+        if (result == System.Windows.MessageBoxResult.Cancel)
+            return;
+
         try
         {
-            // Get the executable path
-            var exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName;
-            if (!string.IsNullOrEmpty(exePath))
+            Models.MacroButtonConfig? sourceConfig = null;
+            if (result == System.Windows.MessageBoxResult.Yes)
             {
-                // Dispose resources first
-                _notifyIcon?.Dispose();
-                _viewModel?.Dispose();
-
-                // Release the single-instance mutex so the new instance can start
-                if (System.Windows.Application.Current is App app)
-                {
-                    app.ReleaseSingleInstanceMutex();
-                }
-
-                // Create process start info
-                var startInfo = new System.Diagnostics.ProcessStartInfo
-                {
-                    FileName = exePath,
-                    UseShellExecute = true
-                };
-
-                // Start the new instance
-                System.Diagnostics.Process.Start(startInfo);
-
-                // Small delay to ensure new process starts before we exit
-                await System.Threading.Tasks.Task.Delay(100);
-
-                // Shutdown the current instance
-                System.Windows.Application.Current.Shutdown();
+                sourceConfig = _viewModel.Config;
             }
+
+            _profileService.CreateProfile(newProfileName, sourceConfig);
+
+            // Switch to new profile
+            SwitchToProfile(newProfileName);
         }
         catch (Exception ex)
         {
             System.Windows.MessageBox.Show(
-                $"Failed to reload application: {ex.Message}",
-                "Reload Error",
+                $"Failed to create profile: {ex.Message}",
+                "Create Profile Error",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Error);
+        }
+    }
+
+    private void RenameCurrentProfile()
+    {
+        var currentProfile = _viewModel.CurrentProfileName;
+
+        // Show input dialog with current name
+        var dialog = new ProfileNameDialog("Rename Profile", currentProfile);
+        if (dialog.ShowDialog() != true)
+            return;
+
+        var newProfileName = dialog.ProfileName;
+
+        if (newProfileName == currentProfile)
+            return; // No change
+
+        // Validate
+        if (!_profileService.ValidateProfileName(newProfileName, out var errorMessage))
+        {
+            System.Windows.MessageBox.Show(
+                errorMessage,
+                "Invalid Profile Name",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Warning);
+            return;
+        }
+
+        if (_profileService.ProfileExists(newProfileName))
+        {
+            System.Windows.MessageBox.Show(
+                $"Profile '{newProfileName}' already exists.",
+                "Profile Exists",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Warning);
+            return;
+        }
+
+        try
+        {
+            _profileService.RenameProfile(currentProfile, newProfileName);
+
+            // Switch to renamed profile (updates UI and menu)
+            SwitchToProfile(newProfileName);
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show(
+                $"Failed to rename profile: {ex.Message}",
+                "Rename Profile Error",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Error);
+        }
+    }
+
+    private void DeleteCurrentProfile()
+    {
+        var currentProfile = _viewModel.CurrentProfileName;
+        var profiles = _profileService.ListProfiles();
+
+        // Prevent deleting last profile
+        if (profiles.Count <= 1)
+        {
+            System.Windows.MessageBox.Show(
+                "Cannot delete the last profile.",
+                "Delete Profile",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Warning);
+            return;
+        }
+
+        // Confirmation
+        var result = System.Windows.MessageBox.Show(
+            $"Are you sure you want to delete the profile '{currentProfile}'?\n\nThis action cannot be undone.",
+            "Delete Profile",
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Warning);
+
+        if (result != System.Windows.MessageBoxResult.Yes)
+            return;
+
+        try
+        {
+            // Determine which profile to switch to after deletion
+            var nextProfile = profiles.FirstOrDefault(p => p != currentProfile);
+            if (nextProfile == null)
+            {
+                System.Windows.MessageBox.Show(
+                    "Cannot determine next profile to switch to.",
+                    "Delete Profile Error",
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Error);
+                return;
+            }
+
+            // Delete the profile
+            _profileService.DeleteProfile(currentProfile);
+
+            // Switch to another profile
+            SwitchToProfile(nextProfile);
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show(
+                $"Failed to delete profile: {ex.Message}",
+                "Delete Profile Error",
                 System.Windows.MessageBoxButton.OK,
                 System.Windows.MessageBoxImage.Error);
         }
@@ -167,9 +365,8 @@ public partial class MainWindow : Window
     {
         try
         {
-            // Get config file path
-            var configService = new ConfigurationService();
-            var configPath = configService.GetConfigPath();
+            var currentProfile = _viewModel.CurrentProfileName;
+            var configPath = _profileService.GetProfilePath(currentProfile);
 
             // Ensure the file exists
             if (!System.IO.File.Exists(configPath))

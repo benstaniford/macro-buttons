@@ -11,40 +11,95 @@ namespace MacroButtons.Services;
 /// </summary>
 public class ConfigurationService
 {
-    private readonly string _configPath;
+    private readonly ProfileService _profileService;
 
-    public ConfigurationService()
+    public ConfigurationService(ProfileService profileService)
     {
-        _configPath = Path.Combine(
+        _profileService = profileService;
+
+        // Perform one-time migration if needed
+        PerformMigrationIfNeeded();
+    }
+
+    /// <summary>
+    /// Migrates from old single-config format (~/.macrobuttons.json) to new multi-profile format.
+    /// </summary>
+    private void PerformMigrationIfNeeded()
+    {
+        var oldPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
             ".macrobuttons.json");
+
+        if (File.Exists(oldPath))
+        {
+            try
+            {
+                // Read old config
+                var json = File.ReadAllText(oldPath);
+                var config = DeserializeConfiguration(json);
+
+                if (config != null)
+                {
+                    // Save to new location as "default" profile
+                    SaveConfiguration(config, "default");
+
+                    // Set as current profile
+                    _profileService.SetCurrentProfileName("default");
+
+                    // Rename old file as backup (don't delete - user might want it)
+                    File.Move(oldPath, oldPath + ".backup");
+                }
+            }
+            catch
+            {
+                // If migration fails, just continue - the app will create a default profile
+            }
+        }
     }
 
     /// <summary>
-    /// Gets the full path to the configuration file.
+    /// Loads the configuration for a specific profile.
+    /// Creates a default configuration if the profile file doesn't exist.
     /// </summary>
-    public string GetConfigPath() => _configPath;
-
-    /// <summary>
-    /// Loads the configuration from the user's profile directory.
-    /// Creates a default configuration if the file doesn't exist.
-    /// </summary>
-    public MacroButtonConfig LoadConfiguration()
+    public MacroButtonConfig LoadConfiguration(string profileName)
     {
-        if (!File.Exists(_configPath))
+        var configPath = _profileService.GetProfilePath(profileName);
+
+        if (!File.Exists(configPath))
         {
-            CreateDefaultConfiguration();
+            CreateDefaultConfiguration(profileName);
         }
 
-        var json = File.ReadAllText(_configPath);
+        var json = File.ReadAllText(configPath);
         var config = DeserializeConfiguration(json);
-        return config ?? CreateFallbackConfiguration();
+        return config ?? CreateFallbackConfiguration(profileName);
     }
 
     /// <summary>
-    /// Creates the default configuration file in the user's profile directory.
+    /// Saves a configuration to a specific profile.
     /// </summary>
-    private void CreateDefaultConfiguration()
+    public void SaveConfiguration(MacroButtonConfig config, string profileName)
+    {
+        // Update profile name in config
+        config.Global.ProfileName = profileName;
+
+        // Serialize to JSON
+        var json = JsonConvert.SerializeObject(config, Formatting.Indented);
+
+        // Write to profile file
+        var path = _profileService.GetProfilePath(profileName);
+        File.WriteAllText(path, json);
+    }
+
+    /// <summary>
+    /// Gets the full path to a profile's configuration file.
+    /// </summary>
+    public string GetConfigPath(string profileName) => _profileService.GetProfilePath(profileName);
+
+    /// <summary>
+    /// Creates the default configuration file for a specific profile.
+    /// </summary>
+    private void CreateDefaultConfiguration(string profileName)
     {
         try
         {
@@ -57,14 +112,25 @@ public class ConfigurationService
             {
                 using var reader = new StreamReader(stream);
                 var defaultJson = reader.ReadToEnd();
-                File.WriteAllText(_configPath, defaultJson);
+
+                // Deserialize, update profile name, and save
+                var config = DeserializeConfiguration(defaultJson);
+                if (config != null)
+                {
+                    SaveConfiguration(config, profileName);
+                }
+                else
+                {
+                    // If deserialization failed, create fallback
+                    var fallbackConfig = CreateFallbackConfiguration(profileName);
+                    SaveConfiguration(fallbackConfig, profileName);
+                }
             }
             else
             {
                 // Fallback: create inline default config
-                var defaultConfig = CreateFallbackConfiguration();
-                var json = JsonConvert.SerializeObject(defaultConfig, Formatting.Indented);
-                File.WriteAllText(_configPath, json);
+                var defaultConfig = CreateFallbackConfiguration(profileName);
+                SaveConfiguration(defaultConfig, profileName);
             }
         }
         catch (Exception ex)
@@ -162,7 +228,7 @@ public class ConfigurationService
     /// <summary>
     /// Creates a fallback configuration when the file can't be loaded.
     /// </summary>
-    private MacroButtonConfig CreateFallbackConfiguration()
+    private MacroButtonConfig CreateFallbackConfiguration(string profileName)
     {
         // Detect the smallest monitor for default configuration
         var monitorService = new MonitorService();
@@ -202,6 +268,7 @@ public class ConfigurationService
             {
                 Refresh = "30s",
                 MonitorIndex = smallestMonitorIndex,
+                ProfileName = profileName,
                 SendKeys = new SendKeysConfig
                 {
                     Delay = "10ms",

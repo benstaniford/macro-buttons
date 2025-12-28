@@ -23,6 +23,11 @@ public class GlobalConfig
     public SendKeysConfig SendKeys { get; set; } = new SendKeysConfig();
 
     /// <summary>
+    /// Profile name for this configuration.
+    /// </summary>
+    public string ProfileName { get; set; } = "default";
+
+    /// <summary>
     /// Parses the refresh interval string into a TimeSpan.
     /// </summary>
     public TimeSpan GetRefreshInterval()

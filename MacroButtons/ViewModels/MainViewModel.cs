@@ -32,14 +32,18 @@ internal class NavigationLevel
 /// </summary>
 public class MainViewModel : ViewModelBase, IDisposable
 {
+    private readonly ProfileService _profileService;
     private readonly ConfigurationService _configService;
     private readonly CommandExecutionService _commandService;
-    private readonly KeystrokeService _keystrokeService;
+    private KeystrokeService _keystrokeService;
     private readonly WindowHelper _windowHelper;
 
     // Navigation state
     private readonly Stack<NavigationLevel> _navigationStack = new();
     private List<ButtonItem> _currentItems = new();
+
+    // Profile state
+    private string _currentProfileName;
 
     public ObservableCollection<ButtonTileViewModel> Tiles { get; set; } = new();
     public Brush Foreground { get; private set; } = Brushes.DarkGreen;
@@ -53,16 +57,25 @@ public class MainViewModel : ViewModelBase, IDisposable
     /// </summary>
     public bool IsAtRootLevel => _navigationStack.Count == 0;
 
-    public MainViewModel(WindowHelper? windowHelper = null)
+    /// <summary>
+    /// Gets the current profile name.
+    /// </summary>
+    public string CurrentProfileName => _currentProfileName;
+
+    public MainViewModel(WindowHelper? windowHelper = null, ProfileService? profileService = null)
     {
-        _configService = new ConfigurationService();
+        _profileService = profileService ?? new ProfileService();
+        _configService = new ConfigurationService(_profileService);
         _commandService = new CommandExecutionService();
         _windowHelper = windowHelper ?? new WindowHelper();
 
         try
         {
+            // Get current profile name
+            _currentProfileName = _profileService.GetCurrentProfileName();
+
             // Load configuration first to get sendKeys config
-            Config = _configService.LoadConfiguration();
+            Config = _configService.LoadConfiguration(_currentProfileName);
 
             // Create keystroke service with configured sendKeys settings
             _keystrokeService = new KeystrokeService(_windowHelper, Config.Global.SendKeys);
@@ -74,6 +87,7 @@ public class MainViewModel : ViewModelBase, IDisposable
         {
             // If config loading fails, create with default settings
             _keystrokeService = new KeystrokeService(_windowHelper);
+            _currentProfileName = "default";
 
             // Show error and use minimal fallback
             System.Windows.MessageBox.Show(
@@ -289,6 +303,58 @@ public class MainViewModel : ViewModelBase, IDisposable
 
         // Set current items to root config items
         _currentItems = new List<ButtonItem>(Config.Items);
+    }
+
+    /// <summary>
+    /// Switches to a different profile and reloads the configuration.
+    /// </summary>
+    public void SwitchProfile(string profileName)
+    {
+        try
+        {
+            // Load new configuration
+            var newConfig = _configService.LoadConfiguration(profileName);
+
+            // Store old config for comparison
+            var oldConfig = Config;
+
+            // Update current profile name
+            _currentProfileName = profileName;
+            _profileService.SetCurrentProfileName(profileName);
+
+            // Update config reference
+            Config = newConfig;
+
+            // Check if SendKeysConfig changed - if so, recreate KeystrokeService
+            if (!SendKeysConfigEquals(oldConfig.Global.SendKeys, newConfig.Global.SendKeys))
+            {
+                _keystrokeService = new KeystrokeService(_windowHelper, newConfig.Global.SendKeys);
+            }
+
+            // Apply new configuration (theme, tiles, layout)
+            ApplyConfiguration();
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show(
+                $"Failed to switch profile: {ex.Message}",
+                "Profile Switch Error",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Error);
+        }
+    }
+
+    /// <summary>
+    /// Compares two SendKeysConfig instances for equality.
+    /// </summary>
+    private bool SendKeysConfigEquals(SendKeysConfig a, SendKeysConfig b)
+    {
+        if (a == null && b == null)
+            return true;
+        if (a == null || b == null)
+            return false;
+
+        return a.Delay == b.Delay && a.Duration == b.Duration;
     }
 
     public void Dispose()
