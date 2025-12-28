@@ -2,6 +2,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using MacroButtons.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace MacroButtons.Services;
 
@@ -112,8 +113,8 @@ public class ProfileService
     /// Creates a new profile.
     /// </summary>
     /// <param name="profileName">Name of the profile to create</param>
-    /// <param name="sourceConfig">Optional source configuration to copy from. If null, uses default config.</param>
-    public void CreateProfile(string profileName, MacroButtonConfig? sourceConfig = null)
+    /// <param name="sourceProfileName">Optional source profile name to copy from. If null, uses default config.</param>
+    public void CreateProfile(string profileName, string? sourceProfileName = null)
     {
         var profilePath = GetProfilePath(profileName);
 
@@ -122,25 +123,50 @@ public class ProfileService
             throw new InvalidOperationException($"Profile '{profileName}' already exists.");
         }
 
-        MacroButtonConfig config;
-        if (sourceConfig != null)
+        if (!string.IsNullOrEmpty(sourceProfileName))
         {
-            // Deep copy by serializing and deserializing
-            var json = JsonConvert.SerializeObject(sourceConfig, Formatting.Indented);
-            config = JsonConvert.DeserializeObject<MacroButtonConfig>(json) ?? new MacroButtonConfig();
+            // Copy from existing profile file
+            var sourcePath = GetProfilePath(sourceProfileName);
+            if (!File.Exists(sourcePath))
+            {
+                throw new InvalidOperationException($"Source profile '{sourceProfileName}' does not exist.");
+            }
+
+            // Read the source file
+            var json = File.ReadAllText(sourcePath);
+
+            // Parse and update the profile name
+            var jObject = JObject.Parse(json);
+
+            // Find and update the profilename field (case-insensitive)
+            var globalToken = jObject.Properties()
+                .FirstOrDefault(p => p.Name.Equals("global", StringComparison.OrdinalIgnoreCase))?.Value as JObject;
+
+            if (globalToken != null)
+            {
+                var profileNameProp = globalToken.Properties()
+                    .FirstOrDefault(p => p.Name.Equals("profilename", StringComparison.OrdinalIgnoreCase));
+
+                if (profileNameProp != null)
+                {
+                    profileNameProp.Value = profileName;
+                }
+                else
+                {
+                    // Add profileName if it doesn't exist
+                    globalToken["profileName"] = profileName;
+                }
+            }
+
+            // Write to new file (preserves formatting from source)
+            File.WriteAllText(profilePath, jObject.ToString(Formatting.Indented));
         }
         else
         {
-            // Create default config
-            config = new MacroButtonConfig();
+            // Create default profile - ConfigurationService will handle this
+            // Just create an empty marker file that will be populated on first load
+            File.WriteAllText(profilePath, "{}");
         }
-
-        // Set the profile name
-        config.Global.ProfileName = profileName;
-
-        // Save to file
-        var configJson = JsonConvert.SerializeObject(config, Formatting.Indented);
-        File.WriteAllText(profilePath, configJson);
     }
 
     /// <summary>
@@ -166,24 +192,34 @@ public class ProfileService
             throw new InvalidOperationException($"Profile '{newName}' already exists.");
         }
 
-        // Read the config
+        // Read the file
         var json = File.ReadAllText(oldPath);
-        var config = JsonConvert.DeserializeObject<MacroButtonConfig>(json);
 
-        if (config != null)
-        {
-            // Update the ProfileName field
-            config.Global.ProfileName = newName;
+        // Parse and update the profile name
+        var jObject = JObject.Parse(json);
 
-            // Write to new file
-            var updatedJson = JsonConvert.SerializeObject(config, Formatting.Indented);
-            File.WriteAllText(newPath, updatedJson);
-        }
-        else
+        // Find and update the profilename field (case-insensitive)
+        var globalToken = jObject.Properties()
+            .FirstOrDefault(p => p.Name.Equals("global", StringComparison.OrdinalIgnoreCase))?.Value as JObject;
+
+        if (globalToken != null)
         {
-            // If deserialization failed, just copy the file
-            File.Copy(oldPath, newPath);
+            var profileNameProp = globalToken.Properties()
+                .FirstOrDefault(p => p.Name.Equals("profilename", StringComparison.OrdinalIgnoreCase));
+
+            if (profileNameProp != null)
+            {
+                profileNameProp.Value = newName;
+            }
+            else
+            {
+                // Add profileName if it doesn't exist
+                globalToken["profileName"] = newName;
+            }
         }
+
+        // Write to new file (preserves formatting from source)
+        File.WriteAllText(newPath, jObject.ToString(Formatting.Indented));
 
         // Delete old file
         File.Delete(oldPath);

@@ -225,13 +225,13 @@ public partial class MainWindow : Window
 
         try
         {
-            Models.MacroButtonConfig? sourceConfig = null;
+            string? sourceProfileName = null;
             if (result == System.Windows.MessageBoxResult.Yes)
             {
-                sourceConfig = _viewModel.Config;
+                sourceProfileName = _viewModel.CurrentProfileName;
             }
 
-            _profileService.CreateProfile(newProfileName, sourceConfig);
+            _profileService.CreateProfile(newProfileName, sourceProfileName);
 
             // Switch to new profile
             SwitchToProfile(newProfileName);
