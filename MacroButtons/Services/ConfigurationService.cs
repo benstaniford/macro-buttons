@@ -3,6 +3,7 @@ using System.Reflection;
 using MacroButtons.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace MacroButtons.Services;
 
@@ -12,6 +13,23 @@ namespace MacroButtons.Services;
 public class ConfigurationService
 {
     private readonly ProfileService _profileService;
+
+    // Case-insensitive JSON settings for deserialization
+    private static readonly JsonSerializerSettings CaseInsensitiveSettings = new JsonSerializerSettings
+    {
+        ContractResolver = new CaseInsensitiveContractResolver(),
+        MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
+        Formatting = Formatting.Indented
+    };
+
+    // Custom contract resolver for case-insensitive property matching
+    private class CaseInsensitiveContractResolver : DefaultContractResolver
+    {
+        protected override string ResolvePropertyName(string propertyName)
+        {
+            return propertyName.ToLowerInvariant();
+        }
+    }
 
     public ConfigurationService(ProfileService profileService)
     {
@@ -150,20 +168,28 @@ public class ConfigurationService
             var jObject = JObject.Parse(json);
             var config = new MacroButtonConfig();
 
-            // Deserialize theme
-            if (jObject["theme"] != null)
+            // Deserialize theme (case-insensitive)
+            var themeToken = jObject.Properties()
+                .FirstOrDefault(p => p.Name.Equals("theme", StringComparison.OrdinalIgnoreCase))?.Value;
+            if (themeToken != null)
             {
-                config.Theme = jObject["theme"]!.ToObject<ThemeConfig>() ?? new ThemeConfig();
+                config.Theme = themeToken.ToObject<ThemeConfig>(JsonSerializer.Create(CaseInsensitiveSettings))
+                    ?? new ThemeConfig();
             }
 
-            // Deserialize global
-            if (jObject["global"] != null)
+            // Deserialize global (case-insensitive)
+            var globalToken = jObject.Properties()
+                .FirstOrDefault(p => p.Name.Equals("global", StringComparison.OrdinalIgnoreCase))?.Value;
+            if (globalToken != null)
             {
-                config.Global = jObject["global"]!.ToObject<GlobalConfig>() ?? new GlobalConfig();
+                config.Global = globalToken.ToObject<GlobalConfig>(JsonSerializer.Create(CaseInsensitiveSettings))
+                    ?? new GlobalConfig();
             }
 
-            // Deserialize items with special handling for Title field and recursive Items
-            if (jObject["items"] is JArray itemsArray)
+            // Deserialize items (case-insensitive) with special handling for Title field and recursive Items
+            var itemsToken = jObject.Properties()
+                .FirstOrDefault(p => p.Name.Equals("items", StringComparison.OrdinalIgnoreCase))?.Value;
+            if (itemsToken is JArray itemsArray)
             {
                 foreach (var item in itemsArray)
                 {
@@ -187,9 +213,11 @@ public class ConfigurationService
     private ButtonItem DeserializeButtonItem(JToken itemToken)
     {
         var buttonItem = new ButtonItem();
+        var serializer = JsonSerializer.Create(CaseInsensitiveSettings);
 
-        // Handle title (can be string or object)
-        var titleToken = itemToken["title"];
+        // Handle title (can be string or object) - case-insensitive
+        var titleToken = (itemToken as JObject)?.Properties()
+            .FirstOrDefault(p => p.Name.Equals("title", StringComparison.OrdinalIgnoreCase))?.Value;
         if (titleToken != null)
         {
             if (titleToken.Type == JTokenType.String)
@@ -198,19 +226,21 @@ public class ConfigurationService
             }
             else if (titleToken.Type == JTokenType.Object)
             {
-                buttonItem.Title = titleToken.ToObject<TitleDefinition>();
+                buttonItem.Title = titleToken.ToObject<TitleDefinition>(serializer);
             }
         }
 
-        // Handle action (can be null or object)
-        var actionToken = itemToken["action"];
+        // Handle action (can be null or object) - case-insensitive
+        var actionToken = (itemToken as JObject)?.Properties()
+            .FirstOrDefault(p => p.Name.Equals("action", StringComparison.OrdinalIgnoreCase))?.Value;
         if (actionToken != null && actionToken.Type != JTokenType.Null)
         {
-            buttonItem.Action = actionToken.ToObject<ActionDefinition>();
+            buttonItem.Action = actionToken.ToObject<ActionDefinition>(serializer);
         }
 
-        // Handle nested items (recursive deserialization)
-        var nestedItemsToken = itemToken["items"];
+        // Handle nested items (recursive deserialization) - case-insensitive
+        var nestedItemsToken = (itemToken as JObject)?.Properties()
+            .FirstOrDefault(p => p.Name.Equals("items", StringComparison.OrdinalIgnoreCase))?.Value;
         if (nestedItemsToken != null && nestedItemsToken.Type == JTokenType.Array)
         {
             buttonItem.Items = new List<ButtonItem>();

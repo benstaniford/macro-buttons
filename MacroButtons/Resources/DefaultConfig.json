@@ -1,33 +1,47 @@
 {
-  "items": [
-    {
-      "title": "Paste",
-      "action": { "keypress": "^v" }
-    },
-    {
-      "title": "Save",
-      "action": { "keypress": "^s" }
-    },
-    {
-      "title": "Hello World",
-      "action": null
-    },
-    {
-      "title": "Calculator",
-      "action": { "exe": "calc.exe" }
-    }
-  ],
-  "theme": {
-    "foreground": "darkgreen",
-    "background": "black"
-  },
   "global": {
+    "monitorindex": 1,
+    "profilename": "default",
     "refresh": "30s",
-    "monitorIndex": 0,
-    "profileName": "default",
-    "sendKeys": {
+    "sendkeys": {
       "delay": "10ms",
       "duration": "30ms"
     }
+  },
+  "items": [
+    {
+      "action": {
+        "keypress": "^c"
+      },
+      "title": "Copy"
+    },
+    {
+      "action": {
+        "keypress": "^v"
+      },
+      "title": "Paste"
+    },
+    {
+      "action": {
+        "exe": "c:/windows/system32/calc.exe"
+      },
+      "title": "Calculator"
+    },
+    {
+      "title": ""
+    },
+    {
+      "title": {
+        "python": [
+          "-c",
+          "import datetime; import json; print(json.dumps({'text': datetime.datetime.now().strftime('%H:%M:%S'), 'fg': '#00FF00', 'bg': '#003300'}))"
+        ],
+        "refresh": "5s"
+      }
+    }
+  ],
+  "theme": {
+    "background": "black",
+    "foreground": "green"
   }
 }
