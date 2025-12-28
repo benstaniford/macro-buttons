@@ -123,7 +123,8 @@ public class CommandExecutionService
     }
 
     /// <summary>
-    /// Expands tilde (~) to user profile path and resolves relative paths.
+    /// Expands tilde (~) to user profile path, expands environment variables, and normalizes path separators.
+    /// Supports: ~/, %VAR%, c:/path, c:\path
     /// </summary>
     private string ExpandPath(string path)
     {
@@ -136,6 +137,9 @@ public class CommandExecutionService
             var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             path = Path.Combine(userProfile, path.Substring(1).TrimStart('/', '\\'));
         }
+
+        // Expand environment variables (e.g., %SystemRoot%, %ProgramFiles%, etc.)
+        path = Environment.ExpandEnvironmentVariables(path);
 
         // Convert forward slashes to backslashes on Windows
         path = path.Replace('/', Path.DirectorySeparatorChar);

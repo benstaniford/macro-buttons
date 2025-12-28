@@ -318,7 +318,7 @@ public class ConfigurationService
                 new ButtonItem
                 {
                     Title = "Calculator",
-                    Action = new ActionDefinition { Exe = "calc.exe" }
+                    Action = new ActionDefinition { Exe = "%SystemRoot%/system32/calc.exe" }
                 }
             },
             Theme = new ThemeConfig

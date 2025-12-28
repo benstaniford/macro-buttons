@@ -23,7 +23,7 @@
     },
     {
       "action": {
-        "exe": "c:/windows/system32/calc.exe"
+        "exe": "%SystemRoot%/system32/calc.exe"
       },
       "title": "Calculator"
     },
