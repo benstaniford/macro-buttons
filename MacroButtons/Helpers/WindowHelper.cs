@@ -35,6 +35,12 @@ public class WindowHelper
     [DllImport("user32.dll")]
     private static extern IntPtr MonitorFromPoint(POINT pt, uint dwFlags);
 
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+
+    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    private static extern int GetClassName(IntPtr hWnd, System.Text.StringBuilder lpClassName, int nMaxCount);
+
     private const uint SWP_NOMOVE = 0x0002;
     private const uint SWP_NOSIZE = 0x0001;
     private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
@@ -172,5 +178,98 @@ public class WindowHelper
         {
             _previousWindow = currentForeground;
         }
+    }
+
+    /// <summary>
+    /// Gets the current foreground window handle.
+    /// </summary>
+    public IntPtr GetCurrentForegroundWindow()
+    {
+        return GetForegroundWindow();
+    }
+
+    /// <summary>
+    /// Gets the process name (e.g., "notepad.exe") from a window handle.
+    /// Returns null if the process cannot be determined.
+    /// </summary>
+    public string? GetProcessNameFromWindow(IntPtr hWnd)
+    {
+        if (hWnd == IntPtr.Zero)
+            return null;
+
+        try
+        {
+            GetWindowThreadProcessId(hWnd, out uint processId);
+            if (processId == 0)
+                return null;
+
+            using var process = System.Diagnostics.Process.GetProcessById((int)processId);
+            return process.ProcessName + ".exe";
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Gets the window class name from a window handle.
+    /// Returns null if the class name cannot be determined.
+    /// </summary>
+    public string? GetWindowClassName(IntPtr hWnd)
+    {
+        if (hWnd == IntPtr.Zero)
+            return null;
+
+        try
+        {
+            var className = new System.Text.StringBuilder(256);
+            int result = GetClassName(hWnd, className, className.Capacity);
+            return result > 0 ? className.ToString() : null;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Checks if a window matches the activeWindow pattern.
+    /// Pattern formats:
+    /// - "ProcessName.exe" - matches process name only
+    /// - "ProcessName.exe|WindowClass" - matches both process name and window class
+    /// </summary>
+    public bool WindowMatchesPattern(IntPtr hWnd, string? pattern)
+    {
+        if (string.IsNullOrWhiteSpace(pattern) || hWnd == IntPtr.Zero)
+            return false;
+
+        var processName = GetProcessNameFromWindow(hWnd);
+        if (processName == null)
+            return false;
+
+        // Check if pattern contains window class separator
+        var parts = pattern.Split('|', 2);
+        var expectedProcessName = parts[0].Trim();
+
+        // Match process name (case-insensitive)
+        if (!processName.Equals(expectedProcessName, StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        // If pattern includes window class, check it too
+        if (parts.Length > 1)
+        {
+            var expectedClassName = parts[1].Trim();
+            var windowClass = GetWindowClassName(hWnd);
+
+            if (windowClass == null)
+                return false;
+
+            // Match window class (case-insensitive)
+            if (!windowClass.Equals(expectedClassName, StringComparison.OrdinalIgnoreCase))
+                return false;
+        }
+
+        return true;
     }
 }

@@ -604,6 +604,13 @@ public partial class MainWindow : Window
         {
             _windowHelper.UpdateCursorPositionIfNotOnOurMonitor();
             _windowHelper.UpdatePreviousWindowIfNotUs();
+
+            // Check for profile auto-switching based on active window
+            var foregroundWindow = _windowHelper.GetCurrentForegroundWindow();
+            if (foregroundWindow != IntPtr.Zero)
+            {
+                _viewModel.HandleActiveWindowChange(foregroundWindow);
+            }
         };
         _cursorTrackingTimer.Start();
     }

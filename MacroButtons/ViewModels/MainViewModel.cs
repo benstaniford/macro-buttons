@@ -44,6 +44,8 @@ public class MainViewModel : ViewModelBase, IDisposable
 
     // Profile state
     private string _currentProfileName;
+    private bool _isAutoSwitched = false;
+    private string? _baseProfileName = null; // The profile to return to when no window matches
 
     public ObservableCollection<ButtonTileViewModel> Tiles { get; set; } = new();
     public Brush Foreground { get; private set; } = Brushes.DarkGreen;
@@ -308,7 +310,9 @@ public class MainViewModel : ViewModelBase, IDisposable
     /// <summary>
     /// Switches to a different profile and reloads the configuration.
     /// </summary>
-    public void SwitchProfile(string profileName)
+    /// <param name="profileName">The profile to switch to</param>
+    /// <param name="isAutoSwitch">True if this is an automatic switch triggered by window change</param>
+    public void SwitchProfile(string profileName, bool isAutoSwitch = false)
     {
         try
         {
@@ -317,6 +321,19 @@ public class MainViewModel : ViewModelBase, IDisposable
 
             // Store old config for comparison
             var oldConfig = Config;
+
+            // Track whether this is a manual or auto switch
+            if (!isAutoSwitch)
+            {
+                // Manual switch: remember this as the base profile
+                _baseProfileName = profileName;
+                _isAutoSwitched = false;
+            }
+            else
+            {
+                // Auto switch: mark that we're in auto-switched mode
+                _isAutoSwitched = true;
+            }
 
             // Update current profile name
             _currentProfileName = profileName;
@@ -341,6 +358,65 @@ public class MainViewModel : ViewModelBase, IDisposable
                 "Profile Switch Error",
                 System.Windows.MessageBoxButton.OK,
                 System.Windows.MessageBoxImage.Error);
+        }
+    }
+
+    /// <summary>
+    /// Handles active window changes and switches profiles automatically if needed.
+    /// Called periodically by MainWindow to check if profile should change based on active window.
+    /// </summary>
+    public void HandleActiveWindowChange(IntPtr activeWindowHandle)
+    {
+        // Get all available profiles
+        var allProfiles = _profileService.ListProfiles();
+
+        // Check each profile to see if it matches the active window
+        string? matchingProfile = null;
+        foreach (var profileName in allProfiles)
+        {
+            try
+            {
+                var config = _configService.LoadConfiguration(profileName);
+                var activeWindowPattern = config.Global.ActiveWindow;
+
+                if (!string.IsNullOrWhiteSpace(activeWindowPattern))
+                {
+                    if (_windowHelper.WindowMatchesPattern(activeWindowHandle, activeWindowPattern))
+                    {
+                        matchingProfile = profileName;
+                        break;
+                    }
+                }
+            }
+            catch
+            {
+                // Ignore errors loading other profiles
+                continue;
+            }
+        }
+
+        // Decide what to do based on match result
+        if (matchingProfile != null)
+        {
+            // Found a matching profile
+            if (_currentProfileName != matchingProfile)
+            {
+                // Switch to the matching profile (auto-switch)
+                SwitchProfile(matchingProfile, isAutoSwitch: true);
+            }
+        }
+        else
+        {
+            // No matching profile found
+            if (_isAutoSwitched)
+            {
+                // We're currently on an auto-switched profile, return to base
+                var targetProfile = _baseProfileName ?? "default";
+                if (_currentProfileName != targetProfile)
+                {
+                    SwitchProfile(targetProfile, isAutoSwitch: false);
+                }
+            }
         }
     }
 

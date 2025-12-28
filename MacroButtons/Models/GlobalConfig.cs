@@ -28,6 +28,12 @@ public class GlobalConfig
     public string ProfileName { get; set; } = "default";
 
     /// <summary>
+    /// Optional active window trigger for automatic profile switching.
+    /// Format: "ProcessName.exe" or "ProcessName.exe|WindowClass"
+    /// </summary>
+    public string? ActiveWindow { get; set; }
+
+    /// <summary>
     /// Parses the refresh interval string into a TimeSpan.
     /// </summary>
     public TimeSpan GetRefreshInterval()
