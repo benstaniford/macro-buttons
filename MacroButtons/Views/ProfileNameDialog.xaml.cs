@@ -39,11 +39,11 @@ public partial class ProfileNameDialog : Window
 
         if (string.IsNullOrWhiteSpace(ProfileName))
         {
-            MessageBox.Show(
+            System.Windows.MessageBox.Show(
                 "Profile name cannot be empty.",
                 "Invalid Name",
-                MessageBoxButton.OK,
-                MessageBoxImage.Warning);
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Warning);
             return;
         }
 
