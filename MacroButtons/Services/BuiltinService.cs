@@ -1,5 +1,3 @@
-using System.Windows;
-
 namespace MacroButtons.Services;
 
 /// <summary>
@@ -18,7 +16,7 @@ public class BuiltinService
         switch (normalized)
         {
             case "quit":
-                Application.Current.Shutdown();
+                System.Windows.Application.Current.Shutdown();
                 break;
 
             default:
