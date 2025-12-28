@@ -101,12 +101,39 @@ public class ConfigurationService
         // Update profile name in config
         config.Global.ProfileName = profileName;
 
-        // Serialize to JSON
-        var json = JsonConvert.SerializeObject(config, Formatting.Indented);
+        // Serialize to JSON with clean, minimal output
+        var settings = new JsonSerializerSettings
+        {
+            Formatting = Formatting.Indented,
+            NullValueHandling = NullValueHandling.Ignore,  // Skip null properties
+            DefaultValueHandling = DefaultValueHandling.Ignore,  // Skip default values
+            ContractResolver = new CleanJsonContractResolver()  // Skip computed properties
+        };
+
+        var json = JsonConvert.SerializeObject(config, settings);
 
         // Write to profile file
         var path = _profileService.GetProfilePath(profileName);
         File.WriteAllText(path, json);
+    }
+
+    /// <summary>
+    /// Custom contract resolver that skips computed (read-only) properties.
+    /// </summary>
+    private class CleanJsonContractResolver : DefaultContractResolver
+    {
+        protected override JsonProperty CreateProperty(System.Reflection.MemberInfo member, MemberSerialization memberSerialization)
+        {
+            var property = base.CreateProperty(member, memberSerialization);
+
+            // Skip read-only properties (computed properties)
+            if (property.Writable == false)
+            {
+                property.ShouldSerialize = _ => false;
+            }
+
+            return property;
+        }
     }
 
     /// <summary>
