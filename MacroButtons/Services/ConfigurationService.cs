@@ -148,6 +148,10 @@ public class ConfigurationService
     {
         try
         {
+            // Detect the smallest monitor for default configuration
+            var monitorService = new MonitorService();
+            var smallestMonitorIndex = monitorService.GetSmallestMonitorIndex();
+
             // Try to load from embedded resource first
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = "MacroButtons.Resources.DefaultConfig.json";
@@ -158,10 +162,11 @@ public class ConfigurationService
                 using var reader = new StreamReader(stream);
                 var defaultJson = reader.ReadToEnd();
 
-                // Deserialize, update profile name, and save
+                // Deserialize, update profile name and monitor index, and save
                 var config = DeserializeConfiguration(defaultJson);
                 if (config != null)
                 {
+                    config.Global.MonitorIndex = smallestMonitorIndex;
                     SaveConfiguration(config, profileName);
                 }
                 else
