@@ -5,7 +5,8 @@
       "Bash(find:*)",
       "Bash(git add:*)",
       "Bash(git auto:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(curl:*)"
     ]
   }
 }

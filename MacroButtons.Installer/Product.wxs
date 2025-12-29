@@ -95,6 +95,13 @@
               Source="$(var.MacroButtons.TargetDir)CommunityToolkit.Mvvm.dll"
               KeyPath="yes" />
       </Component>
+
+      <!-- License file -->
+      <Component Id="LicenseFile" Guid="{F6A7B8C9-D0E1-2345-6789-012345678901}">
+        <File Id="LicenseTxt"
+              Source="$(var.ProjectDir)..\LICENSE"
+              KeyPath="yes" />
+      </Component>
     </ComponentGroup>
 
     <!-- Samples Files -->
