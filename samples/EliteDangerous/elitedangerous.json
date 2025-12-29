@@ -37,7 +37,10 @@
       }
     },
     {
-      "title": ""
+      "action": {
+        "keypress": "c"
+      },
+      "title": "CHAFF"
     },
     {
       "title": {
@@ -53,13 +56,22 @@
       "title": "HEAT SINK"
     },
     {
-      "title": ""
+      "action": {
+        "keypress": "m"
+      },
+      "title": "COMBAT MODE"
     },
     {
-      "title": ""
+      "action": {
+        "keypress": "+m"
+      },
+      "title": "SENSOR MODE"
     },
     {
-      "title": ""
+      "action": {
+        "keypress": "{space}"
+      },
+      "title": "DISCOVERY SCANNER"
     },
     {
       "items": [
@@ -85,7 +97,45 @@
       "title": "COLONISATION"
     },
     {
-      "title": ""
+      "items": [
+        {
+          "action": {
+            "keypress": "!{F1}"
+          },
+          "title": "FREE CAMERA"
+        },
+        {
+          "action": {
+            "keypress": "^!{space}"
+          },
+          "title": "TOGGLE HUD"
+        },
+        {
+          "action": {
+            "keypress": "!{NUMPADADD}"
+          },
+          "title": "ZOOM IN"
+        },
+        {
+          "action": {
+            "keypress": "!{NUMPADSUB}"
+          },
+          "title": "ZOOM OUT"
+        },
+        {
+          "action": {
+            "keypress": "!r"
+          },
+          "title": "RESET CAMERA"
+        },
+        {
+          "action": {
+            "keypress": "{F10}"
+          },
+          "title": "HIGH RES SCREENSHOT"
+        }
+      ],
+      "title": "CAMERA SUITE"
     },
     {
       "action": {
