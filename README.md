@@ -186,37 +186,11 @@ Found a bug? [Open an issue](https://github.com/yourusername/macro-buttons/issue
 - Your configuration file (if relevant)
 - Windows version
 
-## Building from Source
-
-Want to contribute code or build your own version?
-
-**Requirements:**
-- .NET 8 SDK
-- Visual Studio 2022 (for Windows builds)
-- WiX Toolset 3.11+ (for installer)
-
-```bash
-git clone https://github.com/yourusername/macro-buttons.git
-cd macro-buttons
-dotnet restore
-dotnet build -c Release
-```
-
-For detailed development information, see [CLAUDE.md](CLAUDE.md).
-
 ## License
 
 GNU General Public License v3.0 - see [LICENSE](LICENSE) file for details.
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-## Credits
-
-Built with:
-- .NET 8 and WPF
-- [InputSimulatorPlus](https://github.com/TChatzigiannakis/InputSimulator) for keyboard simulation
-- [Newtonsoft.Json](https://www.newtonsoft.com/json) for configuration parsing
-- [CommunityToolkit.Mvvm](https://github.com/CommunityToolkit/dotnet) for MVVM helpers
 
 ---
 
