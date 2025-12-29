@@ -277,7 +277,11 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
     }
 
     /// <summary>
-    /// Attempts to parse JSON output in the format: {"text": "...", "fg": "#color", "bg": "#color"}
+    /// Attempts to parse JSON output in the format:
+    /// {"text": "...", "fg": "#color", "bg": "#color"}
+    /// or {"text": "...", "theme": "themeName"}
+    ///
+    /// Priority: explicit fg/bg > theme name > null (uses default theme)
     /// </summary>
     private bool TryParseJsonOutput(string output, out string text, out Brush? foreground, out Brush? background)
     {
@@ -297,18 +301,30 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
             if (string.IsNullOrEmpty(text))
                 return false; // JSON must have "text" field
 
-            // Extract optional foreground color
+            // Extract optional foreground color (highest priority)
             var fgColor = json["fg"]?.ToString();
             if (!string.IsNullOrWhiteSpace(fgColor))
             {
-                foreground = Helpers.ColorConverter.ParseColor(fgColor, null);
+                foreground = ColorConverter.ParseColor(fgColor, null);
             }
 
-            // Extract optional background color
+            // Extract optional background color (highest priority)
             var bgColor = json["bg"]?.ToString();
             if (!string.IsNullOrWhiteSpace(bgColor))
             {
-                background = Helpers.ColorConverter.ParseColor(bgColor, null);
+                background = ColorConverter.ParseColor(bgColor, null);
+            }
+
+            // If no explicit colors, check for theme name
+            if (foreground == null && background == null)
+            {
+                var themeName = json["theme"]?.ToString();
+                if (!string.IsNullOrWhiteSpace(themeName))
+                {
+                    var theme = _rootConfig.GetTheme(themeName);
+                    foreground = ColorConverter.ParseColor(theme.Foreground, null);
+                    background = ColorConverter.ParseColor(theme.Background, null);
+                }
             }
 
             return true;
