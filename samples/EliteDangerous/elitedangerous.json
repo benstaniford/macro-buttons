@@ -18,7 +18,7 @@
       },
       "title": {
         "python": [
-          "c:/Users/Ben/dot-files/scripts/elite-status",
+          "%ProgramFiles%/MacroButtons/samples/EliteDangerous/elite-status",
           "--gear"
         ],
         "refresh": "1s"
@@ -30,7 +30,7 @@
       },
       "title": {
         "python": [
-          "c:/Users/Ben/dot-files/scripts/elite-status",
+          "%ProgramFiles%/MacroButtons/samples/EliteDangerous/elite-status",
           "--scoop"
         ],
         "refresh": "1s"
@@ -106,21 +106,21 @@
       "title": "G.A.L.N.E.T"
     }
   ],
-  "Themes": [
+  "themes": [
     {
-      "Name": "default",
-      "Foreground": "green",
-      "Background": "black"
+      "name": "default",
+      "foreground": "green",
+      "background": "black"
     },
     {
-      "Name": "toggled",
-      "Foreground": "black",
-      "Background": "orange"
+      "name": "toggled",
+      "foreground": "black",
+      "background": "orange"
     },
     {
-      "Name": "prominent",
-      "Foreground": "#000000",
-      "Background": "#288F28"
+      "name": "prominent",
+      "foreground": "#000000",
+      "background": "#288F28"
     }
   ]
 }
