@@ -8,7 +8,9 @@
       "Bash(git commit:*)",
       "Bash(curl:*)",
       "Skill(create-macro-buttons)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "WebSearch",
+      "Bash(python3:*)"
     ]
   }
 }

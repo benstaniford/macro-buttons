@@ -1,0 +1,128 @@
+{
+  "global": {
+    "monitorIndex": 0,
+    "activeWindow": "Photoshop",
+    "refresh": "1s"
+  },
+  "themes": [
+    {
+      "name": "default",
+      "foreground": "#4A90E2",
+      "background": "black"
+    },
+    {
+      "name": "prominent",
+      "foreground": "black",
+      "background": "#4A90E2"
+    }
+  ],
+  "items": [
+    {
+      "title": {
+        "builtin": "clock()",
+        "refresh": "1s",
+        "theme": "prominent"
+      }
+    },
+    {
+      "title": "Layer Operations",
+      "items": [
+        {
+          "title": "New Layer\n(Ctrl+Shift+N)",
+          "action": { "keypress": "^+n" }
+        },
+        {
+          "title": "Duplicate Layer\n(Ctrl+J)",
+          "action": { "keypress": "^j" }
+        },
+        {
+          "title": "Merge Down\n(Ctrl+E)",
+          "action": { "keypress": "^e" }
+        },
+        {
+          "title": "Merge Visible\n(Ctrl+Shift+E)",
+          "action": { "keypress": "^+e" }
+        },
+        {
+          "title": "Group Layers\n(Ctrl+G)",
+          "action": { "keypress": "^g" }
+        },
+        {
+          "title": "Stamp Visible\n(Ctrl+Shift+Alt+E)",
+          "action": { "keypress": "^+!e" }
+        }
+      ]
+    },
+    {
+      "title": "Tools",
+      "items": [
+        {
+          "title": "Brush Tool\n(B)",
+          "action": { "keypress": "b" }
+        },
+        {
+          "title": "Eraser Tool\n(E)",
+          "action": { "keypress": "e" }
+        },
+        {
+          "title": "Move Tool\n(V)",
+          "action": { "keypress": "v" }
+        },
+        {
+          "title": "Lasso Tool\n(L)",
+          "action": { "keypress": "l" }
+        },
+        {
+          "title": "Magic Wand\n(W)",
+          "action": { "keypress": "w" }
+        },
+        {
+          "title": "Eyedropper\n(I)",
+          "action": { "keypress": "i" }
+        },
+        {
+          "title": "Gradient Tool\n(G)",
+          "action": { "keypress": "g" }
+        }
+      ]
+    },
+    {
+      "title": "Transform & Edit",
+      "items": [
+        {
+          "title": "Free Transform\n(Ctrl+T)",
+          "action": { "keypress": "^t" }
+        },
+        {
+          "title": "Fill Dialog\n(Shift+F5)",
+          "action": { "keypress": "+{F5}" }
+        },
+        {
+          "title": "Fill Foreground\n(Alt+Backspace)",
+          "action": { "keypress": "!{Backspace}" }
+        },
+        {
+          "title": "Inverse Selection\n(Ctrl+Shift+I)",
+          "action": { "keypress": "^+i" }
+        }
+      ]
+    },
+    {
+      "title": "View",
+      "items": [
+        {
+          "title": "Fit on Screen\n(Ctrl+0)",
+          "action": { "keypress": "^0" }
+        },
+        {
+          "title": "Actual Pixels\n(Ctrl+Alt+0)",
+          "action": { "keypress": "^!0" }
+        },
+        {
+          "title": "Toggle Panels\n(Tab)",
+          "action": { "keypress": "{Tab}" }
+        }
+      ]
+    }
+  ]
+}
