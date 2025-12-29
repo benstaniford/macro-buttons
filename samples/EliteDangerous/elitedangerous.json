@@ -1,0 +1,126 @@
+{
+  "global": {
+    "monitorIndex": 1,
+    "profilename": "EliteDangerous",
+    "refresh": "30s",
+    "activewindow": "EliteDangerous64.exe"
+  },
+  "items": [
+    {
+      "action": {
+        "keypress": "s"
+      },
+      "title": "SHIELD CELL"
+    },
+    {
+      "action": {
+        "keypress": "g"
+      },
+      "title": {
+        "python": [
+          "c:/Users/Ben/dot-files/scripts/elite-status",
+          "--gear"
+        ],
+        "refresh": "1s"
+      }
+    },
+    {
+      "action": {
+        "keypress": "{home}"
+      },
+      "title": {
+        "python": [
+          "c:/Users/Ben/dot-files/scripts/elite-status",
+          "--scoop"
+        ],
+        "refresh": "1s"
+      }
+    },
+    {
+      "title": ""
+    },
+    {
+      "title": {
+        "builtin": "clock()",
+        "refresh": "1s",
+        "theme": "prominent"
+      }
+    },
+    {
+      "action": {
+        "keypress": "h"
+      },
+      "title": "HEAT SINK"
+    },
+    {
+      "title": ""
+    },
+    {
+      "title": ""
+    },
+    {
+      "title": ""
+    },
+    {
+      "items": [
+        {
+          "title": "DOCKING"
+        },
+        {
+          "title": "DEFENSIVE"
+        },
+        {
+          "title": "ENGAGE AT WILL"
+        },
+        {
+          "title": "ATTACK TARGET"
+        }
+      ],
+      "title": "FIGHTER ORDERS"
+    },
+    {
+      "action": {
+        "keypress": "o"
+      },
+      "title": "COLONISATION"
+    },
+    {
+      "title": ""
+    },
+    {
+      "action": {
+        "keypress": "]"
+      },
+      "title": "SYSTEM MAP"
+    },
+    {
+      "action": {
+        "keypress": "["
+      },
+      "title": "GALAXY MAP"
+    },
+    {
+      "action": {
+        "keypress": "p"
+      },
+      "title": "G.A.L.N.E.T"
+    }
+  ],
+  "Themes": [
+    {
+      "Name": "default",
+      "Foreground": "green",
+      "Background": "black"
+    },
+    {
+      "Name": "toggled",
+      "Foreground": "black",
+      "Background": "orange"
+    },
+    {
+      "Name": "prominent",
+      "Foreground": "#000000",
+      "Background": "#288F28"
+    }
+  ]
+}

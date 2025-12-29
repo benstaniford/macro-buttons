@@ -1,0 +1,109 @@
+#!/usr/bin/env python3
+"""
+Check Elite Dangerous game status from Status.json file.
+"""
+
+import argparse
+import json
+import os
+import sys
+from pathlib import Path
+
+def find_elite_status_file():
+    """Find the Elite Dangerous Status.json file."""
+    if sys.platform == "win32":
+        # Windows path
+        base_path = Path(os.environ.get('USERPROFILE', '')) / 'Saved Games' / 'Frontier Developments' / 'Elite Dangerous'
+    else:
+        # For testing on Linux, you might have the files mounted somewhere
+        # Adjust this path as needed for your setup
+        base_path = Path.home() / 'Saved Games' / 'Frontier Developments' / 'Elite Dangerous'
+
+    status_file = base_path / 'Status.json'
+
+    if not status_file.exists():
+        print(f"Error: Status.json not found at {status_file}", file=sys.stderr)
+        sys.exit(1)
+
+    return status_file
+
+def load_status_data(status_file):
+    """Load and parse the Status.json file."""
+    try:
+        with open(status_file, 'r') as f:
+            return json.load(f)
+    except json.JSONDecodeError:
+        print("Error: Invalid JSON in Status.json", file=sys.stderr)
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error reading status file: {e}", file=sys.stderr)
+        sys.exit(1)
+
+def check_landing_gear(data):
+    """
+    Check if landing gear is deployed.
+    Landing gear flag is bit 2 (value 4) in the Flags field.
+    """
+    flags = data.get('Flags', 0)
+    LANDING_GEAR_FLAG = 4
+
+    if flags & LANDING_GEAR_FLAG:
+        return {'text': 'GEAR LOWERED', 'theme': 'toggled'}
+    else:
+        return {'text': 'GEAR RAISED', 'theme': 'default'}
+
+def check_cargo_bay(data):
+    """
+    Check if cargo scoop is deployed.
+    Cargo scoop flag is bit 9 (value 512) in the Flags field.
+    """
+    flags = data.get('Flags', 0)
+    CARGO_SCOOP_FLAG = 512
+
+    if flags & CARGO_SCOOP_FLAG:
+        return {'text': 'SCOOP DEPLOYED', 'theme': 'toggled'}
+    else:
+        return {'text': 'SCOOP RETRACTED', 'theme': 'default'}
+
+def main():
+    parser = argparse.ArgumentParser(
+        description='Check Elite Dangerous game status',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog='''
+Available status checks:
+  --gear       Check landing gear status (outputs JSON with text and theme)
+  --scoop      Check cargo scoop status (outputs JSON with text and theme)
+
+Examples:
+  elite-status --gear       # Check if landing gear is deployed
+  elite-status --scoop      # Check if cargo scoop is deployed
+        '''
+    )
+
+    parser.add_argument('--gear', action='store_true',
+                        help='check landing gear status')
+    parser.add_argument('--scoop', action='store_true',
+                        help='check cargo scoop status')
+
+    args = parser.parse_args()
+
+    # If no arguments provided, show help
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(0)
+
+    # Find and load status file
+    status_file = find_elite_status_file()
+    data = load_status_data(status_file)
+
+    # Execute requested checks
+    if args.gear:
+        result = check_landing_gear(data)
+        print(json.dumps(result))
+
+    if args.scoop:
+        result = check_cargo_bay(data)
+        print(json.dumps(result))
+
+if __name__ == "__main__":
+    main()

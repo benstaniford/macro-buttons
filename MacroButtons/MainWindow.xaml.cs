@@ -253,13 +253,49 @@ public partial class MainWindow : Window
 
     private void ImportProfile()
     {
+        // Try to determine the samples directory location
+        string? initialDirectory = null;
+        try
+        {
+            // First, try the installed samples location (Program Files)
+            var exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName;
+            if (!string.IsNullOrEmpty(exePath))
+            {
+                var exeDir = System.IO.Path.GetDirectoryName(exePath);
+                if (!string.IsNullOrEmpty(exeDir))
+                {
+                    var samplesPath = System.IO.Path.Combine(exeDir, "samples");
+                    if (System.IO.Directory.Exists(samplesPath))
+                    {
+                        initialDirectory = samplesPath;
+                    }
+                }
+            }
+
+            // Fallback: check if we're running from the source repo (development)
+            if (initialDirectory == null)
+            {
+                var currentDir = System.IO.Directory.GetCurrentDirectory();
+                var samplesPath = System.IO.Path.Combine(currentDir, "samples");
+                if (System.IO.Directory.Exists(samplesPath))
+                {
+                    initialDirectory = samplesPath;
+                }
+            }
+        }
+        catch
+        {
+            // If any errors, just use default location (user's documents)
+        }
+
         // Open file browser to select JSON file
         var openFileDialog = new Microsoft.Win32.OpenFileDialog
         {
             Title = "Select Profile to Import",
             Filter = "JSON Files (*.json)|*.json|All Files (*.*)|*.*",
             FilterIndex = 1,
-            Multiselect = false
+            Multiselect = false,
+            InitialDirectory = initialDirectory
         };
 
         if (openFileDialog.ShowDialog() != true)
