@@ -17,6 +17,7 @@ namespace MacroButtons.ViewModels;
 public partial class ButtonTileViewModel : ViewModelBase, IDisposable
 {
     private readonly ButtonItem? _config;
+    private readonly ThemeConfig _themeConfig;
     private readonly CommandExecutionService _commandService;
     private readonly KeystrokeService _keystrokeService;
     private readonly WindowHelper _windowHelper;
@@ -46,6 +47,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
     public ButtonTileViewModel(ThemeConfig themeConfig, CommandExecutionService commandService, KeystrokeService keystrokeService, WindowHelper windowHelper)
     {
         _config = null;
+        _themeConfig = themeConfig;
         _commandService = commandService;
         _keystrokeService = keystrokeService;
         _windowHelper = windowHelper;
@@ -77,6 +79,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         Action? onNavigateBack = null)
     {
         _config = config;
+        _themeConfig = themeConfig;
         _commandService = commandService;
         _keystrokeService = keystrokeService;
         _windowHelper = windowHelper;
@@ -87,8 +90,21 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         IsDynamic = config.IsDynamicTitle;
         HasAction = config.HasAction || config.HasSubmenu;  // Include submenu buttons
 
-        // Apply theme based on ButtonItem's theme name (or default)
-        var theme = themeConfig.GetTheme(config.Theme);
+        // Apply theme based on priority:
+        // 1. If dynamic title, check TitleDefinition.Theme
+        // 2. Otherwise, use ButtonItem.Theme
+        // 3. Fall back to "default"
+        string? themeName = null;
+        if (config.IsDynamicTitle && config.Title is TitleDefinition titleDef)
+        {
+            themeName = titleDef.Theme ?? config.Theme;
+        }
+        else
+        {
+            themeName = config.Theme;
+        }
+
+        var theme = themeConfig.GetTheme(themeName);
         Foreground = ColorConverter.ParseColor(theme.Foreground, Brushes.DarkGreen);
         Background = ColorConverter.ParseColor(theme.Background, Brushes.Transparent);
 
@@ -234,8 +250,23 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
             }
             else
             {
-                // Fallback to plain text
+                // Fallback to plain text - reset to theme colors
                 DisplayTitle = output;
+
+                // Reset to the base theme (from TitleDefinition.Theme or ButtonItem.Theme)
+                string? themeName = null;
+                if (_config?.IsDynamicTitle == true && _config.Title is TitleDefinition titleDef)
+                {
+                    themeName = titleDef.Theme ?? _config.Theme;
+                }
+                else if (_config != null)
+                {
+                    themeName = _config.Theme;
+                }
+
+                var theme = _themeConfig.GetTheme(themeName);
+                Foreground = ColorConverter.ParseColor(theme.Foreground, Brushes.DarkGreen);
+                Background = ColorConverter.ParseColor(theme.Background, Brushes.Transparent);
             }
         }
         catch (Exception ex)

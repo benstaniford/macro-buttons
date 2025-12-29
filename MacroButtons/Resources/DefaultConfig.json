@@ -36,7 +36,8 @@
     {
       "title": {
         "builtin": "clock()",
-        "refresh": "1s"
+        "refresh": "1s",
+        "theme": "prominent"
       }
     }
   ],

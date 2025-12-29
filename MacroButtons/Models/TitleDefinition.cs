@@ -30,6 +30,13 @@ public class TitleDefinition
     public string? Refresh { get; set; }
 
     /// <summary>
+    /// Optional theme name to apply to this dynamic title (e.g., "prominent", "toggled").
+    /// If not specified, uses the ButtonItem's theme or "default".
+    /// This theme can still be overridden by JSON output from the command (fg/bg properties).
+    /// </summary>
+    public string? Theme { get; set; }
+
+    /// <summary>
     /// Returns true if this is a Python-based dynamic title.
     /// </summary>
     public bool IsPython => Python != null && Python.Count > 0;

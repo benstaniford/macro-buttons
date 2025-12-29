@@ -56,12 +56,12 @@ public class BuiltinService
     }
 
     /// <summary>
-    /// Gets the current time in HH:mm:ss format with green foreground and dark green background.
-    /// Returns JSON format: {"text": "HH:mm:ss", "fg": "#00FF00", "bg": "#003300"}
+    /// Gets the current time in HH:mm:ss format.
+    /// Returns plain text. Theme should be set via ButtonItem.Theme property.
     /// </summary>
     private string GetClockValue()
     {
         var currentTime = DateTime.Now.ToString("HH:mm:ss");
-        return $"{{\"text\": \"{currentTime}\", \"fg\": \"#00FF00\", \"bg\": \"#003300\"}}";
+        return currentTime;
     }
 }
