@@ -8,6 +8,7 @@ using System.Windows.Threading;
 using Brush = System.Windows.Media.Brush;
 using Brushes = System.Windows.Media.Brushes;
 using Newtonsoft.Json.Linq;
+using ColorConverter = MacroButtons.Helpers.ColorConverter;
 
 namespace MacroButtons.ViewModels;
 
@@ -255,9 +256,9 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
 
                 // Reset to the base theme (from TitleDefinition.Theme or ButtonItem.Theme)
                 string? themeName = null;
-                if (_config?.IsDynamicTitle == true && _config.Title is TitleDefinition titleDef)
+                if (_config?.IsDynamicTitle == true && _config.Title is TitleDefinition dynamicTitleDef)
                 {
-                    themeName = titleDef.Theme ?? _config.Theme;
+                    themeName = dynamicTitleDef.Theme ?? _config.Theme;
                 }
                 else if (_config != null)
                 {
