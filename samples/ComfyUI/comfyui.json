@@ -1,0 +1,108 @@
+{
+  "global": {
+    "monitorIndex": 0,
+    "activeWindow": "ComfyUI",
+    "refresh": "1s"
+  },
+  "themes": [
+    {
+      "name": "default",
+      "foreground": "green",
+      "background": "black"
+    },
+    {
+      "name": "prominent",
+      "foreground": "black",
+      "background": "green"
+    }
+  ],
+  "items": [
+    {
+      "title": {
+        "builtin": "clock()",
+        "refresh": "1s",
+        "theme": "prominent"
+      }
+    },
+    {
+      "title": "Queue Prompt\n(Ctrl+Enter)",
+      "action": { "keypress": "^{Enter}" }
+    },
+    {
+      "title": "Queue Front\n(Ctrl+Shift+Enter)",
+      "action": { "keypress": "^+{Enter}" }
+    },
+    {
+      "title": "Interrupt\n(Ctrl+Alt+Enter)",
+      "action": { "keypress": "^!{Enter}" }
+    },
+    {
+      "title": "Mute Nodes\n(Ctrl+M)",
+      "action": { "keypress": "^m" }
+    },
+    {
+      "title": "Bypass Nodes\n(Ctrl+B)",
+      "action": { "keypress": "^b" }
+    },
+    {
+      "title": "Collapse Nodes\n(Alt+C)",
+      "action": { "keypress": "!c" }
+    },
+    {
+      "title": "Add Frame\n(Ctrl+G)",
+      "action": { "keypress": "^g" }
+    },
+    {
+      "title": "Paste with Links\n(Ctrl+Shift+V)",
+      "action": { "keypress": "^+v" }
+    },
+    {
+      "title": "Load Default\n(Ctrl+D)",
+      "action": { "keypress": "^d" }
+    },
+    {
+      "title": "Toggle Queue\n(Q)",
+      "action": { "keypress": "q" }
+    },
+    {
+      "title": "Toggle Workflow\n(W)",
+      "action": { "keypress": "w" }
+    },
+    {
+      "title": "Toggle Nodes\n(N)",
+      "action": { "keypress": "n" }
+    },
+    {
+      "title": "Toggle Models\n(M)",
+      "action": { "keypress": "m" }
+    },
+    {
+      "title": "Toggle Log\n(Ctrl+`)",
+      "action": { "keypress": "^`" }
+    },
+    {
+      "title": "Focus Mode\n(F)",
+      "action": { "keypress": "f" }
+    },
+    {
+      "title": "Refresh Nodes\n(R)",
+      "action": { "keypress": "r" }
+    },
+    {
+      "title": "Zoom In\n(Alt+=)",
+      "action": { "keypress": "!=" }
+    },
+    {
+      "title": "Zoom Out\n(Alt+-)",
+      "action": { "keypress": "!-" }
+    },
+    {
+      "title": "Fit View\n(.)",
+      "action": { "keypress": "." }
+    },
+    {
+      "title": "Pin Items\n(P)",
+      "action": { "keypress": "p" }
+    }
+  ]
+}

@@ -10,7 +10,9 @@
       "Skill(create-macro-buttons)",
       "Bash(mkdir:*)",
       "WebSearch",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "WebFetch(domain:docs.comfy.org)",
+      "WebFetch(domain:blenderneko.github.io)"
     ]
   }
 }
