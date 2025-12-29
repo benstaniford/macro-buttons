@@ -1,0 +1,133 @@
+{
+  "global": {
+    "monitorIndex": 0,
+    "activeWindow": "Lightroom",
+    "refresh": "1s"
+  },
+  "themes": [
+    {
+      "name": "default",
+      "foreground": "#C0C0C0",
+      "background": "#1A1A1A"
+    },
+    {
+      "name": "prominent",
+      "foreground": "#1A1A1A",
+      "background": "#C0C0C0"
+    }
+  ],
+  "items": [
+    {
+      "title": {
+        "builtin": "clock()",
+        "refresh": "1s",
+        "theme": "prominent"
+      }
+    },
+    {
+      "title": "Module Navigation",
+      "items": [
+        {
+          "title": "Library Grid\n(G)",
+          "action": { "keypress": "g" }
+        },
+        {
+          "title": "Develop Module\n(D)",
+          "action": { "keypress": "d" }
+        },
+        {
+          "title": "Loupe View\n(E)",
+          "action": { "keypress": "e" }
+        },
+        {
+          "title": "Compare View\n(C)",
+          "action": { "keypress": "c" }
+        }
+      ]
+    },
+    {
+      "title": "Rating & Organization",
+      "items": [
+        {
+          "title": "Flag Pick\n(P)",
+          "action": { "keypress": "p" }
+        },
+        {
+          "title": "Reject\n(X)",
+          "action": { "keypress": "x" }
+        },
+        {
+          "title": "1 Star\n(1)",
+          "action": { "keypress": "1" }
+        },
+        {
+          "title": "2 Stars\n(2)",
+          "action": { "keypress": "2" }
+        },
+        {
+          "title": "3 Stars\n(3)",
+          "action": { "keypress": "3" }
+        },
+        {
+          "title": "4 Stars\n(4)",
+          "action": { "keypress": "4" }
+        }
+      ]
+    },
+    {
+      "title": "Develop Tools",
+      "items": [
+        {
+          "title": "Crop Tool\n(R)",
+          "action": { "keypress": "r" }
+        },
+        {
+          "title": "Spot Removal\n(Q)",
+          "action": { "keypress": "q" }
+        },
+        {
+          "title": "Brush Mask\n(K)",
+          "action": { "keypress": "k" }
+        },
+        {
+          "title": "Linear Gradient\n(M)",
+          "action": { "keypress": "m" }
+        },
+        {
+          "title": "Radial Gradient\n(Shift+M)",
+          "action": { "keypress": "+m" }
+        }
+      ]
+    },
+    {
+      "title": "Adjustments",
+      "items": [
+        {
+          "title": "Auto Tone\n(Ctrl+U)",
+          "action": { "keypress": "^u" }
+        },
+        {
+          "title": "Auto White Balance\n(Ctrl+Shift+U)",
+          "action": { "keypress": "^+u" }
+        },
+        {
+          "title": "Convert to B&W\n(V)",
+          "action": { "keypress": "v" }
+        }
+      ]
+    },
+    {
+      "title": "View & Interface",
+      "items": [
+        {
+          "title": "Lights Out\n(L)",
+          "action": { "keypress": "l" }
+        },
+        {
+          "title": "Hide All Panels\n(Shift+Tab)",
+          "action": { "keypress": "+{Tab}" }
+        }
+      ]
+    }
+  ]
+}
