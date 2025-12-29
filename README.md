@@ -1,6 +1,6 @@
 # MacroButtons
 
-A touch-screen macro button panel with a retro terminal aesthetic. Perfect for streamers, creators, and anyone who wants quick access to macros and system information on a secondary display.
+A touch-screen macro button panel with a retro terminal aesthetic. Perfect for streamers, flight sim fans, creators, and anyone who wants quick access to macros and system information on a secondary touch screen display.
 
 ![MacroButtons Screenshot](https://via.placeholder.com/800x450?text=MacroButtons+Screenshot)
 
