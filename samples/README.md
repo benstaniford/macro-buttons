@@ -14,6 +14,19 @@ Integration with Elite Dangerous space simulation game. Shows dynamic status til
 - Theme-based color switching (default/toggled)
 - Python script integration
 
+### Photoshop
+**Location:** `Photoshop/`
+
+Quick access macro buttons for Adobe Photoshop with 20 common keyboard shortcuts for file operations, layer management, tools, and editing.
+
+**Key Features:**
+- File operations (New, Open, Save, Save As)
+- Layer management (New, Duplicate, Merge)
+- Common tools (Move, Brush, Eraser, Lasso)
+- Edit operations (Transform, Undo/Redo)
+- Selection shortcuts
+- Live clock display
+
 ## Using Samples
 
 To use any sample profile:
