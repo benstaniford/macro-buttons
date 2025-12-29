@@ -290,12 +290,30 @@ public partial class MainWindow : Window
 
         if (_profileService.ProfileExists(newProfileName))
         {
-            System.Windows.MessageBox.Show(
-                $"Profile '{newProfileName}' already exists.",
+            // Ask user if they want to overwrite
+            var overwriteResult = System.Windows.MessageBox.Show(
+                $"Profile '{newProfileName}' already exists.\n\nDo you want to overwrite it?",
                 "Profile Exists",
-                System.Windows.MessageBoxButton.OK,
-                System.Windows.MessageBoxImage.Warning);
-            return;
+                System.Windows.MessageBoxButton.YesNo,
+                System.Windows.MessageBoxImage.Question);
+
+            if (overwriteResult != System.Windows.MessageBoxResult.Yes)
+                return;
+
+            // Delete the existing profile before importing
+            try
+            {
+                _profileService.DeleteProfile(newProfileName);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(
+                    $"Failed to delete existing profile: {ex.Message}",
+                    "Delete Profile Error",
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Error);
+                return;
+            }
         }
 
         try
