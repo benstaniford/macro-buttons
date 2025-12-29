@@ -1,12 +1,12 @@
 # MacroButtons
 
-A touch-screen macro button panel with a retro terminal aesthetic. Perfect for streamers, creators, and anyone who wants quick access to macros and system information on a secondary display.
+A touch-screen macro button panel with a retro terminal aesthetic. Perfect for streamers, flight sim fans, creators, and anyone who wants quick access to macros and system information on a secondary touch screen display.
 
 ![MacroButtons Screenshot](https://via.placeholder.com/800x450?text=MacroButtons+Screenshot)
 
 ## What is MacroButtons?
 
-MacroButtons turns a secondary monitor or touch screen into a customizable grid of buttons that can:
+MacroButtons turns a secondary touch screen monitor in Windows into a customizable grid of buttons that can:
 
 - **Execute keyboard shortcuts** - Paste, save, copy, or any key combination using AutoHotkey syntax
 - **Run scripts and programs** - Launch Python scripts, executables, or built-in commands
@@ -19,7 +19,7 @@ The window fills your screen with a grid of tiles, each customizable with differ
 
 ### Windows
 
-1. Download the latest `MacroButtons.msi` installer from the [Releases](https://github.com/yourusername/macro-buttons/releases) page
+1. Download the latest `MacroButtons.msi` installer from the [Releases](https://github.com/benstaniford/macro-buttons/releases) page
 2. Run the installer
 3. MacroButtons will start automatically and appear in your system tray
 
@@ -186,37 +186,11 @@ Found a bug? [Open an issue](https://github.com/yourusername/macro-buttons/issue
 - Your configuration file (if relevant)
 - Windows version
 
-## Building from Source
-
-Want to contribute code or build your own version?
-
-**Requirements:**
-- .NET 8 SDK
-- Visual Studio 2022 (for Windows builds)
-- WiX Toolset 3.11+ (for installer)
-
-```bash
-git clone https://github.com/yourusername/macro-buttons.git
-cd macro-buttons
-dotnet restore
-dotnet build -c Release
-```
-
-For detailed development information, see [CLAUDE.md](CLAUDE.md).
-
 ## License
 
 GNU General Public License v3.0 - see [LICENSE](LICENSE) file for details.
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-## Credits
-
-Built with:
-- .NET 8 and WPF
-- [InputSimulatorPlus](https://github.com/TChatzigiannakis/InputSimulator) for keyboard simulation
-- [Newtonsoft.Json](https://www.newtonsoft.com/json) for configuration parsing
-- [CommunityToolkit.Mvvm](https://github.com/CommunityToolkit/dotnet) for MVVM helpers
 
 ---
 
