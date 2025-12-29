@@ -19,7 +19,7 @@ The window fills your screen with a grid of tiles, each customizable with differ
 
 ### Windows
 
-1. Download the latest `MacroButtons.msi` installer from the [Releases](https://github.com/yourusername/macro-buttons/releases) page
+1. Download the latest `MacroButtons.msi` installer from the [Releases](https://github.com/benstaniford/macro-buttons/releases) page
 2. Run the installer
 3. MacroButtons will start automatically and appear in your system tray
 
