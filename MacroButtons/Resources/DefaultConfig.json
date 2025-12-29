@@ -53,11 +53,6 @@
       "foreground": "black"
     },
     {
-      "name": "toggled",
-      "background": "orange",
-      "foreground": "black"
-    },
-    {
       "name": "prominent",
       "foreground": "#000000",
       "background": "#288F28"
