@@ -57,15 +57,12 @@
     },
     {
       "action": {
-        "keypress": "m"
+        "keypress": "{F5}"
       },
-      "title": "COMBAT MODE"
+      "title": "COMBAT/SENSOR TOGGLE"
     },
     {
-      "action": {
-        "keypress": "+m"
-      },
-      "title": "SENSOR MODE"
+      "title": ""
     },
     {
       "action": {
