@@ -7,6 +7,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MacroButtons", "MacroButton
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "MacroButtons.Installer", "MacroButtons.Installer\MacroButtons.Installer.wixproj", "{F1E2D3C4-B5A6-9788-C0D1-E2F3A4B5C6D7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{A1B2C3D4-E5F6-4A5B-8C9D-0E1F2A3B4C5D}"
+	ProjectSection(SolutionItems) = preProject
+		samples\README.md = samples\README.md
+		samples\EliteDangerous\elite-status = samples\EliteDangerous\elite-status
+		samples\EliteDangerous\README.md = samples\EliteDangerous\README.md
+		samples\EliteDangerous\elitedangerous.json = samples\EliteDangerous\elitedangerous.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
