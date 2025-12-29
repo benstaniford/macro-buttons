@@ -41,7 +41,7 @@
       }
     }
   ],
-  "theme": [
+  "themes": [
     {
       "name": "default",
       "background": "black",

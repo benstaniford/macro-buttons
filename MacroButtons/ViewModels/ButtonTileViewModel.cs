@@ -18,7 +18,7 @@ namespace MacroButtons.ViewModels;
 public partial class ButtonTileViewModel : ViewModelBase, IDisposable
 {
     private readonly ButtonItem? _config;
-    private readonly ThemeConfig _themeConfig;
+    private readonly MacroButtonConfig _rootConfig;
     private readonly CommandExecutionService _commandService;
     private readonly KeystrokeService _keystrokeService;
     private readonly WindowHelper _windowHelper;
@@ -45,10 +45,10 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
     /// <summary>
     /// Creates an empty tile (placeholder).
     /// </summary>
-    public ButtonTileViewModel(ThemeConfig themeConfig, CommandExecutionService commandService, KeystrokeService keystrokeService, WindowHelper windowHelper)
+    public ButtonTileViewModel(MacroButtonConfig rootConfig, CommandExecutionService commandService, KeystrokeService keystrokeService, WindowHelper windowHelper)
     {
         _config = null;
-        _themeConfig = themeConfig;
+        _rootConfig = rootConfig;
         _commandService = commandService;
         _keystrokeService = keystrokeService;
         _windowHelper = windowHelper;
@@ -61,7 +61,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         DisplayTitle = string.Empty;
 
         // Apply default theme for empty tiles
-        var theme = themeConfig.GetTheme("default");
+        var theme = rootConfig.GetTheme("default");
         Foreground = ColorConverter.ParseColor(theme.Foreground, Brushes.DarkGreen);
         Background = ColorConverter.ParseColor(theme.Background, Brushes.Transparent);
     }
@@ -71,7 +71,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
     /// </summary>
     public ButtonTileViewModel(
         ButtonItem config,
-        ThemeConfig themeConfig,
+        MacroButtonConfig rootConfig,
         TimeSpan globalRefreshInterval,
         CommandExecutionService commandService,
         KeystrokeService keystrokeService,
@@ -80,7 +80,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         Action? onNavigateBack = null)
     {
         _config = config;
-        _themeConfig = themeConfig;
+        _rootConfig = rootConfig;
         _commandService = commandService;
         _keystrokeService = keystrokeService;
         _windowHelper = windowHelper;
@@ -105,7 +105,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
             themeName = config.Theme;
         }
 
-        var theme = themeConfig.GetTheme(themeName);
+        var theme = rootConfig.GetTheme(themeName);
         Foreground = ColorConverter.ParseColor(theme.Foreground, Brushes.DarkGreen);
         Background = ColorConverter.ParseColor(theme.Background, Brushes.Transparent);
 
@@ -265,7 +265,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
                     themeName = _config.Theme;
                 }
 
-                var theme = _themeConfig.GetTheme(themeName);
+                var theme = _rootConfig.GetTheme(themeName);
                 Foreground = ColorConverter.ParseColor(theme.Foreground, Brushes.DarkGreen);
                 Background = ColorConverter.ParseColor(theme.Background, Brushes.Transparent);
             }

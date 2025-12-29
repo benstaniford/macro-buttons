@@ -200,49 +200,63 @@ public class ConfigurationService
             var jObject = JObject.Parse(json);
             var config = new MacroButtonConfig();
 
-            // Deserialize theme (case-insensitive) with backward compatibility
-            var themeToken = jObject.Properties()
-                .FirstOrDefault(p => p.Name.Equals("theme", StringComparison.OrdinalIgnoreCase))?.Value;
-            if (themeToken != null)
+            // Deserialize themes (case-insensitive) with backward compatibility
+            // First, try the new format: root-level "themes" array
+            var themesToken = jObject.Properties()
+                .FirstOrDefault(p => p.Name.Equals("themes", StringComparison.OrdinalIgnoreCase))?.Value;
+
+            if (themesToken != null && themesToken is JArray themesArray)
             {
-                if (themeToken is JArray)
-                {
-                    // New format: array of themes
-                    var themes = themeToken.ToObject<List<Theme>>(JsonSerializer.Create(CaseInsensitiveSettings));
-                    config.Theme = new ThemeConfig { Themes = themes ?? new List<Theme>() };
-                }
-                else if (themeToken is JObject themeObj)
-                {
-                    // Check if it's the old format (has "foreground"/"background" directly)
-                    var hasForeground = themeObj.Properties().Any(p => p.Name.Equals("foreground", StringComparison.OrdinalIgnoreCase));
-                    var hasBackground = themeObj.Properties().Any(p => p.Name.Equals("background", StringComparison.OrdinalIgnoreCase));
+                // New format: root-level themes array
+                var themes = themesArray.ToObject<List<Theme>>(JsonSerializer.Create(CaseInsensitiveSettings));
+                config.Themes = themes ?? new List<Theme>();
+            }
+            else
+            {
+                // Backward compatibility: check for old "theme" property
+                var themeToken = jObject.Properties()
+                    .FirstOrDefault(p => p.Name.Equals("theme", StringComparison.OrdinalIgnoreCase))?.Value;
 
-                    if (hasForeground || hasBackground)
+                if (themeToken != null)
+                {
+                    if (themeToken is JArray oldThemesArray)
                     {
-                        // Old format: migrate to new format
-                        var foreground = themeObj.Properties()
-                            .FirstOrDefault(p => p.Name.Equals("foreground", StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? "darkgreen";
-                        var background = themeObj.Properties()
-                            .FirstOrDefault(p => p.Name.Equals("background", StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? "black";
+                        // Old format: theme array (migrate to themes)
+                        var themes = oldThemesArray.ToObject<List<Theme>>(JsonSerializer.Create(CaseInsensitiveSettings));
+                        config.Themes = themes ?? new List<Theme>();
+                    }
+                    else if (themeToken is JObject themeObj)
+                    {
+                        // Check if it's the oldest format (has "foreground"/"background" directly)
+                        var hasForeground = themeObj.Properties().Any(p => p.Name.Equals("foreground", StringComparison.OrdinalIgnoreCase));
+                        var hasBackground = themeObj.Properties().Any(p => p.Name.Equals("background", StringComparison.OrdinalIgnoreCase));
 
-                        config.Theme = new ThemeConfig
+                        if (hasForeground || hasBackground)
                         {
-                            Themes = new List<Theme>
+                            // Oldest format: single theme object with foreground/background
+                            var foreground = themeObj.Properties()
+                                .FirstOrDefault(p => p.Name.Equals("foreground", StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? "darkgreen";
+                            var background = themeObj.Properties()
+                                .FirstOrDefault(p => p.Name.Equals("background", StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? "black";
+
+                            config.Themes = new List<Theme>
                             {
                                 new Theme { Name = "default", Foreground = foreground, Background = background }
+                            };
+                        }
+                        else
+                        {
+                            // Old format: theme object with themes array inside
+                            var themesProperty = themeObj.Properties()
+                                .FirstOrDefault(p => p.Name.Equals("themes", StringComparison.OrdinalIgnoreCase))?.Value;
+
+                            if (themesProperty is JArray nestedThemesArray)
+                            {
+                                var themes = nestedThemesArray.ToObject<List<Theme>>(JsonSerializer.Create(CaseInsensitiveSettings));
+                                config.Themes = themes ?? new List<Theme>();
                             }
-                        };
+                        }
                     }
-                    else
-                    {
-                        // New format but as object (might have "themes" property)
-                        config.Theme = themeObj.ToObject<ThemeConfig>(JsonSerializer.Create(CaseInsensitiveSettings))
-                            ?? new ThemeConfig();
-                    }
-                }
-                else
-                {
-                    config.Theme = new ThemeConfig();
                 }
             }
 
@@ -358,12 +372,9 @@ public class ConfigurationService
                     Action = new ActionDefinition { Exe = "%SystemRoot%/system32/calc.exe" }
                 }
             },
-            Theme = new ThemeConfig
+            Themes = new List<Theme>
             {
-                Themes = new List<Theme>
-                {
-                    new Theme { Name = "default", Foreground = "darkgreen", Background = "black" }
-                }
+                new Theme { Name = "default", Foreground = "darkgreen", Background = "black" }
             },
             Global = new GlobalConfig
             {

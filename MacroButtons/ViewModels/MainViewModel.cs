@@ -101,7 +101,7 @@ public class MainViewModel : ViewModelBase, IDisposable
             // Set minimal defaults
             Rows = 3;
             Columns = 5;
-            var errorTile = new ButtonTileViewModel(Config.Theme, _commandService, _keystrokeService, _windowHelper)
+            var errorTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _windowHelper)
             {
                 DisplayTitle = "Config Error"
             };
@@ -114,7 +114,7 @@ public class MainViewModel : ViewModelBase, IDisposable
         try
         {
             // Apply theme colors (use default theme for window background)
-            var defaultTheme = Config.Theme.GetTheme("default");
+            var defaultTheme = Config.GetTheme("default");
             WindowForeground = ColorConverter.ParseColor(defaultTheme.Foreground, Brushes.DarkGreen);
             WindowBackground = ColorConverter.ParseColor(defaultTheme.Background, Brushes.Black);
 
@@ -139,7 +139,7 @@ public class MainViewModel : ViewModelBase, IDisposable
             // Set minimal defaults
             Rows = 3;
             Columns = 5;
-            var errorTile = new ButtonTileViewModel(Config.Theme, _commandService, _keystrokeService, _windowHelper)
+            var errorTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _windowHelper)
             {
                 DisplayTitle = "Config Error"
             };
@@ -203,7 +203,7 @@ public class MainViewModel : ViewModelBase, IDisposable
         {
             var tile = new ButtonTileViewModel(
                 _currentItems[i],
-                Config.Theme,
+                Config,
                 globalRefreshInterval,
                 _commandService,
                 _keystrokeService,
@@ -216,7 +216,7 @@ public class MainViewModel : ViewModelBase, IDisposable
         // Fill remaining slots with empty tiles
         for (int i = itemCount; i < totalTiles; i++)
         {
-            var emptyTile = new ButtonTileViewModel(Config.Theme, _commandService, _keystrokeService, _windowHelper);
+            var emptyTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _windowHelper);
             Tiles.Add(emptyTile);
         }
     }
