@@ -6,7 +6,7 @@ A touch-screen macro button panel with a retro terminal aesthetic. Perfect for s
 
 ## What is MacroButtons?
 
-MacroButtons turns a secondary monitor or touch screen into a customizable grid of buttons that can:
+MacroButtons turns a secondary touch screen monitor in Windows into a customizable grid of buttons that can:
 
 - **Execute keyboard shortcuts** - Paste, save, copy, or any key combination using AutoHotkey syntax
 - **Run scripts and programs** - Launch Python scripts, executables, or built-in commands
