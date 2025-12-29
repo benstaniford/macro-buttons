@@ -40,8 +40,26 @@
       }
     }
   ],
-  "theme": {
-    "background": "black",
-    "foreground": "green"
-  }
+  "theme": [
+    {
+      "name": "default",
+      "background": "black",
+      "foreground": "green"
+    },
+    {
+      "name": "toggled",
+      "background": "orange",
+      "foreground": "black"
+    },
+    {
+      "name": "toggled",
+      "background": "orange",
+      "foreground": "black"
+    },
+    {
+      "name": "prominent",
+      "background": "#00FF00",
+      "foreground": "#003300"
+    }
+  ]
 }

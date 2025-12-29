@@ -43,7 +43,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
     /// <summary>
     /// Creates an empty tile (placeholder).
     /// </summary>
-    public ButtonTileViewModel(Brush foreground, CommandExecutionService commandService, KeystrokeService keystrokeService, WindowHelper windowHelper)
+    public ButtonTileViewModel(ThemeConfig themeConfig, CommandExecutionService commandService, KeystrokeService keystrokeService, WindowHelper windowHelper)
     {
         _config = null;
         _commandService = commandService;
@@ -56,7 +56,11 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         IsDynamic = false;
         HasAction = false;
         DisplayTitle = string.Empty;
-        Foreground = foreground;
+
+        // Apply default theme for empty tiles
+        var theme = themeConfig.GetTheme("default");
+        Foreground = ColorConverter.ParseColor(theme.Foreground, Brushes.DarkGreen);
+        Background = ColorConverter.ParseColor(theme.Background, Brushes.Transparent);
     }
 
     /// <summary>
@@ -64,7 +68,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
     /// </summary>
     public ButtonTileViewModel(
         ButtonItem config,
-        Brush foreground,
+        ThemeConfig themeConfig,
         TimeSpan globalRefreshInterval,
         CommandExecutionService commandService,
         KeystrokeService keystrokeService,
@@ -82,7 +86,11 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         IsEmpty = false;
         IsDynamic = config.IsDynamicTitle;
         HasAction = config.HasAction || config.HasSubmenu;  // Include submenu buttons
-        Foreground = foreground;
+
+        // Apply theme based on ButtonItem's theme name (or default)
+        var theme = themeConfig.GetTheme(config.Theme);
+        Foreground = ColorConverter.ParseColor(theme.Foreground, Brushes.DarkGreen);
+        Background = ColorConverter.ParseColor(theme.Background, Brushes.Transparent);
 
         // Set initial title
         if (config.IsStaticTitle)

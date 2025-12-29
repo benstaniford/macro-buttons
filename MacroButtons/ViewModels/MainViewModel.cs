@@ -48,8 +48,8 @@ public class MainViewModel : ViewModelBase, IDisposable
     private string? _baseProfileName = null; // The profile to return to when no window matches
 
     public ObservableCollection<ButtonTileViewModel> Tiles { get; set; } = new();
-    public Brush Foreground { get; private set; } = Brushes.DarkGreen;
-    public Brush Background { get; private set; } = Brushes.Black;
+    public Brush WindowForeground { get; private set; } = Brushes.DarkGreen;
+    public Brush WindowBackground { get; private set; } = Brushes.Black;
     public int Rows { get; private set; }
     public int Columns { get; private set; }
     public MacroButtonConfig Config { get; private set; } = new();
@@ -101,7 +101,7 @@ public class MainViewModel : ViewModelBase, IDisposable
             // Set minimal defaults
             Rows = 3;
             Columns = 5;
-            var errorTile = new ButtonTileViewModel(Foreground, _commandService, _keystrokeService, _windowHelper)
+            var errorTile = new ButtonTileViewModel(Config.Theme, _commandService, _keystrokeService, _windowHelper)
             {
                 DisplayTitle = "Config Error"
             };
@@ -113,9 +113,10 @@ public class MainViewModel : ViewModelBase, IDisposable
     {
         try
         {
-            // Apply theme colors
-            Foreground = ColorConverter.ParseColor(Config.Theme.Foreground, Brushes.DarkGreen);
-            Background = ColorConverter.ParseColor(Config.Theme.Background, Brushes.Black);
+            // Apply theme colors (use default theme for window background)
+            var defaultTheme = Config.Theme.GetTheme("default");
+            WindowForeground = ColorConverter.ParseColor(defaultTheme.Foreground, Brushes.DarkGreen);
+            WindowBackground = ColorConverter.ParseColor(defaultTheme.Background, Brushes.Black);
 
             // Reset to root level (clear navigation stack)
             ResetToRootLevel();
@@ -138,7 +139,7 @@ public class MainViewModel : ViewModelBase, IDisposable
             // Set minimal defaults
             Rows = 3;
             Columns = 5;
-            var errorTile = new ButtonTileViewModel(Foreground, _commandService, _keystrokeService, _windowHelper)
+            var errorTile = new ButtonTileViewModel(Config.Theme, _commandService, _keystrokeService, _windowHelper)
             {
                 DisplayTitle = "Config Error"
             };
@@ -202,7 +203,7 @@ public class MainViewModel : ViewModelBase, IDisposable
         {
             var tile = new ButtonTileViewModel(
                 _currentItems[i],
-                Foreground,
+                Config.Theme,
                 globalRefreshInterval,
                 _commandService,
                 _keystrokeService,
@@ -215,7 +216,7 @@ public class MainViewModel : ViewModelBase, IDisposable
         // Fill remaining slots with empty tiles
         for (int i = itemCount; i < totalTiles; i++)
         {
-            var emptyTile = new ButtonTileViewModel(Foreground, _commandService, _keystrokeService, _windowHelper);
+            var emptyTile = new ButtonTileViewModel(Config.Theme, _commandService, _keystrokeService, _windowHelper);
             Tiles.Add(emptyTile);
         }
     }

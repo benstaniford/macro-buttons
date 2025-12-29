@@ -16,6 +16,12 @@ public class ButtonItem
     public List<ButtonItem>? Items { get; set; }
 
     /// <summary>
+    /// Optional theme name to apply to this button (e.g., "default", "toggled", "prominent").
+    /// If null or empty, uses the "default" theme.
+    /// </summary>
+    public string? Theme { get; set; }
+
+    /// <summary>
     /// Returns true if the title is a static string.
     /// </summary>
     public bool IsStaticTitle => Title is string;

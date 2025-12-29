@@ -200,13 +200,50 @@ public class ConfigurationService
             var jObject = JObject.Parse(json);
             var config = new MacroButtonConfig();
 
-            // Deserialize theme (case-insensitive)
+            // Deserialize theme (case-insensitive) with backward compatibility
             var themeToken = jObject.Properties()
                 .FirstOrDefault(p => p.Name.Equals("theme", StringComparison.OrdinalIgnoreCase))?.Value;
             if (themeToken != null)
             {
-                config.Theme = themeToken.ToObject<ThemeConfig>(JsonSerializer.Create(CaseInsensitiveSettings))
-                    ?? new ThemeConfig();
+                if (themeToken is JArray)
+                {
+                    // New format: array of themes
+                    var themes = themeToken.ToObject<List<Theme>>(JsonSerializer.Create(CaseInsensitiveSettings));
+                    config.Theme = new ThemeConfig { Themes = themes ?? new List<Theme>() };
+                }
+                else if (themeToken is JObject themeObj)
+                {
+                    // Check if it's the old format (has "foreground"/"background" directly)
+                    var hasForeground = themeObj.Properties().Any(p => p.Name.Equals("foreground", StringComparison.OrdinalIgnoreCase));
+                    var hasBackground = themeObj.Properties().Any(p => p.Name.Equals("background", StringComparison.OrdinalIgnoreCase));
+
+                    if (hasForeground || hasBackground)
+                    {
+                        // Old format: migrate to new format
+                        var foreground = themeObj.Properties()
+                            .FirstOrDefault(p => p.Name.Equals("foreground", StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? "darkgreen";
+                        var background = themeObj.Properties()
+                            .FirstOrDefault(p => p.Name.Equals("background", StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? "black";
+
+                        config.Theme = new ThemeConfig
+                        {
+                            Themes = new List<Theme>
+                            {
+                                new Theme { Name = "default", Foreground = foreground, Background = background }
+                            }
+                        };
+                    }
+                    else
+                    {
+                        // New format but as object (might have "themes" property)
+                        config.Theme = themeObj.ToObject<ThemeConfig>(JsonSerializer.Create(CaseInsensitiveSettings))
+                            ?? new ThemeConfig();
+                    }
+                }
+                else
+                {
+                    config.Theme = new ThemeConfig();
+                }
             }
 
             // Deserialize global (case-insensitive)
@@ -323,8 +360,10 @@ public class ConfigurationService
             },
             Theme = new ThemeConfig
             {
-                Foreground = "darkgreen",
-                Background = "black"
+                Themes = new List<Theme>
+                {
+                    new Theme { Name = "default", Foreground = "darkgreen", Background = "black" }
+                }
             },
             Global = new GlobalConfig
             {

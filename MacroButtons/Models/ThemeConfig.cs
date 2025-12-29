@@ -1,17 +1,29 @@
 namespace MacroButtons.Models;
 
 /// <summary>
-/// Theme configuration for the application appearance.
+/// Theme configuration containing an array of named themes.
 /// </summary>
 public class ThemeConfig
 {
     /// <summary>
-    /// Foreground color for text and borders (e.g., "darkgreen", "#00FF00").
+    /// List of available themes. Each theme has a name and color scheme.
     /// </summary>
-    public string Foreground { get; set; } = "darkgreen";
+    public List<Theme> Themes { get; set; } = new()
+    {
+        new Theme { Name = "default", Foreground = "darkgreen", Background = "black" }
+    };
 
     /// <summary>
-    /// Background color for the window (e.g., "black", "#000000").
+    /// Gets a theme by name. Returns the "default" theme if the specified theme is not found.
     /// </summary>
-    public string Background { get; set; } = "black";
+    public Theme GetTheme(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return Themes.FirstOrDefault(t => t.Name == "default") ?? Themes.FirstOrDefault() ?? new Theme();
+
+        return Themes.FirstOrDefault(t => t.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+            ?? Themes.FirstOrDefault(t => t.Name == "default")
+            ?? Themes.FirstOrDefault()
+            ?? new Theme();
+    }
 }
