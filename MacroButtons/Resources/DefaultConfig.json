@@ -59,8 +59,8 @@
     },
     {
       "name": "prominent",
-      "background": "#00FF00",
-      "foreground": "#003300"
+      "foreground": "#000000",
+      "background": "#288F28"
     }
   ]
 }
