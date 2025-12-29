@@ -21,6 +21,7 @@ packages/
 # WiX
 *.wixobj
 *.wixpdb
+MacroButtons.Installer/SamplesAuto.wxs
 
 # User-specific files
 *.userprefs
