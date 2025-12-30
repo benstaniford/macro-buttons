@@ -1,3 +1,4 @@
+using System.Linq;
 using MacroButtons.Helpers;
 using MacroButtons.Models;
 using WindowsInput;
@@ -49,8 +50,14 @@ public class KeystrokeService
         // Parse AutoHotkey syntax
         var keySequence = _parser.Parse(autoHotkeyString);
 
-        // Restore focus to previous window if we have one
-        if (previousWindow != IntPtr.Zero)
+        // Check if this sequence contains Windows key modifiers
+        bool hasWindowsKey = keySequence.Any(k =>
+            k.VirtualKeyCode == VirtualKeyCode.LWIN ||
+            k.VirtualKeyCode == VirtualKeyCode.RWIN);
+
+        // Restore focus to previous window ONLY if not using Windows key
+        // (Windows key shortcuts are system-level and don't need window focus)
+        if (!hasWindowsKey && previousWindow != IntPtr.Zero)
         {
             _windowHelper.RestorePreviousWindow(previousWindow);
             await Task.Delay(_delay); // Configurable delay to ensure window is active
@@ -73,6 +80,11 @@ public class KeystrokeService
         {
             case KeyActionType.ModifierDown:
                 _inputSimulator.Keyboard.KeyDown(action.VirtualKeyCode);
+                // Add extra delay for Windows key to ensure it's recognized
+                if (action.VirtualKeyCode == VirtualKeyCode.LWIN || action.VirtualKeyCode == VirtualKeyCode.RWIN)
+                {
+                    await Task.Delay(50); // Extra delay for Windows key
+                }
                 break;
             case KeyActionType.ModifierUp:
                 _inputSimulator.Keyboard.KeyUp(action.VirtualKeyCode);
