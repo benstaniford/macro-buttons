@@ -32,7 +32,10 @@ public class GlobalConfig
 
     /// <summary>
     /// Optional active window trigger for automatic profile switching.
-    /// Format: "ProcessName.exe" or "ProcessName.exe|WindowClass"
+    /// The process name can be specified with or without the .exe extension.
+    /// Format: "ProcessName" or "ProcessName.exe" - matches process name only
+    ///         "ProcessName|WindowClass" or "ProcessName.exe|WindowClass" - matches both process and window class
+    /// Examples: "firefox", "firefox.exe", "chrome|Chrome_WidgetWin_1"
     /// </summary>
     public string? ActiveWindow { get; set; }
 

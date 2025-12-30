@@ -1,7 +1,7 @@
 {
   "global": {
     "refresh": "1s",
-    "activeWindow": "Mozilla Firefox"
+    "activeWindow": "firefox"
   },
   "themes": [
     {

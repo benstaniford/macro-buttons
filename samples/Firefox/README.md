@@ -43,6 +43,8 @@ This profile includes **21 tiles** with 20 Firefox-specific shortcuts plus a clo
 2. Browse to: `samples/Firefox/firefox.json`
 3. The profile will auto-activate when Firefox is the active window
 
+**Note:** The profile is configured to activate when the "firefox" process is detected. You can specify the process name with or without the ".exe" extension (both "firefox" and "firefox.exe" work).
+
 ## Theme
 
 Uses Firefox's signature orange (#FF9500) on dark background (#1C1B22) for an authentic Firefox look.
@@ -53,7 +55,7 @@ Edit the JSON file to:
 - Add more Firefox shortcuts
 - Rearrange button layout
 - Change colors/themes
-- Adjust the auto-activation window pattern (currently set to "Mozilla Firefox")
+- Adjust the auto-activation window pattern (currently set to "firefox")
 
 ## Notes
 

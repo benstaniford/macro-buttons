@@ -236,8 +236,8 @@ public class WindowHelper
     /// <summary>
     /// Checks if a window matches the activeWindow pattern.
     /// Pattern formats:
-    /// - "ProcessName.exe" - matches process name only
-    /// - "ProcessName.exe|WindowClass" - matches both process name and window class
+    /// - "ProcessName" or "ProcessName.exe" - matches process name only
+    /// - "ProcessName|WindowClass" or "ProcessName.exe|WindowClass" - matches both process name and window class
     /// </summary>
     public bool WindowMatchesPattern(IntPtr hWnd, string? pattern)
     {
@@ -251,6 +251,12 @@ public class WindowHelper
         // Check if pattern contains window class separator
         var parts = pattern.Split('|', 2);
         var expectedProcessName = parts[0].Trim();
+
+        // Normalize the expected process name to include .exe if not present
+        if (!expectedProcessName.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+        {
+            expectedProcessName += ".exe";
+        }
 
         // Match process name (case-insensitive)
         if (!processName.Equals(expectedProcessName, StringComparison.OrdinalIgnoreCase))
