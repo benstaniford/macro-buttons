@@ -12,7 +12,8 @@
       "WebSearch",
       "Bash(python3:*)",
       "WebFetch(domain:docs.comfy.org)",
-      "WebFetch(domain:blenderneko.github.io)"
+      "WebFetch(domain:blenderneko.github.io)",
+      "Bash(grep:*)"
     ]
   }
 }
