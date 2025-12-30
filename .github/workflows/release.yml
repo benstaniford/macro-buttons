@@ -63,6 +63,12 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore MacroButtons/MacroButtons.csproj
 
+      - name: Restore test dependencies
+        run: dotnet restore MacroButtons.Tests/MacroButtons.Tests.csproj
+
+      - name: Run unit tests
+        run: dotnet test MacroButtons.Tests/MacroButtons.Tests.csproj --configuration Release --no-restore --verbosity normal
+
       - name: Build application
         run: dotnet build MacroButtons/MacroButtons.csproj -c Release --no-restore
 
