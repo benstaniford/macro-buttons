@@ -1,20 +1,8 @@
 {
   "global": {
-    "activeWindow": "Windows Terminal",
+    "activeWindow": "WindowsTerminal",
     "refresh": "1s"
   },
-  "themes": [
-    {
-      "name": "default",
-      "foreground": "cyan",
-      "background": "black"
-    },
-    {
-      "name": "prominent",
-      "foreground": "black",
-      "background": "cyan"
-    }
-  ],
   "items": [
     {
       "title": {
@@ -24,104 +12,156 @@
       }
     },
     {
-      "title": "Command & Settings",
       "items": [
         {
-          "title": "Command Palette\n(Ctrl+Shift+P)",
-          "action": { "keypress": "^+p" }
+          "action": {
+            "keypress": "^+p"
+          },
+          "title": "Command Palette\n(Ctrl+Shift+P)"
         },
         {
-          "title": "Open Settings\n(Ctrl+,)",
-          "action": { "keypress": "^," }
+          "action": {
+            "keypress": "^,"
+          },
+          "title": "Open Settings\n(Ctrl+,)"
         },
         {
-          "title": "Settings UI\n(Ctrl+Shift+,)",
-          "action": { "keypress": "^+," }
+          "action": {
+            "keypress": "^+,"
+          },
+          "title": "Settings UI\n(Ctrl+Shift+,)"
         }
-      ]
+      ],
+      "title": "Command & Settings"
     },
     {
-      "title": "Tab Management",
       "items": [
         {
-          "title": "New Tab\n(Ctrl+Shift+T)",
-          "action": { "keypress": "^+t" }
+          "action": {
+            "keypress": "^+t"
+          },
+          "title": "New Tab\n(Ctrl+Shift+T)"
         },
         {
-          "title": "New Tab Profile 1\n(Ctrl+Shift+1)",
-          "action": { "keypress": "^+1" }
+          "action": {
+            "keypress": "^+1"
+          },
+          "title": "New Tab Profile 1\n(Ctrl+Shift+1)"
         },
         {
-          "title": "Next Tab\n(Ctrl+Tab)",
-          "action": { "keypress": "^{Tab}" }
+          "action": {
+            "keypress": "^{Tab}"
+          },
+          "title": "Next Tab\n(Ctrl+Tab)"
         },
         {
-          "title": "Previous Tab\n(Ctrl+Shift+Tab)",
-          "action": { "keypress": "^+{Tab}" }
+          "action": {
+            "keypress": "^+{Tab}"
+          },
+          "title": "Previous Tab\n(Ctrl+Shift+Tab)"
         },
         {
-          "title": "Switch to Tab 1\n(Ctrl+Alt+1)",
-          "action": { "keypress": "^!1" }
+          "action": {
+            "keypress": "^!1"
+          },
+          "title": "Switch to Tab 1\n(Ctrl+Alt+1)"
         },
         {
-          "title": "Duplicate Tab\n(Ctrl+Shift+D)",
-          "action": { "keypress": "^+d" }
+          "action": {
+            "keypress": "^+d"
+          },
+          "title": "Duplicate Tab\n(Ctrl+Shift+D)"
         }
-      ]
+      ],
+      "title": "Tab Management"
     },
     {
-      "title": "Pane Management",
       "items": [
         {
-          "title": "Split Horizontal\n(Alt+Shift+-)",
-          "action": { "keypress": "!+-" }
+          "action": {
+            "keypress": "!+-"
+          },
+          "title": "Split Horizontal\n(Alt+Shift+-)"
         },
         {
-          "title": "Split Vertical\n(Alt+Shift+=)",
-          "action": { "keypress": "!+=" }
+          "action": {
+            "keypress": "!+="
+          },
+          "title": "Split Vertical\n(Alt+Shift+=)"
         },
         {
-          "title": "Focus Up\n(Alt+Up)",
-          "action": { "keypress": "!{Up}" }
+          "action": {
+            "keypress": "!{Up}"
+          },
+          "title": "Focus Up\n(Alt+Up)"
         },
         {
-          "title": "Focus Down\n(Alt+Down)",
-          "action": { "keypress": "!{Down}" }
+          "action": {
+            "keypress": "!{Down}"
+          },
+          "title": "Focus Down\n(Alt+Down)"
         },
         {
-          "title": "Resize Up\n(Alt+Shift+Up)",
-          "action": { "keypress": "!+{Up}" }
+          "action": {
+            "keypress": "!+{Up}"
+          },
+          "title": "Resize Up\n(Alt+Shift+Up)"
         },
         {
-          "title": "Resize Down\n(Alt+Shift+Down)",
-          "action": { "keypress": "!+{Down}" }
+          "action": {
+            "keypress": "!+{Down}"
+          },
+          "title": "Resize Down\n(Alt+Shift+Down)"
         }
-      ]
+      ],
+      "title": "Pane Management"
     },
     {
-      "title": "Search & View",
       "items": [
         {
-          "title": "Find\n(Ctrl+Shift+F)",
-          "action": { "keypress": "^+f" }
+          "action": {
+            "keypress": "^+f"
+          },
+          "title": "Find\n(Ctrl+Shift+F)"
         },
         {
-          "title": "Fullscreen\n(F11)",
-          "action": { "keypress": "{F11}" }
+          "action": {
+            "keypress": "{F11}"
+          },
+          "title": "Fullscreen\n(F11)"
         },
         {
-          "title": "Zoom In\n(Ctrl++)",
-          "action": { "keypress": "^{+}" }
+          "action": {
+            "keypress": "^{+}"
+          },
+          "title": "Zoom In\n(Ctrl++)"
         },
         {
-          "title": "Zoom Out\n(Ctrl+-)",
-          "action": { "keypress": "^-" }
+          "action": {
+            "keypress": "^-"
+          },
+          "title": "Zoom Out\n(Ctrl+-)"
         },
         {
-          "title": "Reset Zoom\n(Ctrl+0)",
-          "action": { "keypress": "^0" }
+          "action": {
+            "keypress": "^0"
+          },
+          "title": "Reset Zoom\n(Ctrl+0)"
         }
-      ]
+      ],
+      "title": "Search & View"
+    }
+  ],
+  "themes": [
+    {
+      "background": "black",
+      "foreground": "cyan",
+      "name": "default"
+    },
+    {
+      "background": "cyan",
+      "foreground": "black",
+      "name": "prominent"
     }
   ]
 }
