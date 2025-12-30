@@ -1,0 +1,111 @@
+{
+  "global": {
+    "refresh": "1s",
+    "activeWindow": "Mozilla Firefox"
+  },
+  "themes": [
+    {
+      "name": "default",
+      "foreground": "#FF9500",
+      "background": "#1C1B22"
+    },
+    {
+      "name": "prominent",
+      "foreground": "#1C1B22",
+      "background": "#FF9500"
+    }
+  ],
+  "items": [
+    {
+      "title": {
+        "builtin": "clock()",
+        "refresh": "1s",
+        "theme": "prominent"
+      }
+    },
+    {
+      "title": "Reopen Closed Tab\n(Ctrl+Shift+T)",
+      "action": { "keypress": "^+t" }
+    },
+    {
+      "title": "Next Tab\n(Ctrl+Tab)",
+      "action": { "keypress": "^{Tab}" }
+    },
+    {
+      "title": "Previous Tab\n(Ctrl+Shift+Tab)",
+      "action": { "keypress": "^+{Tab}" }
+    },
+    {
+      "title": "Jump to Tab 1\n(Ctrl+1)",
+      "action": { "keypress": "^1" }
+    },
+    {
+      "title": "Jump to Last Tab\n(Ctrl+9)",
+      "action": { "keypress": "^9" }
+    },
+    {
+      "title": "Private Window\n(Ctrl+Shift+P)",
+      "action": { "keypress": "^+p" }
+    },
+    {
+      "title": "Address Bar\n(Ctrl+L)",
+      "action": { "keypress": "^l" }
+    },
+    {
+      "title": "Search Bar\n(Ctrl+K)",
+      "action": { "keypress": "^k" }
+    },
+    {
+      "title": "Bookmark Page\n(Ctrl+D)",
+      "action": { "keypress": "^d" }
+    },
+    {
+      "title": "Bookmark All Tabs\n(Ctrl+Shift+D)",
+      "action": { "keypress": "^+d" }
+    },
+    {
+      "title": "History Sidebar\n(Ctrl+H)",
+      "action": { "keypress": "^h" }
+    },
+    {
+      "title": "Bookmarks Sidebar\n(Ctrl+Shift+B)",
+      "action": { "keypress": "^+b" }
+    },
+    {
+      "title": "Add-ons Manager\n(Ctrl+Shift+A)",
+      "action": { "keypress": "^+a" }
+    },
+    {
+      "title": "Settings\n(Ctrl+,)",
+      "action": { "keypress": "^," }
+    },
+    {
+      "title": "Developer Tools\n(F12)",
+      "action": { "keypress": "{F12}" }
+    },
+    {
+      "title": "Web Console\n(Ctrl+Shift+K)",
+      "action": { "keypress": "^+k" }
+    },
+    {
+      "title": "Responsive Design\n(Ctrl+Shift+M)",
+      "action": { "keypress": "^+m" }
+    },
+    {
+      "title": "Hard Refresh\n(Ctrl+Shift+R)",
+      "action": { "keypress": "^+r" }
+    },
+    {
+      "title": "Full Screen\n(F11)",
+      "action": { "keypress": "{F11}" }
+    },
+    {
+      "title": "Back\n(Alt+Left)",
+      "action": { "keypress": "!{Left}" }
+    },
+    {
+      "title": "Forward\n(Alt+Right)",
+      "action": { "keypress": "!{Right}" }
+    }
+  ]
+}
