@@ -1,0 +1,108 @@
+{
+  "global": {
+    "monitorIndex": 0,
+    "activeWindow": "Code",
+    "refresh": "1s"
+  },
+  "themes": [
+    {
+      "name": "default",
+      "foreground": "green",
+      "background": "black"
+    },
+    {
+      "name": "prominent",
+      "foreground": "black",
+      "background": "green"
+    }
+  ],
+  "items": [
+    {
+      "title": {
+        "builtin": "clock()",
+        "refresh": "1s",
+        "theme": "prominent"
+      }
+    },
+    {
+      "title": "Command Palette\n(Ctrl+Shift+P)",
+      "action": { "keypress": "^+p" }
+    },
+    {
+      "title": "Go to Symbol\n(Ctrl+Shift+O)",
+      "action": { "keypress": "^+o" }
+    },
+    {
+      "title": "Go to Line\n(Ctrl+G)",
+      "action": { "keypress": "^g" }
+    },
+    {
+      "title": "Toggle Terminal\n(Ctrl+`)",
+      "action": { "keypress": "^`" }
+    },
+    {
+      "title": "Toggle Sidebar\n(Ctrl+B)",
+      "action": { "keypress": "^b" }
+    },
+    {
+      "title": "Split Editor\n(Ctrl+\\)",
+      "action": { "keypress": "^{\\}" }
+    },
+    {
+      "title": "Delete Line\n(Ctrl+Shift+K)",
+      "action": { "keypress": "^+k" }
+    },
+    {
+      "title": "Move Line Up\n(Alt+Up)",
+      "action": { "keypress": "!{Up}" }
+    },
+    {
+      "title": "Move Line Down\n(Alt+Down)",
+      "action": { "keypress": "!{Down}" }
+    },
+    {
+      "title": "Copy Line Down\n(Shift+Alt+Down)",
+      "action": { "keypress": "+!{Down}" }
+    },
+    {
+      "title": "Toggle Comment\n(Ctrl+/)",
+      "action": { "keypress": "^/" }
+    },
+    {
+      "title": "Format Document\n(Shift+Alt+F)",
+      "action": { "keypress": "+!f" }
+    },
+    {
+      "title": "Rename Symbol\n(F2)",
+      "action": { "keypress": "{F2}" }
+    },
+    {
+      "title": "Go to Definition\n(F12)",
+      "action": { "keypress": "{F12}" }
+    },
+    {
+      "title": "Peek Definition\n(Alt+F12)",
+      "action": { "keypress": "!{F12}" }
+    },
+    {
+      "title": "Find References\n(Shift+F12)",
+      "action": { "keypress": "+{F12}" }
+    },
+    {
+      "title": "Next Match\n(Ctrl+D)",
+      "action": { "keypress": "^d" }
+    },
+    {
+      "title": "Select All Matches\n(Ctrl+Shift+L)",
+      "action": { "keypress": "^+l" }
+    },
+    {
+      "title": "Toggle Breakpoint\n(F9)",
+      "action": { "keypress": "{F9}" }
+    },
+    {
+      "title": "Start Debugging\n(F5)",
+      "action": { "keypress": "{F5}" }
+    }
+  ]
+}

@@ -16,7 +16,9 @@
       "Bash(grep:*)",
       "WebFetch(domain:support.microsoft.com)",
       "WebFetch(domain:brownmath.com)",
-      "WebFetch(domain:www.dofactory.com)"
+      "WebFetch(domain:www.dofactory.com)",
+      "WebFetch(domain:code.visualstudio.com)",
+      "WebFetch(domain:hackr.io)"
     ]
   }
 }
