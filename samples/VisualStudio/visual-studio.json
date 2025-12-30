@@ -1,0 +1,108 @@
+{
+  "global": {
+    "monitorIndex": 0,
+    "activeWindow": "devenv",
+    "refresh": "1s"
+  },
+  "themes": [
+    {
+      "name": "default",
+      "foreground": "green",
+      "background": "black"
+    },
+    {
+      "name": "prominent",
+      "foreground": "black",
+      "background": "green"
+    }
+  ],
+  "items": [
+    {
+      "title": {
+        "builtin": "clock()",
+        "refresh": "1s",
+        "theme": "prominent"
+      }
+    },
+    {
+      "title": "Start Debugging\n(F5)",
+      "action": { "keypress": "{F5}" }
+    },
+    {
+      "title": "Start No Debug\n(Ctrl+F5)",
+      "action": { "keypress": "^{F5}" }
+    },
+    {
+      "title": "Toggle Breakpoint\n(F9)",
+      "action": { "keypress": "{F9}" }
+    },
+    {
+      "title": "Step Over\n(F10)",
+      "action": { "keypress": "{F10}" }
+    },
+    {
+      "title": "Step Into\n(F11)",
+      "action": { "keypress": "{F11}" }
+    },
+    {
+      "title": "Step Out\n(Shift+F11)",
+      "action": { "keypress": "+{F11}" }
+    },
+    {
+      "title": "Stop Debugging\n(Shift+F5)",
+      "action": { "keypress": "+{F5}" }
+    },
+    {
+      "title": "Run to Cursor\n(Ctrl+F10)",
+      "action": { "keypress": "^{F10}" }
+    },
+    {
+      "title": "Quick Watch\n(Shift+F9)",
+      "action": { "keypress": "+{F9}" }
+    },
+    {
+      "title": "Go to Definition\n(F12)",
+      "action": { "keypress": "{F12}" }
+    },
+    {
+      "title": "Peek Definition\n(Alt+F12)",
+      "action": { "keypress": "!{F12}" }
+    },
+    {
+      "title": "Find References\n(Shift+F12)",
+      "action": { "keypress": "+{F12}" }
+    },
+    {
+      "title": "Go to All\n(Ctrl+T)",
+      "action": { "keypress": "^t" }
+    },
+    {
+      "title": "Build Solution\n(Ctrl+Shift+B)",
+      "action": { "keypress": "^+b" }
+    },
+    {
+      "title": "Rename Symbol\n(Ctrl+R, Ctrl+R)",
+      "action": { "keypress": "^r^r" }
+    },
+    {
+      "title": "Extract Method\n(Ctrl+R, Ctrl+M)",
+      "action": { "keypress": "^r^m" }
+    },
+    {
+      "title": "Format Document\n(Ctrl+K, Ctrl+D)",
+      "action": { "keypress": "^k^d" }
+    },
+    {
+      "title": "Comment Lines\n(Ctrl+K, Ctrl+C)",
+      "action": { "keypress": "^k^c" }
+    },
+    {
+      "title": "Uncomment Lines\n(Ctrl+K, Ctrl+U)",
+      "action": { "keypress": "^k^u" }
+    },
+    {
+      "title": "Solution Explorer\n(Ctrl+Alt+L)",
+      "action": { "keypress": "^!l" }
+    }
+  ]
+}

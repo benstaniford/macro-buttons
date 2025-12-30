@@ -1,0 +1,148 @@
+{
+  "global": {
+    "activeWindow": "CalculatorApp",
+    "monitorIndex": 0,
+    "refresh": "1s"
+  },
+  "items": [
+    {
+      "title": {
+        "builtin": "clock()",
+        "refresh": "1s",
+        "theme": "prominent"
+      }
+    },
+    {
+      "action": {
+        "keypress": "!1"
+      },
+      "title": "Standard Mode\n(Alt+1)"
+    },
+    {
+      "action": {
+        "keypress": "!2"
+      },
+      "title": "Scientific Mode\n(Alt+2)"
+    },
+    {
+      "action": {
+        "keypress": "!4"
+      },
+      "title": "Programmer Mode\n(Alt+4)"
+    },
+    {
+      "action": {
+        "keypress": "^m"
+      },
+      "title": "Store Memory\n(Ctrl+M)"
+    },
+    {
+      "action": {
+        "keypress": "^p"
+      },
+      "title": "Add to Memory\n(Ctrl+P)"
+    },
+    {
+      "action": {
+        "keypress": "^r"
+      },
+      "title": "Recall Memory\n(Ctrl+R)"
+    },
+    {
+      "action": {
+        "keypress": "^l"
+      },
+      "title": "Clear Memory\n(Ctrl+L)"
+    },
+    {
+      "action": {
+        "keypress": "^+d"
+      },
+      "title": "Clear History\n(Ctrl+Shift+D)"
+    },
+    {
+      "action": {
+        "keypress": "{F9}"
+      },
+      "title": "Toggle Sign\n(F9)"
+    },
+    {
+      "action": {
+        "keypress": "r"
+      },
+      "title": "Reciprocal\n(R)"
+    },
+    {
+      "action": {
+        "keypress": "@"
+      },
+      "title": "Square Root\n(@)"
+    },
+    {
+      "action": {
+        "keypress": "y"
+      },
+      "title": "Power\n(Y)"
+    },
+    {
+      "action": {
+        "keypress": "p"
+      },
+      "title": "Insert Pi\n(P)"
+    },
+    {
+      "action": {
+        "keypress": "+e"
+      },
+      "title": "Insert E\n(Shift+E)"
+    },
+    {
+      "action": {
+        "keypress": "{!}"
+      },
+      "title": "Factorial\n(!)"
+    },
+    {
+      "action": {
+        "keypress": "s"
+      },
+      "title": "Sine\n(S)"
+    },
+    {
+      "action": {
+        "keypress": "o"
+      },
+      "title": "Cosine\n(O)"
+    },
+    {
+      "action": {
+        "keypress": "t"
+      },
+      "title": "Tangent\n(T)"
+    },
+    {
+      "action": {
+        "keypress": "{F5}"
+      },
+      "title": "Hex Mode\n(F5)"
+    },
+    {
+      "action": {
+        "keypress": "{F8}"
+      },
+      "title": "Binary Mode\n(F8)"
+    }
+  ],
+  "themes": [
+    {
+      "background": "black",
+      "foreground": "green",
+      "name": "default"
+    },
+    {
+      "background": "green",
+      "foreground": "black",
+      "name": "prominent"
+    }
+  ]
+}
