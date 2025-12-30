@@ -2,60 +2,128 @@
   "global": {
     "monitorindex": 0,
     "profilename": "default",
-    "refresh": "30s",
+    "refresh": "1s",
     "sendkeys": {
       "delay": "10ms",
       "duration": "30ms"
     }
   },
+  "themes": [
+    {
+      "name": "default",
+      "foreground": "cyan",
+      "background": "black"
+    },
+    {
+      "name": "prominent",
+      "foreground": "black",
+      "background": "cyan"
+    },
+    {
+      "name": "utility",
+      "foreground": "yellow",
+      "background": "#001a1a"
+    }
+  ],
   "items": [
-    {
-      "action": {
-        "keypress": "^c"
-      },
-      "title": "Copy"
-    },
-    {
-      "action": {
-        "keypress": "^v"
-      },
-      "title": "Paste"
-    },
-    {
-      "action": {
-        "exe": "%SystemRoot%/system32/calc.exe"
-      },
-      "title": "Calculator"
-    },
-    {
-      "action": {
-        "builtin": "quit()"
-      },
-      "title": "Quit"
-    },
     {
       "title": {
         "builtin": "clock()",
         "refresh": "1s",
         "theme": "prominent"
       }
-    }
-  ],
-  "themes": [
-    {
-      "name": "default",
-      "background": "black",
-      "foreground": "green"
     },
     {
-      "name": "toggled",
-      "background": "orange",
-      "foreground": "black"
+      "title": "Settings\n(Win+I)",
+      "action": { "keypress": "#i" }
     },
     {
-      "name": "prominent",
-      "foreground": "#000000",
-      "background": "#288F28"
+      "title": "File Explorer\n(Win+E)",
+      "action": { "keypress": "#e" }
+    },
+    {
+      "title": "Run Dialog\n(Win+R)",
+      "action": { "keypress": "#r" }
+    },
+    {
+      "title": "Task Manager\n(Ctrl+Shift+Esc)",
+      "action": { "keypress": "^+{Esc}" },
+      "theme": "utility"
+    },
+    {
+      "title": "Lock Computer\n(Win+L)",
+      "action": { "keypress": "#l" }
+    },
+    {
+      "title": "Show Desktop\n(Win+D)",
+      "action": { "keypress": "#d" }
+    },
+    {
+      "title": "Task View\n(Win+Tab)",
+      "action": { "keypress": "#{Tab}" }
+    },
+    {
+      "title": "Screenshot\n(Win+Shift+S)",
+      "action": { "keypress": "#+s" }
+    },
+    {
+      "title": "Clipboard History\n(Win+V)",
+      "action": { "keypress": "#v" }
+    },
+    {
+      "title": "Emoji Picker\n(Win+.)",
+      "action": { "keypress": "#." }
+    },
+    {
+      "title": "Quick Settings\n(Win+A)",
+      "action": { "keypress": "#a" }
+    },
+    {
+      "title": "Connect/Cast\n(Win+K)",
+      "action": { "keypress": "#k" }
+    },
+    {
+      "title": "New Virtual Desktop\n(Win+Ctrl+D)",
+      "action": { "keypress": "#^d" }
+    },
+    {
+      "title": "Previous Desktop\n(Win+Ctrl+Left)",
+      "action": { "keypress": "#^{Left}" }
+    },
+    {
+      "title": "Next Desktop\n(Win+Ctrl+Right)",
+      "action": { "keypress": "#^{Right}" }
+    },
+    {
+      "title": "Close Desktop\n(Win+Ctrl+F4)",
+      "action": { "keypress": "#^{F4}" }
+    },
+    {
+      "title": "Magnifier\n(Win++)",
+      "action": { "keypress": "#{NumpadPlus}" }
+    },
+    {
+      "title": "Voice Typing\n(Win+H)",
+      "action": { "keypress": "#h" }
+    },
+    {
+      "title": "Device Manager",
+      "action": { "exe": "devmgmt.msc" },
+      "theme": "utility"
+    },
+    {
+      "title": "Control Panel",
+      "action": { "exe": "control.exe" },
+      "theme": "utility"
+    },
+    {
+      "title": "Calculator",
+      "action": { "exe": "calc.exe" },
+      "theme": "utility"
+    },
+    {
+      "title": "Quit",
+      "action": { "builtin": "quit()" }
     }
   ]
 }
