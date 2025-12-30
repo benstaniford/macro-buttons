@@ -1,0 +1,146 @@
+{
+  "global": {
+    "refresh": "1s",
+    "activeWindow": "explorer|CabinetWClass"
+  },
+  "themes": [
+    {
+      "name": "default",
+      "foreground": "cyan",
+      "background": "black"
+    },
+    {
+      "name": "prominent",
+      "foreground": "black",
+      "background": "cyan"
+    },
+    {
+      "name": "navigation",
+      "foreground": "lightblue",
+      "background": "#001a1a"
+    },
+    {
+      "name": "file-ops",
+      "foreground": "lightgreen",
+      "background": "#001a00"
+    },
+    {
+      "name": "danger",
+      "foreground": "red",
+      "background": "#1a0000"
+    }
+  ],
+  "items": [
+    {
+      "title": {
+        "builtin": "clock()",
+        "refresh": "1s",
+        "theme": "prominent"
+      }
+    },
+    {
+      "title": "New Window\n(Ctrl+N)",
+      "action": { "keypress": "^n" }
+    },
+    {
+      "title": "Close Window\n(Ctrl+W)",
+      "action": { "keypress": "^w" }
+    },
+    {
+      "title": "New Folder\n(Ctrl+Shift+N)",
+      "action": { "keypress": "^+n" },
+      "theme": "file-ops"
+    },
+    {
+      "title": "Rename\n(F2)",
+      "action": { "keypress": "{F2}" },
+      "theme": "file-ops"
+    },
+    {
+      "title": "Delete\n(Delete)",
+      "action": { "keypress": "{Delete}" },
+      "theme": "danger"
+    },
+    {
+      "title": "Permanent Delete\n(Shift+Delete)",
+      "action": { "keypress": "+{Delete}" },
+      "theme": "danger"
+    },
+    {
+      "title": "Properties\n(Alt+Enter)",
+      "action": { "keypress": "!{Enter}" }
+    },
+    {
+      "title": "Copy\n(Ctrl+C)",
+      "action": { "keypress": "^c" },
+      "theme": "file-ops"
+    },
+    {
+      "title": "Cut\n(Ctrl+X)",
+      "action": { "keypress": "^x" },
+      "theme": "file-ops"
+    },
+    {
+      "title": "Paste\n(Ctrl+V)",
+      "action": { "keypress": "^v" },
+      "theme": "file-ops"
+    },
+    {
+      "title": "Undo\n(Ctrl+Z)",
+      "action": { "keypress": "^z" },
+      "theme": "file-ops"
+    },
+    {
+      "title": "Select All\n(Ctrl+A)",
+      "action": { "keypress": "^a" }
+    },
+    {
+      "title": "Invert Selection\n(Ctrl+Shift+A)",
+      "action": { "keypress": "^+a" }
+    },
+    {
+      "title": "Back\n(Alt+Left)",
+      "action": { "keypress": "!{Left}" },
+      "theme": "navigation"
+    },
+    {
+      "title": "Forward\n(Alt+Right)",
+      "action": { "keypress": "!{Right}" },
+      "theme": "navigation"
+    },
+    {
+      "title": "Up One Level\n(Alt+Up)",
+      "action": { "keypress": "!{Up}" },
+      "theme": "navigation"
+    },
+    {
+      "title": "Refresh\n(F5)",
+      "action": { "keypress": "{F5}" }
+    },
+    {
+      "title": "Search\n(Ctrl+F)",
+      "action": { "keypress": "^f" }
+    },
+    {
+      "title": "Address Bar\n(Alt+D)",
+      "action": { "keypress": "!d" },
+      "theme": "navigation"
+    },
+    {
+      "title": "Full Screen\n(F11)",
+      "action": { "keypress": "{F11}" }
+    },
+    {
+      "title": "Details View\n(Ctrl+Shift+6)",
+      "action": { "keypress": "^+6" }
+    },
+    {
+      "title": "Large Icons\n(Ctrl+Shift+2)",
+      "action": { "keypress": "^+2" }
+    },
+    {
+      "title": "Preview Pane\n(Alt+P)",
+      "action": { "keypress": "!p" }
+    }
+  ]
+}
