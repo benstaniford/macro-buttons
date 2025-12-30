@@ -13,8 +13,11 @@ public class GlobalConfig
     public string Refresh { get; set; } = "30s";
 
     /// <summary>
-    /// Monitor index to display the window on (0 = first monitor).
+    /// DEPRECATED: Monitor index to display the window on.
+    /// This setting is now stored in the Windows Registry and managed globally.
+    /// This property is kept for backward compatibility with old configs but is ignored.
     /// </summary>
+    [Obsolete("MonitorIndex is no longer used. Monitor selection is now managed in the Windows Registry.")]
     public int MonitorIndex { get; set; } = 0;
 
     /// <summary>

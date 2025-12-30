@@ -1,6 +1,5 @@
 {
   "global": {
-    "monitorIndex": 0,
     "activeWindow": "Photoshop",
     "refresh": "1s"
   },

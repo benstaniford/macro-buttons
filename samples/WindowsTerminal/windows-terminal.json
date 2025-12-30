@@ -1,6 +1,5 @@
 {
   "global": {
-    "monitorIndex": 0,
     "activeWindow": "Windows Terminal",
     "refresh": "1s"
   },

@@ -1,6 +1,5 @@
 {
   "global": {
-    "monitorIndex": 0,
     "refresh": "1s"
   },
   "themes": [

@@ -1,6 +1,5 @@
 {
   "global": {
-    "monitorindex": 0,
     "profilename": "default",
     "refresh": "1s",
     "sendkeys": {

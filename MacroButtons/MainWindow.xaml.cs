@@ -44,6 +44,7 @@ public partial class MainWindow : Window
     private readonly MonitorService _monitorService;
     private readonly WindowHelper _windowHelper;
     private readonly ProfileService _profileService;
+    private readonly SettingsService _settingsService;
     private readonly MainViewModel _viewModel;
     private System.Windows.Forms.NotifyIcon? _notifyIcon;
     private DispatcherTimer? _cursorTrackingTimer;
@@ -55,6 +56,7 @@ public partial class MainWindow : Window
         _monitorService = new MonitorService();
         _windowHelper = new WindowHelper();
         _profileService = new ProfileService();
+        _settingsService = new SettingsService();
 
         // Initialize view model with the shared instances
         _viewModel = new MainViewModel(_windowHelper, _profileService);
@@ -109,6 +111,11 @@ public partial class MainWindow : Window
         var profilesMenuItem = new System.Windows.Forms.ToolStripMenuItem("Profiles");
         BuildProfilesSubmenu(profilesMenuItem);
         contextMenu.Items.Add(profilesMenuItem);
+
+        // Monitor submenu
+        var monitorMenuItem = new System.Windows.Forms.ToolStripMenuItem("Monitor");
+        BuildMonitorSubmenu(monitorMenuItem);
+        contextMenu.Items.Add(monitorMenuItem);
 
         contextMenu.Items.Add(new System.Windows.Forms.ToolStripSeparator());
 
@@ -169,6 +176,61 @@ public partial class MainWindow : Window
         var deleteProfileItem = new System.Windows.Forms.ToolStripMenuItem("Delete Profile...");
         deleteProfileItem.Click += (s, e) => DeleteCurrentProfile();
         profilesMenuItem.DropDownItems.Add(deleteProfileItem);
+    }
+
+    private void BuildMonitorSubmenu(System.Windows.Forms.ToolStripMenuItem monitorMenuItem)
+    {
+        monitorMenuItem.DropDownItems.Clear();
+
+        var currentMonitorIndex = _settingsService.GetOrInitializeMonitorIndex(_monitorService);
+        var monitorCount = _monitorService.GetMonitorCount();
+
+        // Add each monitor as a menu item with checkmark for current
+        for (int i = 0; i < monitorCount; i++)
+        {
+            var screen = _monitorService.GetMonitorByIndex(i);
+            var bounds = screen.Bounds;
+
+            // Display as 1-based index (Monitor 1, Monitor 2, etc.)
+            var displayIndex = i + 1;
+            var menuText = $"Monitor {displayIndex} ({bounds.Width}x{bounds.Height})";
+            if (screen.Primary)
+            {
+                menuText += " - Primary";
+            }
+
+            var monitorItem = new System.Windows.Forms.ToolStripMenuItem(menuText);
+            monitorItem.Checked = (i == currentMonitorIndex);
+
+            // Capture the index for the click handler
+            int capturedIndex = i;
+            monitorItem.Click += (s, e) => SwitchToMonitor(capturedIndex);
+
+            monitorMenuItem.DropDownItems.Add(monitorItem);
+        }
+    }
+
+    private void SwitchToMonitor(int monitorIndex)
+    {
+        try
+        {
+            // Save to registry
+            _settingsService.SetMonitorIndex(monitorIndex);
+
+            // Rebuild tray menu to update checkmarks
+            BuildTrayContextMenu();
+
+            // Reload window position
+            RepositionWindow();
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show(
+                $"Failed to switch monitor: {ex.Message}",
+                "Monitor Switch Error",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Error);
+        }
     }
 
     private void SwitchToProfile(string profileName)
@@ -582,10 +644,13 @@ public partial class MainWindow : Window
         return (1.0, 1.0);
     }
 
-    private void Window_Loaded(object sender, RoutedEventArgs e)
+    /// <summary>
+    /// Repositions the window on the configured monitor.
+    /// </summary>
+    private void RepositionWindow()
     {
-        // Position window on the specified monitor from configuration
-        var monitorIndex = _viewModel.Config.Global.MonitorIndex;
+        // Get monitor index from settings (uses smallest monitor as default on first run)
+        var monitorIndex = _settingsService.GetOrInitializeMonitorIndex(_monitorService);
         var monitorCount = _monitorService.GetMonitorCount();
 
         // Debug: Show all monitors
@@ -601,12 +666,13 @@ public partial class MainWindow : Window
         if (monitorIndex < 0 || monitorIndex >= monitorCount)
         {
             monitorIndex = 0;
+            _settingsService.SetMonitorIndex(monitorIndex);
         }
 
         var bounds = _monitorService.GetMonitorBounds(monitorIndex);
 
         // Debug output
-        System.Diagnostics.Debug.WriteLine($"\nRequested monitor index: {_viewModel.Config.Global.MonitorIndex}, Using: {monitorIndex}");
+        System.Diagnostics.Debug.WriteLine($"\nUsing monitor index: {monitorIndex}");
         System.Diagnostics.Debug.WriteLine($"Monitor bounds: Left={bounds.Left}, Top={bounds.Top}, Width={bounds.Width}, Height={bounds.Height}");
 
         // Safety check: If coordinates seem unreasonable (likely due to virtual desktop/DPI issues),
@@ -616,6 +682,7 @@ public partial class MainWindow : Window
             System.Diagnostics.Debug.WriteLine("WARNING: Monitor bounds appear invalid, falling back to primary monitor");
             monitorIndex = 0;
             bounds = _monitorService.GetMonitorBounds(0);
+            _settingsService.SetMonitorIndex(monitorIndex);
             System.Diagnostics.Debug.WriteLine($"Fallback bounds: Left={bounds.Left}, Top={bounds.Top}, Width={bounds.Width}, Height={bounds.Height}");
         }
 
@@ -644,6 +711,12 @@ public partial class MainWindow : Window
 
         // Set our monitor bounds for cursor tracking
         _windowHelper.SetOurMonitorBounds(bounds);
+    }
+
+    private void Window_Loaded(object sender, RoutedEventArgs e)
+    {
+        // Position window on the monitor from settings
+        RepositionWindow();
 
         // Initialize cursor and window tracking immediately (before timer starts)
         _windowHelper.UpdateCursorPositionIfNotOnOurMonitor();

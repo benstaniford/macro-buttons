@@ -1,6 +1,5 @@
 {
   "global": {
-    "monitorIndex": 1,
     "profilename": "EliteDangerous",
     "refresh": "30s",
     "activewindow": "EliteDangerous64.exe"

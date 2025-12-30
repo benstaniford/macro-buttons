@@ -1,6 +1,5 @@
 {
   "global": {
-    "monitorIndex": 0,
     "activeWindow": "ComfyUI",
     "refresh": "1s"
   },
