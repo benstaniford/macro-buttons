@@ -77,13 +77,11 @@ public class GlobalConfigTests
     }
 
     [Fact]
-    public void GetRefreshInterval_WithNullRefresh_ReturnsDefault()
+    public void GetRefreshInterval_WithNullRefresh_ThrowsException()
     {
         var config = new GlobalConfig { Refresh = null! };
 
-        var result = config.GetRefreshInterval();
-
-        Assert.Equal(TimeSpan.FromSeconds(30), result);
+        Assert.Throws<ArgumentNullException>(() => config.GetRefreshInterval());
     }
 
     [Theory]

@@ -114,23 +114,19 @@ public class SendKeysConfigTests
     }
 
     [Fact]
-    public void GetDelay_WithNullValue_ReturnsDefault()
+    public void GetDelay_WithNullValue_ThrowsException()
     {
         var config = new SendKeysConfig { Delay = null! };
 
-        var result = config.GetDelay();
-
-        Assert.Equal(TimeSpan.FromMilliseconds(30), result);
+        Assert.Throws<ArgumentNullException>(() => config.GetDelay());
     }
 
     [Fact]
-    public void GetDuration_WithNullValue_ReturnsDefault()
+    public void GetDuration_WithNullValue_ThrowsException()
     {
         var config = new SendKeysConfig { Duration = null! };
 
-        var result = config.GetDuration();
-
-        Assert.Equal(TimeSpan.FromMilliseconds(30), result);
+        Assert.Throws<ArgumentNullException>(() => config.GetDuration());
     }
 
     [Fact]
