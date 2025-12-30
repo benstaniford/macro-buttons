@@ -1,0 +1,128 @@
+{
+  "global": {
+    "monitorIndex": 0,
+    "activeWindow": "Windows Terminal",
+    "refresh": "1s"
+  },
+  "themes": [
+    {
+      "name": "default",
+      "foreground": "cyan",
+      "background": "black"
+    },
+    {
+      "name": "prominent",
+      "foreground": "black",
+      "background": "cyan"
+    }
+  ],
+  "items": [
+    {
+      "title": {
+        "builtin": "clock()",
+        "refresh": "1s",
+        "theme": "prominent"
+      }
+    },
+    {
+      "title": "Command & Settings",
+      "items": [
+        {
+          "title": "Command Palette\n(Ctrl+Shift+P)",
+          "action": { "keypress": "^+p" }
+        },
+        {
+          "title": "Open Settings\n(Ctrl+,)",
+          "action": { "keypress": "^," }
+        },
+        {
+          "title": "Settings UI\n(Ctrl+Shift+,)",
+          "action": { "keypress": "^+," }
+        }
+      ]
+    },
+    {
+      "title": "Tab Management",
+      "items": [
+        {
+          "title": "New Tab\n(Ctrl+Shift+T)",
+          "action": { "keypress": "^+t" }
+        },
+        {
+          "title": "New Tab Profile 1\n(Ctrl+Shift+1)",
+          "action": { "keypress": "^+1" }
+        },
+        {
+          "title": "Next Tab\n(Ctrl+Tab)",
+          "action": { "keypress": "^{Tab}" }
+        },
+        {
+          "title": "Previous Tab\n(Ctrl+Shift+Tab)",
+          "action": { "keypress": "^+{Tab}" }
+        },
+        {
+          "title": "Switch to Tab 1\n(Ctrl+Alt+1)",
+          "action": { "keypress": "^!1" }
+        },
+        {
+          "title": "Duplicate Tab\n(Ctrl+Shift+D)",
+          "action": { "keypress": "^+d" }
+        }
+      ]
+    },
+    {
+      "title": "Pane Management",
+      "items": [
+        {
+          "title": "Split Horizontal\n(Alt+Shift+-)",
+          "action": { "keypress": "!+-" }
+        },
+        {
+          "title": "Split Vertical\n(Alt+Shift+=)",
+          "action": { "keypress": "!+=" }
+        },
+        {
+          "title": "Focus Up\n(Alt+Up)",
+          "action": { "keypress": "!{Up}" }
+        },
+        {
+          "title": "Focus Down\n(Alt+Down)",
+          "action": { "keypress": "!{Down}" }
+        },
+        {
+          "title": "Resize Up\n(Alt+Shift+Up)",
+          "action": { "keypress": "!+{Up}" }
+        },
+        {
+          "title": "Resize Down\n(Alt+Shift+Down)",
+          "action": { "keypress": "!+{Down}" }
+        }
+      ]
+    },
+    {
+      "title": "Search & View",
+      "items": [
+        {
+          "title": "Find\n(Ctrl+Shift+F)",
+          "action": { "keypress": "^+f" }
+        },
+        {
+          "title": "Fullscreen\n(F11)",
+          "action": { "keypress": "{F11}" }
+        },
+        {
+          "title": "Zoom In\n(Ctrl++)",
+          "action": { "keypress": "^{+}" }
+        },
+        {
+          "title": "Zoom Out\n(Ctrl+-)",
+          "action": { "keypress": "^-" }
+        },
+        {
+          "title": "Reset Zoom\n(Ctrl+0)",
+          "action": { "keypress": "^0" }
+        }
+      ]
+    }
+  ]
+}
