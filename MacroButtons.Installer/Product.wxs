@@ -38,6 +38,25 @@
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
     <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
 
+    <!-- Launch app after installation checkbox -->
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch MacroButtons" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
+
+    <!-- Custom action to launch the application -->
+    <CustomAction Id="LaunchApplication"
+                  FileKey="MacroButtonsEXE"
+                  ExeCommand=""
+                  Execute="immediate"
+                  Impersonate="yes"
+                  Return="asyncNoWait" />
+
+    <!-- Schedule the custom action to run at the end if checkbox is checked -->
+    <InstallExecuteSequence>
+      <Custom Action="LaunchApplication" After="InstallFinalize">
+        NOT Installed AND NOT REMOVE AND WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1
+      </Custom>
+    </InstallExecuteSequence>
+
     <!-- Icon for Add/Remove Programs -->
     <Icon Id="icon.ico" SourceFile="MacroButtons.ico"/>
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
