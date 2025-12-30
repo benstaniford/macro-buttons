@@ -82,6 +82,10 @@ public class MainViewModel : ViewModelBase, IDisposable
             // Create keystroke service with configured sendKeys settings
             _keystrokeService = new KeystrokeService(_windowHelper, Config.Global.SendKeys);
 
+            // Initialize base profile to the starting profile
+            // This ensures that if we auto-switch, we know where to return to
+            _baseProfileName = _currentProfileName;
+
             // Now apply the configuration
             ApplyConfiguration();
         }
