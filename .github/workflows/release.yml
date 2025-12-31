@@ -78,28 +78,43 @@ jobs:
           $nugetPackages = "$env:USERPROFILE\.nuget\packages"
           $outputDir = "MacroButtons\bin\x64\Release\net8.0-windows"
 
-          Write-Host "Copying PowerShell DLLs from NuGet cache..."
+          Write-Host "Searching for PowerShell DLLs in NuGet cache..."
 
-          # System.Management.Automation
-          $smaSource = "$nugetPackages\system.management.automation\7.4.7\lib\net8.0\System.Management.Automation.dll"
-          Copy-Item -Path $smaSource -Destination $outputDir -Force -ErrorAction Stop
-          Write-Host "Copied System.Management.Automation.dll"
+          # Find System.Management.Automation.dll
+          $smaFiles = Get-ChildItem -Path $nugetPackages -Recurse -Filter "System.Management.Automation.dll" -ErrorAction SilentlyContinue
+          if ($smaFiles) {
+            Write-Host "Found System.Management.Automation.dll locations:"
+            $smaFiles | ForEach-Object { Write-Host "  $($_.FullName)" }
+            # Use the first one found (typically the most recent)
+            Copy-Item -Path $smaFiles[0].FullName -Destination $outputDir -Force
+            Write-Host "Copied System.Management.Automation.dll from $($smaFiles[0].FullName)"
+          } else {
+            Write-Host "WARNING: System.Management.Automation.dll not found"
+          }
 
-          # Microsoft.Management.Infrastructure
-          $mmiSource = "$nugetPackages\microsoft.management.infrastructure\3.0.0\lib\net8.0\Microsoft.Management.Infrastructure.dll"
-          if (Test-Path $mmiSource) {
-            Copy-Item -Path $mmiSource -Destination $outputDir -Force
+          # Find Microsoft.Management.Infrastructure.dll
+          $mmiFiles = Get-ChildItem -Path $nugetPackages -Recurse -Filter "Microsoft.Management.Infrastructure.dll" -ErrorAction SilentlyContinue
+          if ($mmiFiles) {
+            Write-Host "Found Microsoft.Management.Infrastructure.dll locations:"
+            $mmiFiles | ForEach-Object { Write-Host "  $($_.FullName)" }
+            Copy-Item -Path $mmiFiles[0].FullName -Destination $outputDir -Force
             Write-Host "Copied Microsoft.Management.Infrastructure.dll"
+          } else {
+            Write-Host "WARNING: Microsoft.Management.Infrastructure.dll not found"
           }
 
-          # Microsoft.PowerShell.CoreCLR.Eventing
-          $psEventingSource = "$nugetPackages\microsoft.powershell.coreclr.eventing\7.4.7\lib\net8.0\Microsoft.PowerShell.CoreCLR.Eventing.dll"
-          if (Test-Path $psEventingSource) {
-            Copy-Item -Path $psEventingSource -Destination $outputDir -Force
+          # Find Microsoft.PowerShell.CoreCLR.Eventing.dll
+          $psEventingFiles = Get-ChildItem -Path $nugetPackages -Recurse -Filter "Microsoft.PowerShell.CoreCLR.Eventing.dll" -ErrorAction SilentlyContinue
+          if ($psEventingFiles) {
+            Write-Host "Found Microsoft.PowerShell.CoreCLR.Eventing.dll locations:"
+            $psEventingFiles | ForEach-Object { Write-Host "  $($_.FullName)" }
+            Copy-Item -Path $psEventingFiles[0].FullName -Destination $outputDir -Force
             Write-Host "Copied Microsoft.PowerShell.CoreCLR.Eventing.dll"
+          } else {
+            Write-Host "WARNING: Microsoft.PowerShell.CoreCLR.Eventing.dll not found"
           }
 
-          Write-Host "PowerShell dependencies copied successfully"
+          Write-Host "PowerShell dependencies copy completed"
 
       - name: Debug - List output directory
         shell: powershell
