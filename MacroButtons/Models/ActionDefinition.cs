@@ -27,6 +27,21 @@ public class ActionDefinition
     public string? Builtin { get; set; }
 
     /// <summary>
+    /// PowerShell command to execute inline (e.g., "Get-Date -Format 'HH:mm:ss'").
+    /// </summary>
+    public string? PowerShell { get; set; }
+
+    /// <summary>
+    /// PowerShell script file path to execute (e.g., "~/scripts/toggle-mic.ps1").
+    /// </summary>
+    public string? PowerShellScript { get; set; }
+
+    /// <summary>
+    /// Optional named parameters to pass to PowerShell script/command.
+    /// </summary>
+    public Dictionary<string, object>? PowerShellParameters { get; set; }
+
+    /// <summary>
     /// Gets the type of action defined.
     /// </summary>
     public ActionType GetActionType()
@@ -40,6 +55,8 @@ public class ActionDefinition
         }
         if (Python != null && Python.Count > 0) return ActionType.Python;
         if (!string.IsNullOrEmpty(Exe)) return ActionType.Executable;
+        if (!string.IsNullOrEmpty(PowerShell)) return ActionType.PowerShell;
+        if (!string.IsNullOrEmpty(PowerShellScript)) return ActionType.PowerShellScript;
         if (!string.IsNullOrEmpty(Builtin)) return ActionType.Builtin;
         return ActionType.None;
     }
@@ -54,6 +71,8 @@ public enum ActionType
     Keypress,
     Python,
     Executable,
+    PowerShell,
+    PowerShellScript,
     NavigateBack,
     Builtin
 }

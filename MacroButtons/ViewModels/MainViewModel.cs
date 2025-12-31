@@ -35,6 +35,7 @@ public class MainViewModel : ViewModelBase, IDisposable
     private readonly ProfileService _profileService;
     private readonly ConfigurationService _configService;
     private readonly CommandExecutionService _commandService;
+    private readonly PowerShellService _powershellService;
     private KeystrokeService _keystrokeService;
     private readonly WindowHelper _windowHelper;
 
@@ -69,6 +70,7 @@ public class MainViewModel : ViewModelBase, IDisposable
         _profileService = profileService ?? new ProfileService();
         _configService = new ConfigurationService(_profileService);
         _commandService = new CommandExecutionService();
+        _powershellService = new PowerShellService();
         _windowHelper = windowHelper ?? new WindowHelper();
 
         try
@@ -105,7 +107,7 @@ public class MainViewModel : ViewModelBase, IDisposable
             // Set minimal defaults
             Rows = 3;
             Columns = 5;
-            var errorTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _windowHelper)
+            var errorTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _powershellService, _windowHelper)
             {
                 DisplayTitle = "Config Error"
             };
@@ -143,7 +145,7 @@ public class MainViewModel : ViewModelBase, IDisposable
             // Set minimal defaults
             Rows = 3;
             Columns = 5;
-            var errorTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _windowHelper)
+            var errorTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _powershellService, _windowHelper)
             {
                 DisplayTitle = "Config Error"
             };
@@ -211,6 +213,7 @@ public class MainViewModel : ViewModelBase, IDisposable
                 globalRefreshInterval,
                 _commandService,
                 _keystrokeService,
+                _powershellService,
                 _windowHelper,
                 NavigateToSubmenu,
                 NavigateBack);
@@ -220,7 +223,7 @@ public class MainViewModel : ViewModelBase, IDisposable
         // Fill remaining slots with empty tiles
         for (int i = itemCount; i < totalTiles; i++)
         {
-            var emptyTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _windowHelper);
+            var emptyTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _powershellService, _windowHelper);
             Tiles.Add(emptyTile);
         }
     }

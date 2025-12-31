@@ -4,12 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-MacroButtons is a WPF/C# application designed for touch-screen macro button panels with a retro terminal aesthetic. The application provides a full-screen, non-activating window that displays a grid of customizable tiles for executing macros (keystrokes, Python scripts, executables) or displaying dynamic information.
+MacroButtons is a WPF/C# application designed for touch-screen macro button panels with a retro terminal aesthetic. The application provides a full-screen, non-activating window that displays a grid of customizable tiles for executing macros (keystrokes, Python scripts, PowerShell commands, executables) or displaying dynamic information.
 
 **Key Features:**
 - Non-activating window that never steals focus (critical for gaming/creation workflows)
 - AutoHotkey-style keystroke simulation (pure C# implementation)
-- Silent Python/executable execution with stdout capture
+- Silent Python/executable/PowerShell execution with stdout capture
+- In-process PowerShell execution via System.Management.Automation (no console windows)
 - Dynamic information tiles with configurable refresh intervals
 - Multi-monitor support
 - Retro terminal aesthetic with configurable themes (monospace fonts, configurable colors)
@@ -36,7 +37,7 @@ MacroButtons/
 │   ├── Models/                         # Configuration data models
 │   │   ├── MacroButtonConfig.cs        # Root configuration (Items, Theme, Global)
 │   │   ├── ButtonItem.cs               # Individual button definition
-│   │   ├── ActionDefinition.cs         # Action types (Keypress, Python, Exe)
+│   │   ├── ActionDefinition.cs         # Action types (Keypress, Python, PowerShell, Exe)
 │   │   ├── TitleDefinition.cs          # Dynamic title command definition
 │   │   ├── ThemeConfig.cs              # Foreground/Background colors
 │   │   └── GlobalConfig.cs             # Refresh interval, MonitorIndex
@@ -52,6 +53,7 @@ MacroButtons/
 │   ├── Services/                       # Business logic services
 │   │   ├── ConfigurationService.cs     # JSON config loading/creation
 │   │   ├── CommandExecutionService.cs  # Silent process execution
+│   │   ├── PowerShellService.cs        # In-process PowerShell execution via runspaces
 │   │   ├── KeystrokeService.cs         # Keystroke simulation
 │   │   └── MonitorService.cs           # Multi-monitor management
 │   │
@@ -103,10 +105,22 @@ private const int GWL_EXSTYLE = -20;
   "items": [
     {
       "title": "Static Text" | {
-        "python": [...] | "exe": [...],
-        "refresh": "100ms"  // Optional: per-tile refresh interval (overrides global)
+        "python": [...] | "exe": [...] | "powershell": "command" | "powershellScript": "path/to/script.ps1",
+        "refresh": "100ms",  // Optional: per-tile refresh interval (overrides global)
+        "powershellParameters": { "ParamName": "value" }  // Optional: named parameters for PowerShell
       },
-      "action": { "keypress": "^v" } | { "python": [...] } | { "exe": "..." } | null
+      "action": {
+        "keypress": "^v"
+      } | {
+        "python": [...]
+      } | {
+        "exe": "..."
+      } | {
+        "powershell": "Get-Date -Format 'HH:mm:ss'"  // Inline PowerShell command
+      } | {
+        "powershellScript": "~/scripts/my-script.ps1",  // PowerShell script file
+        "powershellParameters": { "Name": "value" }  // Optional: named parameters
+      } | null
     }
   ],
   "theme": {
@@ -142,7 +156,60 @@ private const int GWL_EXSTYLE = -20;
 
 **Implementation:** Parses to list of KeyAction objects (ModifierDown → KeyPress → ModifierUp sequence)
 
-### 4. Grid Layout Algorithm
+### 4. PowerShell Execution System
+
+**Architecture:** In-process execution using System.Management.Automation (NuGet package v7.4.7)
+
+**Two Execution Modes:**
+
+1. **Inline Commands** (`powershell` property):
+   ```json
+   {
+     "action": {
+       "powershell": "Get-Date -Format 'HH:mm:ss'"
+     }
+   }
+   ```
+
+2. **Script Files** (`powershellScript` property):
+   ```json
+   {
+     "action": {
+       "powershellScript": "~/scripts/toggle-mic.ps1",
+       "powershellParameters": {
+         "DeviceIndex": 0,
+         "Verbose": true
+       }
+     }
+   }
+   ```
+
+**Key Implementation Details:**
+- **Service:** PowerShellService.cs creates isolated runspaces for each execution
+- **Runspace Strategy:** Per-execution runspace creation (thread-safe, no state pollution)
+- **Performance:** ~100-200ms per execution (acceptable for user-triggered actions)
+- **No Console Windows:** Executes in-process, completely silent
+- **Output Capture:** Captures Output stream + Error stream for dynamic titles
+- **Path Expansion:** Supports ~ (tilde), %VAR% (environment variables), absolute and relative paths
+- **Working Directory:** Set to UserProfile (matches CommandExecutionService)
+- **Error Handling:** RuntimeException and HadErrors captured and displayed in tiles
+
+**Dynamic Title Example (Microphone Status):**
+```json
+{
+  "title": {
+    "powershell": "Import-Module AudioDeviceCmdlets; $device = Get-AudioDevice -Recording; if ($device.Mute) { '{\"text\": \"MIC\\nMUTED\", \"theme\": \"prominent\"}' } else { 'MIC\\nACTIVE' }",
+    "refresh": "1s"
+  },
+  "action": {
+    "powershell": "Import-Module AudioDeviceCmdlets; $device = Get-AudioDevice -Recording; Set-AudioDevice -Recording -Mute (!$device.Mute)"
+  }
+}
+```
+
+**Important:** Requires PowerShell modules to be installed (e.g., `Install-Module AudioDeviceCmdlets -Scope CurrentUser`)
+
+### 5. Grid Layout Algorithm
 
 **Minimum:** 3 rows × 4 columns (12 tiles)
 
@@ -597,6 +664,7 @@ choco install wixtoolset --version=3.11.2
 ✅ Non-activating window
 ✅ AutoHotkey keystroke simulation
 ✅ Python/executable execution
+✅ In-process PowerShell execution (System.Management.Automation)
 ✅ Dynamic title refresh
 ✅ Multi-monitor support
 ✅ Retro terminal theme
