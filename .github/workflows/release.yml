@@ -69,6 +69,15 @@ jobs:
       - name: Run unit tests
         run: dotnet test MacroButtons.Tests/MacroButtons.Tests.csproj --configuration Release --no-restore --verbosity normal
 
+      - name: Publish MacroButtons application
+        run: dotnet publish MacroButtons/MacroButtons.csproj -c Release /p:Platform=x64 --no-restore -o MacroButtons/bin/x64/Release/net8.0-windows
+
+      - name: Debug - List output directory
+        shell: powershell
+        run: |
+          Write-Host "Listing MacroButtons output directory:"
+          Get-ChildItem -Path "MacroButtons\bin\x64\Release\net8.0-windows" | Select-Object Name
+
       - name: Build WiX Installer
         shell: powershell
         run: |
