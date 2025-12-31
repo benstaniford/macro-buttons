@@ -72,44 +72,77 @@ jobs:
       - name: Publish MacroButtons application
         run: dotnet publish MacroButtons/MacroButtons.csproj -c Release /p:Platform=x64 --no-restore -o MacroButtons/bin/x64/Release/net8.0-windows
 
-      - name: Copy PowerShell dependencies from deps.json
+      - name: Copy PowerShell dependencies
         shell: powershell
         run: |
           $nugetPackages = "$env:USERPROFILE\.nuget\packages"
           $outputDir = "MacroButtons\bin\x64\Release\net8.0-windows"
-          $depsJson = "$outputDir\MacroButtons.deps.json"
 
-          Write-Host "Reading dependencies from MacroButtons.deps.json..."
-          $deps = Get-Content $depsJson | ConvertFrom-Json
+          Write-Host "NuGet packages location: $nugetPackages"
+          Write-Host "Output directory: $outputDir"
+          Write-Host ""
 
-          # Extract the exact PowerShell library paths from deps.json
-          $libraries = $deps.targets.'".NETCoreApp,Version=v8.0/win-x64"'.PSObject.Properties | Where-Object { $_.Name -like "*System.Management.Automation*" -or $_.Name -like "*Microsoft.Management.Infrastructure*" -or $_.Name -like "*Microsoft.PowerShell.CoreCLR.Eventing*" }
+          # System.Management.Automation 7.4.7
+          $smaPaths = @(
+            "$nugetPackages\system.management.automation\7.4.7\lib\net8.0\System.Management.Automation.dll",
+            "$nugetPackages\system.management.automation\7.4.7\runtimes\win\lib\net8.0\System.Management.Automation.dll"
+          )
 
-          foreach ($lib in $libraries) {
-            $libName = $lib.Name
-            $runtime = $lib.Value.runtime
-            if ($runtime) {
-              Write-Host "Processing library: $libName"
-              foreach ($dllPath in $runtime.PSObject.Properties.Name) {
-                $dllFileName = Split-Path $dllPath -Leaf
-                Write-Host "  Found DLL reference: $dllFileName"
-
-                # Construct path in NuGet cache
-                $packageInfo = $libName -split '/'
-                $packageName = $packageInfo[0].ToLower()
-                $packageVersion = $packageInfo[1]
-                $nugetDllPath = Join-Path $nugetPackages "$packageName\$packageVersion\$dllPath"
-
-                if (Test-Path $nugetDllPath) {
-                  Copy-Item -Path $nugetDllPath -Destination $outputDir -Force
-                  Write-Host "  Copied from: $nugetDllPath"
-                } else {
-                  Write-Host "  WARNING: Not found at: $nugetDllPath"
-                }
-              }
+          $copied = $false
+          foreach ($path in $smaPaths) {
+            Write-Host "Checking: $path"
+            if (Test-Path $path) {
+              Copy-Item -Path $path -Destination $outputDir -Force
+              Write-Host "  SUCCESS: Copied System.Management.Automation.dll"
+              $copied = $true
+              break
+            }
+          }
+          if (-not $copied) {
+            Write-Host "  ERROR: System.Management.Automation.dll not found in any expected location"
+            # List what's actually there
+            $smaDir = "$nugetPackages\system.management.automation\7.4.7"
+            if (Test-Path $smaDir) {
+              Write-Host "  Directory contents:"
+              Get-ChildItem $smaDir -Recurse -Filter "*.dll" | ForEach-Object { Write-Host "    $($_.FullName)" }
             }
           }
 
+          # Microsoft.Management.Infrastructure (dependency of System.Management.Automation)
+          $mmiVersions = Get-ChildItem "$nugetPackages\microsoft.management.infrastructure" -Directory -ErrorAction SilentlyContinue | Sort-Object Name -Descending
+          if ($mmiVersions) {
+            $mmiVersion = $mmiVersions[0].Name
+            $mmiPath = "$nugetPackages\microsoft.management.infrastructure\$mmiVersion\lib\net8.0\Microsoft.Management.Infrastructure.dll"
+            Write-Host "Checking: $mmiPath"
+            if (Test-Path $mmiPath) {
+              Copy-Item -Path $mmiPath -Destination $outputDir -Force
+              Write-Host "  SUCCESS: Copied Microsoft.Management.Infrastructure.dll (v$mmiVersion)"
+            } else {
+              Write-Host "  WARNING: Microsoft.Management.Infrastructure.dll not found"
+            }
+          }
+
+          # Microsoft.PowerShell.CoreCLR.Eventing 7.4.7
+          $psEventingPaths = @(
+            "$nugetPackages\microsoft.powershell.coreclr.eventing\7.4.7\lib\net8.0\Microsoft.PowerShell.CoreCLR.Eventing.dll",
+            "$nugetPackages\microsoft.powershell.coreclr.eventing\7.4.7\runtimes\win\lib\net8.0\Microsoft.PowerShell.CoreCLR.Eventing.dll"
+          )
+
+          $copied = $false
+          foreach ($path in $psEventingPaths) {
+            Write-Host "Checking: $path"
+            if (Test-Path $path) {
+              Copy-Item -Path $path -Destination $outputDir -Force
+              Write-Host "  SUCCESS: Copied Microsoft.PowerShell.CoreCLR.Eventing.dll"
+              $copied = $true
+              break
+            }
+          }
+          if (-not $copied) {
+            Write-Host "  WARNING: Microsoft.PowerShell.CoreCLR.Eventing.dll not found"
+          }
+
+          Write-Host ""
           Write-Host "PowerShell dependencies copy completed"
 
       - name: Debug - List output directory
