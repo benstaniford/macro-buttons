@@ -18,7 +18,9 @@
       "WebFetch(domain:brownmath.com)",
       "WebFetch(domain:www.dofactory.com)",
       "WebFetch(domain:code.visualstudio.com)",
-      "WebFetch(domain:hackr.io)"
+      "WebFetch(domain:hackr.io)",
+      "Bash(dotnet nuget:*)",
+      "WebFetch(domain:www.nuget.org)"
     ]
   }
 }

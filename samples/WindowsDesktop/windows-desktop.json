@@ -28,6 +28,15 @@
       }
     },
     {
+      "title": {
+        "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; $device = Get-AudioDevice -Recording; if ($device.Mute) { '{\"text\": \"MIC\\nMUTED\", \"theme\": \"prominent\"}' } else { 'MIC\\nACTIVE' }",
+        "refresh": "1s"
+      },
+      "action": {
+        "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; $device = Get-AudioDevice -Recording; Set-AudioDevice -Recording -Mute (!$device.Mute)"
+      }
+    },
+    {
       "title": "Settings\n(Win+I)",
       "action": { "keypress": "#i" }
     },
