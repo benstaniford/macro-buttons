@@ -607,6 +607,36 @@ Before tagging a release:
 - **WiX Toolset 3.11+:** Required for MSI installer creation
 - **Visual Studio 2022:** Recommended for development (includes MSBuild)
 
+### WiX Installer Dependency Management
+
+**IMPORTANT:** When adding a new NuGet package, you MUST update `MacroButtons.Installer/Product.wxs` to include the DLL in the installer.
+
+**Current NuGet Dependencies in WiX:**
+- `Newtonsoft.Json.dll` (Component: NewtonsoftJson)
+- `WindowsInput.dll` (Component: InputSimulatorPlus)
+- `CommunityToolkit.Mvvm.dll` (Component: CommunityToolkitMvvm)
+- `System.Management.Automation.dll` (Component: SystemManagementAutomation)
+- `Microsoft.Management.Infrastructure.dll` (Component: MicrosoftManagementInfrastructure)
+- `Microsoft.PowerShell.CoreCLR.Eventing.dll` (Component: MicrosoftPowerShellCorePS)
+
+**Steps to add a new NuGet dependency:**
+1. Add `<PackageReference>` to `MacroButtons.csproj`
+2. Add corresponding `<Component>` to `Product.wxs` in the `ProductComponents` group
+3. Generate a new GUID for the Component (use `[Guid]::NewGuid()` in PowerShell)
+4. Reference the DLL from `$(var.MacroButtons.TargetDir)DllName.dll`
+5. Test the installer build locally before committing
+
+**Example:**
+```xml
+<Component Id="MyNewPackage" Guid="{NEW-GUID-HERE}">
+  <File Id="MyNewPackageDll"
+        Source="$(var.MacroButtons.TargetDir)MyPackage.dll"
+        KeyPath="yes" />
+</Component>
+```
+
+**Note:** The GitHub Actions workflow automatically restores NuGet packages, but the WiX installer must be manually configured to include each DLL.
+
 ## Security Considerations
 
 ### Configuration File
@@ -700,6 +730,7 @@ choco install wixtoolset --version=3.11.2
 ✅ AutoHotkey keystroke simulation
 ✅ Python/executable execution
 ✅ In-process PowerShell execution (System.Management.Automation)
+✅ Comprehensive logging system
 ✅ Dynamic title refresh
 ✅ Multi-monitor support
 ✅ Retro terminal theme

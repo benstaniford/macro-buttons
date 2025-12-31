@@ -135,7 +135,9 @@ jobs:
           - Full-screen non-activating window that never steals focus
           - Grid of customizable tiles for macros and information display
           - Support for keyboard shortcuts (AutoHotkey syntax)
-          - Execute Python scripts and executables
+          - Execute Python scripts, PowerShell commands, and executables
+          - In-process PowerShell execution (no console windows)
+          - Comprehensive logging to %LOCALAPPDATA%\MacroButtons\macrobuttons.log
           - Dynamic information tiles with periodic refresh
           - Multi-monitor support
           - Retro terminal aesthetic with configurable themes

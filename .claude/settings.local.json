@@ -20,7 +20,8 @@
       "WebFetch(domain:code.visualstudio.com)",
       "WebFetch(domain:hackr.io)",
       "Bash(dotnet nuget:*)",
-      "WebFetch(domain:www.nuget.org)"
+      "WebFetch(domain:www.nuget.org)",
+      "Bash(dotnet restore:*)"
     ]
   }
 }
