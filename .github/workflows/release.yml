@@ -70,10 +70,10 @@ jobs:
         run: dotnet test MacroButtons.Tests/MacroButtons.Tests.csproj --configuration Release --no-restore --verbosity normal
 
       - name: Build application
-        run: dotnet build MacroButtons/MacroButtons.csproj -c Release --no-restore
+        run: dotnet build MacroButtons/MacroButtons.csproj -c Release --no-restore /p:Platform=x64
 
       - name: Publish application
-        run: dotnet publish MacroButtons/MacroButtons.csproj -c Release -o MacroButtons/bin/Release/net8.0-windows/publish
+        run: dotnet publish MacroButtons/MacroButtons.csproj -c Release -o MacroButtons/bin/Release/net8.0-windows/publish /p:Platform=x64
 
       - name: Build WiX Installer
         shell: powershell
