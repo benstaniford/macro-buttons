@@ -36,6 +36,7 @@ public class MainViewModel : ViewModelBase, IDisposable
     private readonly ConfigurationService _configService;
     private readonly CommandExecutionService _commandService;
     private readonly PowerShellService _powershellService;
+    private readonly LoggingService _loggingService;
     private KeystrokeService _keystrokeService;
     private readonly WindowHelper _windowHelper;
 
@@ -69,14 +70,18 @@ public class MainViewModel : ViewModelBase, IDisposable
     {
         _profileService = profileService ?? new ProfileService();
         _configService = new ConfigurationService(_profileService);
+        _loggingService = new LoggingService();
         _commandService = new CommandExecutionService();
-        _powershellService = new PowerShellService();
+        _powershellService = new PowerShellService(_loggingService);
         _windowHelper = windowHelper ?? new WindowHelper();
+
+        _loggingService.LogInfo("========== MacroButtons Started ==========");
 
         try
         {
             // Get current profile name
             _currentProfileName = _profileService.GetCurrentProfileName();
+            _loggingService.LogInfo($"Loading profile: {_currentProfileName}");
 
             // Load configuration first to get sendKeys config
             Config = _configService.LoadConfiguration(_currentProfileName);
@@ -107,7 +112,7 @@ public class MainViewModel : ViewModelBase, IDisposable
             // Set minimal defaults
             Rows = 3;
             Columns = 5;
-            var errorTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _powershellService, _windowHelper)
+            var errorTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _powershellService, _loggingService, _windowHelper)
             {
                 DisplayTitle = "Config Error"
             };
@@ -145,7 +150,7 @@ public class MainViewModel : ViewModelBase, IDisposable
             // Set minimal defaults
             Rows = 3;
             Columns = 5;
-            var errorTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _powershellService, _windowHelper)
+            var errorTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _powershellService, _loggingService, _windowHelper)
             {
                 DisplayTitle = "Config Error"
             };
@@ -214,6 +219,7 @@ public class MainViewModel : ViewModelBase, IDisposable
                 _commandService,
                 _keystrokeService,
                 _powershellService,
+                _loggingService,
                 _windowHelper,
                 NavigateToSubmenu,
                 NavigateBack);
@@ -223,7 +229,7 @@ public class MainViewModel : ViewModelBase, IDisposable
         // Fill remaining slots with empty tiles
         for (int i = itemCount; i < totalTiles; i++)
         {
-            var emptyTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _powershellService, _windowHelper);
+            var emptyTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _powershellService, _loggingService, _windowHelper);
             Tiles.Add(emptyTile);
         }
     }

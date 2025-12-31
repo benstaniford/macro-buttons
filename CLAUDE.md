@@ -54,6 +54,7 @@ MacroButtons/
 │   │   ├── ConfigurationService.cs     # JSON config loading/creation
 │   │   ├── CommandExecutionService.cs  # Silent process execution
 │   │   ├── PowerShellService.cs        # In-process PowerShell execution via runspaces
+│   │   ├── LoggingService.cs           # Application event and error logging
 │   │   ├── KeystrokeService.cs         # Keystroke simulation
 │   │   └── MonitorService.cs           # Multi-monitor management
 │   │
@@ -209,7 +210,41 @@ private const int GWL_EXSTYLE = -20;
 
 **Important:** Requires PowerShell modules to be installed (e.g., `Install-Module AudioDeviceCmdlets -Scope CurrentUser`)
 
-### 5. Grid Layout Algorithm
+### 5. Logging System
+
+**Log File Location:** `%LOCALAPPDATA%\MacroButtons\macrobuttons.log`
+
+**What Gets Logged:**
+- Application startup and profile loading
+- Button presses with action type
+- PowerShell command output and errors
+- Exceptions with full stack traces
+- Dynamic title update failures
+
+**Features:**
+- **Thread-safe**: Uses lock for concurrent write protection
+- **Auto-rotation**: Rotates log when it exceeds 5 MB
+- **Backup retention**: Keeps last 5 rotated log files
+- **Structured format**: Timestamped entries with log levels (INFO, WARN, ERROR, BUTTON, STDOUT, STDERR)
+
+**Accessing the Log:**
+- Tray icon → Right-click → "View Log" (opens in Notepad)
+- Manually navigate to: `%LOCALAPPDATA%\MacroButtons\macrobuttons.log`
+
+**Log Entry Format:**
+```
+[2025-01-01 12:34:56.789] [INFO  ] MacroButtons Started
+[2025-01-01 12:35:01.234] [BUTTON] Pressed: 'Mute Mic' (Action: PowerShell)
+[2025-01-01 12:35:01.456] [STDERR] [PowerShell] Import-Module AudioDeviceCmdlets...
+Output: Error: Module 'AudioDeviceCmdlets' not found
+```
+
+**Troubleshooting PowerShell Issues:**
+1. Check log for PowerShell exceptions: `grep -i "powershell" macrobuttons.log`
+2. Look for ERROR entries with full stack traces
+3. Verify module installation: Open PowerShell and run `Get-Module -ListAvailable`
+
+### 6. Grid Layout Algorithm
 
 **Minimum:** 3 rows × 4 columns (12 tiles)
 

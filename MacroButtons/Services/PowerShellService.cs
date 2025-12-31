@@ -11,6 +11,12 @@ namespace MacroButtons.Services;
 /// </summary>
 public class PowerShellService
 {
+    private readonly LoggingService? _loggingService;
+
+    public PowerShellService(LoggingService? loggingService = null)
+    {
+        _loggingService = loggingService;
+    }
     /// <summary>
     /// Executes a PowerShell script file.
     /// </summary>
@@ -125,7 +131,15 @@ public class PowerShellService
                         }
                     }
 
-                    return output.ToString().Trim();
+                    var outputText = output.ToString().Trim();
+
+                    // Log output
+                    _loggingService?.LogCommandOutput("PowerShell",
+                        scriptContent.Length > 100 ? scriptContent.Substring(0, 100) + "..." : scriptContent,
+                        outputText,
+                        powershell.HadErrors);
+
+                    return outputText;
                 }
                 else
                 {
@@ -133,8 +147,16 @@ public class PowerShellService
                     // Still check for errors and log them
                     if (powershell.HadErrors)
                     {
-                        // Could log to debug output in future
-                        // For now, silently continue (matches CommandExecutionService behavior)
+                        var errorOutput = new StringBuilder();
+                        foreach (var error in powershell.Streams.Error)
+                        {
+                            errorOutput.AppendLine(error.ToString());
+                        }
+
+                        _loggingService?.LogCommandOutput("PowerShell",
+                            scriptContent.Length > 100 ? scriptContent.Substring(0, 100) + "..." : scriptContent,
+                            errorOutput.ToString(),
+                            isError: true);
                     }
 
                     return string.Empty;
@@ -143,11 +165,13 @@ public class PowerShellService
             catch (RuntimeException ex)
             {
                 // PowerShell terminating errors (syntax errors, cmdlet not found, etc.)
+                _loggingService?.LogError($"PowerShell RuntimeException: {scriptContent.Substring(0, Math.Min(100, scriptContent.Length))}", ex);
                 return captureOutput ? $"Error: {ex.Message}" : string.Empty;
             }
             catch (Exception ex)
             {
                 // Other exceptions (should be rare)
+                _loggingService?.LogError($"PowerShell Exception: {scriptContent.Substring(0, Math.Min(100, scriptContent.Length))}", ex);
                 return captureOutput ? $"Error: {ex.Message}" : string.Empty;
             }
         });

@@ -131,6 +131,13 @@ public partial class MainWindow : Window
 
         contextMenu.Items.Add(new System.Windows.Forms.ToolStripSeparator());
 
+        // View Log
+        var viewLogItem = new System.Windows.Forms.ToolStripMenuItem("View Log");
+        viewLogItem.Click += (s, e) => LoggingService.OpenLogInNotepad();
+        contextMenu.Items.Add(viewLogItem);
+
+        contextMenu.Items.Add(new System.Windows.Forms.ToolStripSeparator());
+
         // Quit
         var quitItem = new System.Windows.Forms.ToolStripMenuItem("Quit");
         quitItem.Click += (s, e) => QuitApplication();
