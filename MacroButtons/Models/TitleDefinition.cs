@@ -23,6 +23,21 @@ public class TitleDefinition
     public string? Builtin { get; set; }
 
     /// <summary>
+    /// PowerShell command to execute inline (e.g., "Get-Date -Format 'HH:mm:ss'").
+    /// </summary>
+    public string? PowerShell { get; set; }
+
+    /// <summary>
+    /// PowerShell script file path to execute (e.g., "~/scripts/get-status.ps1").
+    /// </summary>
+    public string? PowerShellScript { get; set; }
+
+    /// <summary>
+    /// Optional named parameters to pass to PowerShell script/command.
+    /// </summary>
+    public Dictionary<string, object>? PowerShellParameters { get; set; }
+
+    /// <summary>
     /// Optional refresh interval override (e.g., "100ms", "1s", "5m").
     /// If not specified, uses global refresh interval.
     /// Minimum is 100ms.
@@ -50,6 +65,16 @@ public class TitleDefinition
     /// Returns true if this is a builtin-based dynamic title.
     /// </summary>
     public bool IsBuiltin => !string.IsNullOrEmpty(Builtin);
+
+    /// <summary>
+    /// Returns true if this is a PowerShell-based dynamic title (inline command).
+    /// </summary>
+    public bool IsPowerShell => !string.IsNullOrEmpty(PowerShell);
+
+    /// <summary>
+    /// Returns true if this is a PowerShell script-based dynamic title.
+    /// </summary>
+    public bool IsPowerShellScript => !string.IsNullOrEmpty(PowerShellScript);
 
     /// <summary>
     /// Parses the refresh interval string into a TimeSpan.

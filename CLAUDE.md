@@ -4,12 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-MacroButtons is a WPF/C# application designed for touch-screen macro button panels with a retro terminal aesthetic. The application provides a full-screen, non-activating window that displays a grid of customizable tiles for executing macros (keystrokes, Python scripts, executables) or displaying dynamic information.
+MacroButtons is a WPF/C# application designed for touch-screen macro button panels with a retro terminal aesthetic. The application provides a full-screen, non-activating window that displays a grid of customizable tiles for executing macros (keystrokes, Python scripts, PowerShell commands, executables) or displaying dynamic information.
 
 **Key Features:**
 - Non-activating window that never steals focus (critical for gaming/creation workflows)
 - AutoHotkey-style keystroke simulation (pure C# implementation)
-- Silent Python/executable execution with stdout capture
+- Silent Python/executable/PowerShell execution with stdout capture
+- In-process PowerShell execution via System.Management.Automation (no console windows)
 - Dynamic information tiles with configurable refresh intervals
 - Multi-monitor support
 - Retro terminal aesthetic with configurable themes (monospace fonts, configurable colors)
@@ -36,7 +37,7 @@ MacroButtons/
 │   ├── Models/                         # Configuration data models
 │   │   ├── MacroButtonConfig.cs        # Root configuration (Items, Theme, Global)
 │   │   ├── ButtonItem.cs               # Individual button definition
-│   │   ├── ActionDefinition.cs         # Action types (Keypress, Python, Exe)
+│   │   ├── ActionDefinition.cs         # Action types (Keypress, Python, PowerShell, Exe)
 │   │   ├── TitleDefinition.cs          # Dynamic title command definition
 │   │   ├── ThemeConfig.cs              # Foreground/Background colors
 │   │   └── GlobalConfig.cs             # Refresh interval, MonitorIndex
@@ -52,6 +53,8 @@ MacroButtons/
 │   ├── Services/                       # Business logic services
 │   │   ├── ConfigurationService.cs     # JSON config loading/creation
 │   │   ├── CommandExecutionService.cs  # Silent process execution
+│   │   ├── PowerShellService.cs        # In-process PowerShell execution via runspaces
+│   │   ├── LoggingService.cs           # Application event and error logging
 │   │   ├── KeystrokeService.cs         # Keystroke simulation
 │   │   └── MonitorService.cs           # Multi-monitor management
 │   │
@@ -103,10 +106,22 @@ private const int GWL_EXSTYLE = -20;
   "items": [
     {
       "title": "Static Text" | {
-        "python": [...] | "exe": [...],
-        "refresh": "100ms"  // Optional: per-tile refresh interval (overrides global)
+        "python": [...] | "exe": [...] | "powershell": "command" | "powershellScript": "path/to/script.ps1",
+        "refresh": "100ms",  // Optional: per-tile refresh interval (overrides global)
+        "powershellParameters": { "ParamName": "value" }  // Optional: named parameters for PowerShell
       },
-      "action": { "keypress": "^v" } | { "python": [...] } | { "exe": "..." } | null
+      "action": {
+        "keypress": "^v"
+      } | {
+        "python": [...]
+      } | {
+        "exe": "..."
+      } | {
+        "powershell": "Get-Date -Format 'HH:mm:ss'"  // Inline PowerShell command
+      } | {
+        "powershellScript": "~/scripts/my-script.ps1",  // PowerShell script file
+        "powershellParameters": { "Name": "value" }  // Optional: named parameters
+      } | null
     }
   ],
   "theme": {
@@ -142,7 +157,94 @@ private const int GWL_EXSTYLE = -20;
 
 **Implementation:** Parses to list of KeyAction objects (ModifierDown → KeyPress → ModifierUp sequence)
 
-### 4. Grid Layout Algorithm
+### 4. PowerShell Execution System
+
+**Architecture:** In-process execution using System.Management.Automation (NuGet package v7.4.7)
+
+**Two Execution Modes:**
+
+1. **Inline Commands** (`powershell` property):
+   ```json
+   {
+     "action": {
+       "powershell": "Get-Date -Format 'HH:mm:ss'"
+     }
+   }
+   ```
+
+2. **Script Files** (`powershellScript` property):
+   ```json
+   {
+     "action": {
+       "powershellScript": "~/scripts/toggle-mic.ps1",
+       "powershellParameters": {
+         "DeviceIndex": 0,
+         "Verbose": true
+       }
+     }
+   }
+   ```
+
+**Key Implementation Details:**
+- **Service:** PowerShellService.cs creates isolated runspaces for each execution
+- **Runspace Strategy:** Per-execution runspace creation (thread-safe, no state pollution)
+- **Performance:** ~100-200ms per execution (acceptable for user-triggered actions)
+- **No Console Windows:** Executes in-process, completely silent
+- **Output Capture:** Captures Output stream + Error stream for dynamic titles
+- **Path Expansion:** Supports ~ (tilde), %VAR% (environment variables), absolute and relative paths
+- **Working Directory:** Set to UserProfile (matches CommandExecutionService)
+- **Error Handling:** RuntimeException and HadErrors captured and displayed in tiles
+
+**Dynamic Title Example (Microphone Status):**
+```json
+{
+  "title": {
+    "powershell": "Import-Module AudioDeviceCmdlets; $device = Get-AudioDevice -Recording; if ($device.Mute) { '{\"text\": \"MIC\\nMUTED\", \"theme\": \"prominent\"}' } else { 'MIC\\nACTIVE' }",
+    "refresh": "1s"
+  },
+  "action": {
+    "powershell": "Import-Module AudioDeviceCmdlets; $device = Get-AudioDevice -Recording; Set-AudioDevice -Recording -Mute (!$device.Mute)"
+  }
+}
+```
+
+**Important:** Requires PowerShell modules to be installed (e.g., `Install-Module AudioDeviceCmdlets -Scope CurrentUser`)
+
+### 5. Logging System
+
+**Log File Location:** `%LOCALAPPDATA%\MacroButtons\macrobuttons.log`
+
+**What Gets Logged:**
+- Application startup and profile loading
+- Button presses with action type
+- PowerShell command output and errors
+- Exceptions with full stack traces
+- Dynamic title update failures
+
+**Features:**
+- **Thread-safe**: Uses lock for concurrent write protection
+- **Auto-rotation**: Rotates log when it exceeds 5 MB
+- **Backup retention**: Keeps last 5 rotated log files
+- **Structured format**: Timestamped entries with log levels (INFO, WARN, ERROR, BUTTON, STDOUT, STDERR)
+
+**Accessing the Log:**
+- Tray icon → Right-click → "View Log" (opens in Notepad)
+- Manually navigate to: `%LOCALAPPDATA%\MacroButtons\macrobuttons.log`
+
+**Log Entry Format:**
+```
+[2025-01-01 12:34:56.789] [INFO  ] MacroButtons Started
+[2025-01-01 12:35:01.234] [BUTTON] Pressed: 'Mute Mic' (Action: PowerShell)
+[2025-01-01 12:35:01.456] [STDERR] [PowerShell] Import-Module AudioDeviceCmdlets...
+Output: Error: Module 'AudioDeviceCmdlets' not found
+```
+
+**Troubleshooting PowerShell Issues:**
+1. Check log for PowerShell exceptions: `grep -i "powershell" macrobuttons.log`
+2. Look for ERROR entries with full stack traces
+3. Verify module installation: Open PowerShell and run `Get-Module -ListAvailable`
+
+### 6. Grid Layout Algorithm
 
 **Minimum:** 3 rows × 4 columns (12 tiles)
 
@@ -505,6 +607,36 @@ Before tagging a release:
 - **WiX Toolset 3.11+:** Required for MSI installer creation
 - **Visual Studio 2022:** Recommended for development (includes MSBuild)
 
+### WiX Installer Dependency Management
+
+**IMPORTANT:** When adding a new NuGet package, you MUST update `MacroButtons.Installer/Product.wxs` to include the DLL in the installer.
+
+**Current NuGet Dependencies in WiX:**
+- `Newtonsoft.Json.dll` (Component: NewtonsoftJson)
+- `WindowsInput.dll` (Component: InputSimulatorPlus)
+- `CommunityToolkit.Mvvm.dll` (Component: CommunityToolkitMvvm)
+- `System.Management.Automation.dll` (Component: SystemManagementAutomation)
+- `Microsoft.Management.Infrastructure.dll` (Component: MicrosoftManagementInfrastructure)
+- `Microsoft.PowerShell.CoreCLR.Eventing.dll` (Component: MicrosoftPowerShellCorePS)
+
+**Steps to add a new NuGet dependency:**
+1. Add `<PackageReference>` to `MacroButtons.csproj`
+2. Add corresponding `<Component>` to `Product.wxs` in the `ProductComponents` group
+3. Generate a new GUID for the Component (use `[Guid]::NewGuid()` in PowerShell)
+4. Reference the DLL from `$(var.MacroButtons.TargetDir)DllName.dll`
+5. Test the installer build locally before committing
+
+**Example:**
+```xml
+<Component Id="MyNewPackage" Guid="{NEW-GUID-HERE}">
+  <File Id="MyNewPackageDll"
+        Source="$(var.MacroButtons.TargetDir)MyPackage.dll"
+        KeyPath="yes" />
+</Component>
+```
+
+**Note:** The GitHub Actions workflow automatically restores NuGet packages, but the WiX installer must be manually configured to include each DLL.
+
 ## Security Considerations
 
 ### Configuration File
@@ -597,6 +729,8 @@ choco install wixtoolset --version=3.11.2
 ✅ Non-activating window
 ✅ AutoHotkey keystroke simulation
 ✅ Python/executable execution
+✅ In-process PowerShell execution (System.Management.Automation)
+✅ Comprehensive logging system
 ✅ Dynamic title refresh
 ✅ Multi-monitor support
 ✅ Retro terminal theme

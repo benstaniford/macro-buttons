@@ -21,6 +21,8 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
     private readonly MacroButtonConfig _rootConfig;
     private readonly CommandExecutionService _commandService;
     private readonly KeystrokeService _keystrokeService;
+    private readonly PowerShellService _powershellService;
+    private readonly LoggingService _loggingService;
     private readonly WindowHelper _windowHelper;
     private readonly BuiltinService _builtinService;
     private DispatcherTimer? _refreshTimer;
@@ -45,12 +47,14 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
     /// <summary>
     /// Creates an empty tile (placeholder).
     /// </summary>
-    public ButtonTileViewModel(MacroButtonConfig rootConfig, CommandExecutionService commandService, KeystrokeService keystrokeService, WindowHelper windowHelper)
+    public ButtonTileViewModel(MacroButtonConfig rootConfig, CommandExecutionService commandService, KeystrokeService keystrokeService, PowerShellService powershellService, LoggingService loggingService, WindowHelper windowHelper)
     {
         _config = null;
         _rootConfig = rootConfig;
         _commandService = commandService;
         _keystrokeService = keystrokeService;
+        _powershellService = powershellService;
+        _loggingService = loggingService;
         _windowHelper = windowHelper;
         _builtinService = new BuiltinService();
         _onNavigateToSubmenu = null;
@@ -75,6 +79,8 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         TimeSpan globalRefreshInterval,
         CommandExecutionService commandService,
         KeystrokeService keystrokeService,
+        PowerShellService powershellService,
+        LoggingService loggingService,
         WindowHelper windowHelper,
         Action<List<ButtonItem>>? onNavigateToSubmenu = null,
         Action? onNavigateBack = null)
@@ -83,6 +89,8 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         _rootConfig = rootConfig;
         _commandService = commandService;
         _keystrokeService = keystrokeService;
+        _powershellService = powershellService;
+        _loggingService = loggingService;
         _windowHelper = windowHelper;
         _builtinService = new BuiltinService();
         _onNavigateToSubmenu = onNavigateToSubmenu;
@@ -168,6 +176,10 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
             {
                 var actionType = _config.Action.GetActionType();
 
+                // Log button press
+                var buttonTitle = _config.Title is string title ? title : "Dynamic Title";
+                _loggingService.LogButtonPress(buttonTitle, actionType.ToString());
+
                 // Handle BACK navigation (exclusive - return immediately)
                 if (actionType == ActionType.NavigateBack)
                 {
@@ -187,6 +199,16 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
                     case ActionType.Executable:
                         await _commandService.ExecuteAsync(_config.Action.Exe!);
                         break;
+                    case ActionType.PowerShell:
+                        await _powershellService.ExecuteCommandAsync(
+                            _config.Action.PowerShell!,
+                            _config.Action.PowerShellParameters);
+                        break;
+                    case ActionType.PowerShellScript:
+                        await _powershellService.ExecuteScriptFileAsync(
+                            _config.Action.PowerShellScript!,
+                            _config.Action.PowerShellParameters);
+                        break;
                     case ActionType.Builtin:
                         _builtinService.ExecuteBuiltin(_config.Action.Builtin!);
                         break;
@@ -201,6 +223,8 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         }
         catch (Exception ex)
         {
+            var buttonTitle = _config.Title is string title ? title : "Dynamic Title";
+            _loggingService.LogError($"Button '{buttonTitle}' execution failed", ex);
             DisplayTitle = $"Error: {ex.Message}";
         }
     }
@@ -228,6 +252,20 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
             else if (titleDef.IsExecutable)
             {
                 output = await _commandService.ExecuteFromListAsync(titleDef.Exe!, captureOutput: true);
+            }
+            else if (titleDef.IsPowerShell)
+            {
+                output = await _powershellService.ExecuteCommandAsync(
+                    titleDef.PowerShell!,
+                    titleDef.PowerShellParameters,
+                    captureOutput: true);
+            }
+            else if (titleDef.IsPowerShellScript)
+            {
+                output = await _powershellService.ExecuteScriptFileAsync(
+                    titleDef.PowerShellScript!,
+                    titleDef.PowerShellParameters,
+                    captureOutput: true);
             }
             else if (titleDef.IsBuiltin)
             {
@@ -272,6 +310,8 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         }
         catch (Exception ex)
         {
+            var buttonTitle = _config.Title is string title ? title : "Dynamic Title";
+            _loggingService.LogError($"Dynamic title update failed for '{buttonTitle}'", ex);
             DisplayTitle = $"Error: {ex.Message}";
         }
     }

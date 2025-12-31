@@ -19,11 +19,12 @@
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup>
-    <DefineConstants>SamplesSourceDir=$(ProjectDir)..\samples</DefineConstants>
+    <DefineConstants>SamplesSourceDir=$(ProjectDir)..\samples;PublishDir=$(ProjectDir)..\MacroButtons\bin\x64\Release\net8.0-windows</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Product.wxs" />
     <Compile Include="SamplesAuto.wxs" />
+    <Compile Include="DllsAuto.wxs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="License.rtf" />
@@ -64,5 +65,20 @@
                    GenerateGuidsNow="true"
                    ToolPath="$(WixToolPath)"
                    PreprocessorVariable="var.SamplesSourceDir" />
+  </Target>
+
+  <!-- Auto-harvest DLLs from publish directory before build -->
+  <Target Name="HarvestDlls" BeforeTargets="BeforeBuild">
+    <HeatDirectory Directory="$(ProjectDir)..\MacroButtons\bin\x64\Release\net8.0-windows"
+                   DirectoryRefId="INSTALLFOLDER"
+                   ComponentGroupName="PublishedDlls"
+                   OutputFile="DllsAuto.wxs"
+                   SuppressFragments="true"
+                   SuppressRegistry="true"
+                   SuppressRootDirectory="true"
+                   AutogenerateGuids="true"
+                   GenerateGuidsNow="true"
+                   ToolPath="$(WixToolPath)"
+                   PreprocessorVariable="var.PublishDir" />
   </Target>
 </Project>
