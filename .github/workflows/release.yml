@@ -72,46 +72,42 @@ jobs:
       - name: Publish MacroButtons application
         run: dotnet publish MacroButtons/MacroButtons.csproj -c Release /p:Platform=x64 --no-restore -o MacroButtons/bin/x64/Release/net8.0-windows
 
-      - name: Copy PowerShell dependencies
+      - name: Copy PowerShell dependencies from deps.json
         shell: powershell
         run: |
           $nugetPackages = "$env:USERPROFILE\.nuget\packages"
           $outputDir = "MacroButtons\bin\x64\Release\net8.0-windows"
+          $depsJson = "$outputDir\MacroButtons.deps.json"
 
-          Write-Host "Searching for PowerShell DLLs in NuGet cache..."
+          Write-Host "Reading dependencies from MacroButtons.deps.json..."
+          $deps = Get-Content $depsJson | ConvertFrom-Json
 
-          # Find System.Management.Automation.dll
-          $smaFiles = Get-ChildItem -Path $nugetPackages -Recurse -Filter "System.Management.Automation.dll" -ErrorAction SilentlyContinue
-          if ($smaFiles) {
-            Write-Host "Found System.Management.Automation.dll locations:"
-            $smaFiles | ForEach-Object { Write-Host "  $($_.FullName)" }
-            # Use the first one found (typically the most recent)
-            Copy-Item -Path $smaFiles[0].FullName -Destination $outputDir -Force
-            Write-Host "Copied System.Management.Automation.dll from $($smaFiles[0].FullName)"
-          } else {
-            Write-Host "WARNING: System.Management.Automation.dll not found"
-          }
+          # Extract the exact PowerShell library paths from deps.json
+          $libraries = $deps.targets.'".NETCoreApp,Version=v8.0/win-x64"'.PSObject.Properties | Where-Object { $_.Name -like "*System.Management.Automation*" -or $_.Name -like "*Microsoft.Management.Infrastructure*" -or $_.Name -like "*Microsoft.PowerShell.CoreCLR.Eventing*" }
 
-          # Find Microsoft.Management.Infrastructure.dll
-          $mmiFiles = Get-ChildItem -Path $nugetPackages -Recurse -Filter "Microsoft.Management.Infrastructure.dll" -ErrorAction SilentlyContinue
-          if ($mmiFiles) {
-            Write-Host "Found Microsoft.Management.Infrastructure.dll locations:"
-            $mmiFiles | ForEach-Object { Write-Host "  $($_.FullName)" }
-            Copy-Item -Path $mmiFiles[0].FullName -Destination $outputDir -Force
-            Write-Host "Copied Microsoft.Management.Infrastructure.dll"
-          } else {
-            Write-Host "WARNING: Microsoft.Management.Infrastructure.dll not found"
-          }
+          foreach ($lib in $libraries) {
+            $libName = $lib.Name
+            $runtime = $lib.Value.runtime
+            if ($runtime) {
+              Write-Host "Processing library: $libName"
+              foreach ($dllPath in $runtime.PSObject.Properties.Name) {
+                $dllFileName = Split-Path $dllPath -Leaf
+                Write-Host "  Found DLL reference: $dllFileName"
 
-          # Find Microsoft.PowerShell.CoreCLR.Eventing.dll
-          $psEventingFiles = Get-ChildItem -Path $nugetPackages -Recurse -Filter "Microsoft.PowerShell.CoreCLR.Eventing.dll" -ErrorAction SilentlyContinue
-          if ($psEventingFiles) {
-            Write-Host "Found Microsoft.PowerShell.CoreCLR.Eventing.dll locations:"
-            $psEventingFiles | ForEach-Object { Write-Host "  $($_.FullName)" }
-            Copy-Item -Path $psEventingFiles[0].FullName -Destination $outputDir -Force
-            Write-Host "Copied Microsoft.PowerShell.CoreCLR.Eventing.dll"
-          } else {
-            Write-Host "WARNING: Microsoft.PowerShell.CoreCLR.Eventing.dll not found"
+                # Construct path in NuGet cache
+                $packageInfo = $libName -split '/'
+                $packageName = $packageInfo[0].ToLower()
+                $packageVersion = $packageInfo[1]
+                $nugetDllPath = Join-Path $nugetPackages "$packageName\$packageVersion\$dllPath"
+
+                if (Test-Path $nugetDllPath) {
+                  Copy-Item -Path $nugetDllPath -Destination $outputDir -Force
+                  Write-Host "  Copied from: $nugetDllPath"
+                } else {
+                  Write-Host "  WARNING: Not found at: $nugetDllPath"
+                }
+              }
+            }
           }
 
           Write-Host "PowerShell dependencies copy completed"
