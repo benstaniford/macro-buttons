@@ -72,10 +72,39 @@ jobs:
       - name: Publish MacroButtons application
         run: dotnet publish MacroButtons/MacroButtons.csproj -c Release /p:Platform=x64 --no-restore -o MacroButtons/bin/x64/Release/net8.0-windows
 
+      - name: Copy PowerShell dependencies
+        shell: powershell
+        run: |
+          $nugetPackages = "$env:USERPROFILE\.nuget\packages"
+          $outputDir = "MacroButtons\bin\x64\Release\net8.0-windows"
+
+          Write-Host "Copying PowerShell DLLs from NuGet cache..."
+
+          # System.Management.Automation
+          $smaSource = "$nugetPackages\system.management.automation\7.4.7\lib\net8.0\System.Management.Automation.dll"
+          Copy-Item -Path $smaSource -Destination $outputDir -Force -ErrorAction Stop
+          Write-Host "Copied System.Management.Automation.dll"
+
+          # Microsoft.Management.Infrastructure
+          $mmiSource = "$nugetPackages\microsoft.management.infrastructure\3.0.0\lib\net8.0\Microsoft.Management.Infrastructure.dll"
+          if (Test-Path $mmiSource) {
+            Copy-Item -Path $mmiSource -Destination $outputDir -Force
+            Write-Host "Copied Microsoft.Management.Infrastructure.dll"
+          }
+
+          # Microsoft.PowerShell.CoreCLR.Eventing
+          $psEventingSource = "$nugetPackages\microsoft.powershell.coreclr.eventing\7.4.7\lib\net8.0\Microsoft.PowerShell.CoreCLR.Eventing.dll"
+          if (Test-Path $psEventingSource) {
+            Copy-Item -Path $psEventingSource -Destination $outputDir -Force
+            Write-Host "Copied Microsoft.PowerShell.CoreCLR.Eventing.dll"
+          }
+
+          Write-Host "PowerShell dependencies copied successfully"
+
       - name: Debug - List output directory
         shell: powershell
         run: |
-          Write-Host "Listing MacroButtons output directory:"
+          Write-Host "Listing MacroButtons output directory after PowerShell copy:"
           Get-ChildItem -Path "MacroButtons\bin\x64\Release\net8.0-windows" | Select-Object Name
 
       - name: Build WiX Installer
