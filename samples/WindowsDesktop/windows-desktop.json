@@ -14,19 +14,19 @@
       "items": [
         {
           "action": {
-            "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; $device = Get-AudioDevice -Recording; Set-AudioDevice -Recording -Mute (!$device.Mute)"
+            "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; Set-AudioDevice -RecordingMuteToggle"
           },
           "title": {
-            "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; $device = Get-AudioDevice -Recording; if ($device.Mute) { '{\"text\": \"MIC\nMUTED\", \"theme\": \"toggled\"}' } else { 'MIC\nACTIVE' }",
+            "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; $device = Get-AudioDevice -Recording; if ($device.Device.AudioEndpointVolume.Mute) { '{\"text\": \"MIC\nMUTED\", \"theme\": \"toggled\"}' } else { 'MIC\nACTIVE' }",
             "refresh": "1s"
           }
         },
         {
           "action": {
-            "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; $device = Get-AudioDevice; Set-AudioDevice -Mute (!$device.Mute)"
+            "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; Set-AudioDevice -PlaybackMuteToggle"
           },
           "title": {
-            "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; $device = Get-AudioDevice; if ($device.Mute) { '{\"text\": \"AUDIO\\nMUTED\", \"theme\": \"toggled\"}' } else { 'AUDIO\\nACTIVE' }",
+            "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; $device = Get-AudioDevice -Playback; if ($device.Device.AudioEndpointVolume.Mute) { '{\"text\": \"AUDIO\nMUTED\", \"theme\": \"toggled\"}' } else { 'AUDIO\nACTIVE' }",
             "refresh": "1s"
           }
         }
