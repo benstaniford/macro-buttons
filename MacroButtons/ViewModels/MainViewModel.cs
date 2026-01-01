@@ -114,7 +114,7 @@ public class MainViewModel : ViewModelBase, IDisposable
             // Set minimal defaults
             Rows = 3;
             Columns = 5;
-            var errorTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _powershellService, _loggingService, _windowHelper)
+            var errorTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _powershellService, _loggingService, _windowHelper, _dynamicSubmenuService)
             {
                 DisplayTitle = "Config Error"
             };
@@ -152,7 +152,7 @@ public class MainViewModel : ViewModelBase, IDisposable
             // Set minimal defaults
             Rows = 3;
             Columns = 5;
-            var errorTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _powershellService, _loggingService, _windowHelper)
+            var errorTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _powershellService, _loggingService, _windowHelper, _dynamicSubmenuService)
             {
                 DisplayTitle = "Config Error"
             };
