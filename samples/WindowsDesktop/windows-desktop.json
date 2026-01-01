@@ -23,10 +23,10 @@
         },
         {
           "action": {
-            "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; $device = Get-AudioDevice -Playback; Set-AudioDevice -Playback -Mute (!$device.Mute)"
+            "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; $device = Get-AudioDevice; Set-AudioDevice -Mute (!$device.Mute)"
           },
           "title": {
-            "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; $device = Get-AudioDevice -Playback; if ($device.Mute) { '{\"text\": \"AUDIO\nMUTED\", \"theme\": \"toggled\"}' } else { 'AUDIO\nACTIVE' }",
+            "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; $device = Get-AudioDevice; if ($device.Mute) { '{\"text\": \"AUDIO\\nMUTED\", \"theme\": \"toggled\"}' } else { 'AUDIO\\nACTIVE' }",
             "refresh": "1s"
           }
         }
