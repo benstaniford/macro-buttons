@@ -1,5 +1,6 @@
 using MacroButtons.Services;
 using Xunit;
+using System.IO;
 
 namespace MacroButtons.Tests;
 
