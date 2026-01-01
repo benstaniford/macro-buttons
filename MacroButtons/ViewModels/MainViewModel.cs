@@ -36,6 +36,7 @@ public class MainViewModel : ViewModelBase, IDisposable
     private readonly ConfigurationService _configService;
     private readonly CommandExecutionService _commandService;
     private readonly PowerShellService _powershellService;
+    private readonly DynamicSubmenuService _dynamicSubmenuService;
     private readonly LoggingService _loggingService;
     private KeystrokeService _keystrokeService;
     private readonly WindowHelper _windowHelper;
@@ -73,6 +74,7 @@ public class MainViewModel : ViewModelBase, IDisposable
         _loggingService = new LoggingService();
         _commandService = new CommandExecutionService();
         _powershellService = new PowerShellService(_loggingService);
+        _dynamicSubmenuService = new DynamicSubmenuService(_commandService, _powershellService, _loggingService);
         _windowHelper = windowHelper ?? new WindowHelper();
 
         _loggingService.LogInfo("========== MacroButtons Started ==========");
@@ -221,6 +223,7 @@ public class MainViewModel : ViewModelBase, IDisposable
                 _powershellService,
                 _loggingService,
                 _windowHelper,
+                _dynamicSubmenuService,
                 NavigateToSubmenu,
                 NavigateBack);
             Tiles.Add(tile);
@@ -229,7 +232,7 @@ public class MainViewModel : ViewModelBase, IDisposable
         // Fill remaining slots with empty tiles
         for (int i = itemCount; i < totalTiles; i++)
         {
-            var emptyTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _powershellService, _loggingService, _windowHelper);
+            var emptyTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _powershellService, _loggingService, _windowHelper, _dynamicSubmenuService);
             Tiles.Add(emptyTile);
         }
     }

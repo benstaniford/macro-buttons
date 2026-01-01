@@ -335,6 +335,22 @@ public class ConfigurationService
             }
         }
 
+        // Handle dynamic submenu (can be null or object) - case-insensitive
+        var dynamicSubmenuToken = (itemToken as JObject)?.Properties()
+            .FirstOrDefault(p => p.Name.Equals("dynamicSubmenu", StringComparison.OrdinalIgnoreCase))?.Value;
+        if (dynamicSubmenuToken != null && dynamicSubmenuToken.Type != JTokenType.Null)
+        {
+            buttonItem.DynamicSubmenu = dynamicSubmenuToken.ToObject<DynamicSubmenuDefinition>(serializer);
+        }
+
+        // Handle theme - case-insensitive
+        var themeToken = (itemToken as JObject)?.Properties()
+            .FirstOrDefault(p => p.Name.Equals("theme", StringComparison.OrdinalIgnoreCase))?.Value;
+        if (themeToken != null && themeToken.Type == JTokenType.String)
+        {
+            buttonItem.Theme = themeToken.Value<string>();
+        }
+
         return buttonItem;
     }
 

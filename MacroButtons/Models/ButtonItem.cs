@@ -16,6 +16,12 @@ public class ButtonItem
     public List<ButtonItem>? Items { get; set; }
 
     /// <summary>
+    /// Dynamic submenu definition - executes command and parses JSON array of ButtonItem objects.
+    /// Mutually exclusive with Items property (static submenu).
+    /// </summary>
+    public DynamicSubmenuDefinition? DynamicSubmenu { get; set; }
+
+    /// <summary>
     /// Optional theme name to apply to this button (e.g., "default", "toggled", "prominent").
     /// If null or empty, uses the "default" theme.
     /// </summary>
@@ -37,9 +43,19 @@ public class ButtonItem
     public bool HasAction => Action != null;
 
     /// <summary>
-    /// Returns true if this button has a submenu.
+    /// Returns true if this button has a submenu (static or dynamic).
     /// </summary>
-    public bool HasSubmenu => Items != null && Items.Count > 0;
+    public bool HasSubmenu => HasStaticSubmenu || HasDynamicSubmenu;
+
+    /// <summary>
+    /// Returns true if this button has a static submenu.
+    /// </summary>
+    public bool HasStaticSubmenu => Items != null && Items.Count > 0;
+
+    /// <summary>
+    /// Returns true if this button has a dynamic submenu.
+    /// </summary>
+    public bool HasDynamicSubmenu => DynamicSubmenu != null;
 
     /// <summary>
     /// Returns true if this button has both an action and a submenu.

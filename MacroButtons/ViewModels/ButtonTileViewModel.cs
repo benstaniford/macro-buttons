@@ -25,6 +25,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
     private readonly LoggingService _loggingService;
     private readonly WindowHelper _windowHelper;
     private readonly BuiltinService _builtinService;
+    private readonly DynamicSubmenuService _dynamicSubmenuService;
     private DispatcherTimer? _refreshTimer;
 
     // Navigation callbacks
@@ -47,7 +48,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
     /// <summary>
     /// Creates an empty tile (placeholder).
     /// </summary>
-    public ButtonTileViewModel(MacroButtonConfig rootConfig, CommandExecutionService commandService, KeystrokeService keystrokeService, PowerShellService powershellService, LoggingService loggingService, WindowHelper windowHelper)
+    public ButtonTileViewModel(MacroButtonConfig rootConfig, CommandExecutionService commandService, KeystrokeService keystrokeService, PowerShellService powershellService, LoggingService loggingService, WindowHelper windowHelper, DynamicSubmenuService dynamicSubmenuService)
     {
         _config = null;
         _rootConfig = rootConfig;
@@ -57,6 +58,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         _loggingService = loggingService;
         _windowHelper = windowHelper;
         _builtinService = new BuiltinService();
+        _dynamicSubmenuService = dynamicSubmenuService;
         _onNavigateToSubmenu = null;
         _onNavigateBack = null;
         IsEmpty = true;
@@ -82,6 +84,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         PowerShellService powershellService,
         LoggingService loggingService,
         WindowHelper windowHelper,
+        DynamicSubmenuService dynamicSubmenuService,
         Action<List<ButtonItem>>? onNavigateToSubmenu = null,
         Action? onNavigateBack = null)
     {
@@ -93,6 +96,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         _loggingService = loggingService;
         _windowHelper = windowHelper;
         _builtinService = new BuiltinService();
+        _dynamicSubmenuService = dynamicSubmenuService;
         _onNavigateToSubmenu = onNavigateToSubmenu;
         _onNavigateBack = onNavigateBack;
         IsEmpty = false;
@@ -215,8 +219,18 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
                 }
             }
 
-            // PHASE 2: Navigate to submenu if present (happens AFTER action)
-            if (_config.HasSubmenu && _config.Items != null)
+            // PHASE 2: Navigate to dynamic submenu if present (happens AFTER action)
+            if (_config.HasDynamicSubmenu && _config.DynamicSubmenu != null)
+            {
+                _loggingService.LogInfo("Executing dynamic submenu generation");
+
+                var items = await _dynamicSubmenuService.ExecuteAndParseAsync(_config.DynamicSubmenu);
+                _onNavigateToSubmenu?.Invoke(items);
+                return; // Exit - don't check static submenu
+            }
+
+            // PHASE 3: Navigate to static submenu if present (happens AFTER action)
+            if (_config.HasStaticSubmenu && _config.Items != null)
             {
                 _onNavigateToSubmenu?.Invoke(_config.Items);
             }
