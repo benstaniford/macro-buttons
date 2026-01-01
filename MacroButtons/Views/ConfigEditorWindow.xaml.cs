@@ -10,7 +10,7 @@ namespace MacroButtons.Views;
 /// </summary>
 public partial class ConfigEditorWindow : Window
 {
-    private Point _dragStartPoint;
+    private System.Windows.Point _dragStartPoint;
     private bool _isDragging;
     private ButtonTileEditorViewModel? _draggedTile;
 
@@ -20,7 +20,7 @@ public partial class ConfigEditorWindow : Window
         DataContext = viewModel;
     }
 
-    private void Tile_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    private void Tile_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
     {
         _dragStartPoint = e.GetPosition(null);
         _isDragging = false;
@@ -31,12 +31,12 @@ public partial class ConfigEditorWindow : Window
         }
     }
 
-    private void Tile_PreviewMouseMove(object sender, MouseEventArgs e)
+    private void Tile_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
     {
         if (e.LeftButton == MouseButtonState.Pressed && !_isDragging && _draggedTile != null)
         {
-            Point currentPosition = e.GetPosition(null);
-            Vector diff = _dragStartPoint - currentPosition;
+            System.Windows.Point currentPosition = e.GetPosition(null);
+            System.Windows.Vector diff = _dragStartPoint - currentPosition;
 
             // Start drag if moved enough distance
             if (Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
@@ -59,7 +59,7 @@ public partial class ConfigEditorWindow : Window
         }
     }
 
-    private void Tile_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    private void Tile_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
     {
         _isDragging = false;
         if (_draggedTile != null)
@@ -69,7 +69,7 @@ public partial class ConfigEditorWindow : Window
         }
     }
 
-    private void Tile_Drop(object sender, DragEventArgs e)
+    private void Tile_Drop(object sender, System.Windows.DragEventArgs e)
     {
         if (sender is Border border)
         {
@@ -89,7 +89,7 @@ public partial class ConfigEditorWindow : Window
         }
     }
 
-    private void Tile_DragOver(object sender, DragEventArgs e)
+    private void Tile_DragOver(object sender, System.Windows.DragEventArgs e)
     {
         if (sender is Border border && 
             border.DataContext is ButtonTileEditorViewModel targetTile &&
@@ -111,7 +111,7 @@ public partial class ConfigEditorWindow : Window
         e.Handled = true;
     }
 
-    private void Tile_DragLeave(object sender, DragEventArgs e)
+    private void Tile_DragLeave(object sender, System.Windows.DragEventArgs e)
     {
         if (sender is Border border)
         {
