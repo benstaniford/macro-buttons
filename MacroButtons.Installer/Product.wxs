@@ -120,12 +120,6 @@
               KeyPath="yes" />
       </Component>
 
-      <Component Id="MicrosoftManagementInfrastructure" Guid="{B2B3B4B5-C2C3-D2D3-E2E3-F2F3F4F5F6F7}">
-        <File Id="MicrosoftManagementInfrastructureDll"
-              Source="$(var.MacroButtons.TargetDir)Microsoft.Management.Infrastructure.dll"
-              KeyPath="yes" />
-      </Component>
-
       <Component Id="MicrosoftPowerShellCorePS" Guid="{C3C4C5C6-D3D4-E3E4-F3F4-A3A4A5A6A7A8}">
         <File Id="MicrosoftPowerShellCorePSDll"
               Source="$(var.MacroButtons.TargetDir)Microsoft.PowerShell.CoreCLR.Eventing.dll"
