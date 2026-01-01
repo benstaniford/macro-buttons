@@ -361,4 +361,169 @@ public class TitleDefinitionTests
         Assert.NotNull(result);
         Assert.Equal(TimeSpan.FromMilliseconds(100), result.Value);
     }
+
+    // PowerShell Tests
+
+    [Fact]
+    public void IsPowerShell_WhenPowerShellIsSet_ReturnsTrue()
+    {
+        var title = new TitleDefinition
+        {
+            PowerShell = "Get-Date -Format 'HH:mm:ss'"
+        };
+
+        Assert.True(title.IsPowerShell);
+        Assert.False(title.IsPowerShellScript);
+        Assert.False(title.IsPython);
+        Assert.False(title.IsExecutable);
+        Assert.False(title.IsBuiltin);
+    }
+
+    [Fact]
+    public void IsPowerShell_WhenPowerShellIsEmpty_ReturnsFalse()
+    {
+        var title = new TitleDefinition
+        {
+            PowerShell = ""
+        };
+
+        Assert.False(title.IsPowerShell);
+    }
+
+    [Fact]
+    public void IsPowerShell_WhenPowerShellIsNull_ReturnsFalse()
+    {
+        var title = new TitleDefinition
+        {
+            PowerShell = null
+        };
+
+        Assert.False(title.IsPowerShell);
+    }
+
+    [Fact]
+    public void IsPowerShellScript_WhenPowerShellScriptIsSet_ReturnsTrue()
+    {
+        var title = new TitleDefinition
+        {
+            PowerShellScript = "~/scripts/get-status.ps1"
+        };
+
+        Assert.True(title.IsPowerShellScript);
+        Assert.False(title.IsPowerShell);
+        Assert.False(title.IsPython);
+        Assert.False(title.IsExecutable);
+        Assert.False(title.IsBuiltin);
+    }
+
+    [Fact]
+    public void IsPowerShellScript_WhenPowerShellScriptIsEmpty_ReturnsFalse()
+    {
+        var title = new TitleDefinition
+        {
+            PowerShellScript = ""
+        };
+
+        Assert.False(title.IsPowerShellScript);
+    }
+
+    [Fact]
+    public void IsPowerShellScript_WhenPowerShellScriptIsNull_ReturnsFalse()
+    {
+        var title = new TitleDefinition
+        {
+            PowerShellScript = null
+        };
+
+        Assert.False(title.IsPowerShellScript);
+    }
+
+    [Fact]
+    public void PowerShellParameters_CanBeSet()
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "Name", "Test" },
+            { "Count", 5 },
+            { "Enabled", true }
+        };
+
+        var title = new TitleDefinition
+        {
+            PowerShellScript = "~/scripts/test.ps1",
+            PowerShellParameters = parameters
+        };
+
+        Assert.NotNull(title.PowerShellParameters);
+        Assert.Equal(3, title.PowerShellParameters.Count);
+        Assert.Equal("Test", title.PowerShellParameters["Name"]);
+        Assert.Equal(5, title.PowerShellParameters["Count"]);
+        Assert.Equal(true, title.PowerShellParameters["Enabled"]);
+    }
+
+    [Fact]
+    public void PowerShellParameters_CanBeNull()
+    {
+        var title = new TitleDefinition
+        {
+            PowerShell = "Get-Date",
+            PowerShellParameters = null
+        };
+
+        Assert.Null(title.PowerShellParameters);
+    }
+
+    [Fact]
+    public void TitleDefinition_PowerShellWithParameters_AllPropertiesSet()
+    {
+        var parameters = new Dictionary<string, object> { { "Verbose", true } };
+
+        var title = new TitleDefinition
+        {
+            PowerShell = "Get-Process",
+            PowerShellParameters = parameters,
+            Refresh = "2s",
+            Theme = "prominent"
+        };
+
+        Assert.True(title.IsPowerShell);
+        Assert.Equal(parameters, title.PowerShellParameters);
+        Assert.Equal(TimeSpan.FromSeconds(2), title.GetRefreshInterval());
+        Assert.Equal("prominent", title.Theme);
+    }
+
+    [Fact]
+    public void TitleDefinition_PowerShellScriptWithParameters_AllPropertiesSet()
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "DeviceIndex", 0 },
+            { "Mute", false }
+        };
+
+        var title = new TitleDefinition
+        {
+            PowerShellScript = "~/scripts/microphone.ps1",
+            PowerShellParameters = parameters,
+            Refresh = "500ms"
+        };
+
+        Assert.True(title.IsPowerShellScript);
+        Assert.Equal(parameters, title.PowerShellParameters);
+        Assert.Equal(TimeSpan.FromMilliseconds(500), title.GetRefreshInterval());
+    }
+
+    [Fact]
+    public void TitleDefinition_BothPowerShellTypesSet_BothAreTrue()
+    {
+        var title = new TitleDefinition
+        {
+            PowerShell = "Get-Date",
+            PowerShellScript = "~/scripts/test.ps1"
+        };
+
+        // Both can be true if both are set (not mutually exclusive in the model)
+        Assert.True(title.IsPowerShell);
+        Assert.True(title.IsPowerShellScript);
+    }
 }

@@ -228,4 +228,217 @@ public class ActionDefinitionTests
 
         Assert.Equal(ActionType.Builtin, result);
     }
+
+    // PowerShell Tests
+
+    [Fact]
+    public void GetActionType_WhenPowerShellSet_ReturnsPowerShell()
+    {
+        var action = new ActionDefinition
+        {
+            PowerShell = "Get-Date -Format 'HH:mm:ss'"
+        };
+
+        var result = action.GetActionType();
+
+        Assert.Equal(ActionType.PowerShell, result);
+    }
+
+    [Fact]
+    public void GetActionType_WhenEmptyPowerShell_ReturnsNone()
+    {
+        var action = new ActionDefinition
+        {
+            PowerShell = ""
+        };
+
+        var result = action.GetActionType();
+
+        Assert.Equal(ActionType.None, result);
+    }
+
+    [Fact]
+    public void GetActionType_WhenPowerShellScriptSet_ReturnsPowerShellScript()
+    {
+        var action = new ActionDefinition
+        {
+            PowerShellScript = "~/scripts/toggle-mic.ps1"
+        };
+
+        var result = action.GetActionType();
+
+        Assert.Equal(ActionType.PowerShellScript, result);
+    }
+
+    [Fact]
+    public void GetActionType_WhenEmptyPowerShellScript_ReturnsNone()
+    {
+        var action = new ActionDefinition
+        {
+            PowerShellScript = ""
+        };
+
+        var result = action.GetActionType();
+
+        Assert.Equal(ActionType.None, result);
+    }
+
+    [Fact]
+    public void GetActionType_PowerShellPriorityOverBuiltin()
+    {
+        // PowerShell has priority over Builtin
+        var action = new ActionDefinition
+        {
+            PowerShell = "Get-Date",
+            Builtin = "clock()"
+        };
+
+        var result = action.GetActionType();
+
+        Assert.Equal(ActionType.PowerShell, result);
+    }
+
+    [Fact]
+    public void GetActionType_PowerShellScriptPriorityOverBuiltin()
+    {
+        // PowerShellScript has priority over Builtin
+        var action = new ActionDefinition
+        {
+            PowerShellScript = "~/script.ps1",
+            Builtin = "quit()"
+        };
+
+        var result = action.GetActionType();
+
+        Assert.Equal(ActionType.PowerShellScript, result);
+    }
+
+    [Fact]
+    public void GetActionType_ExePriorityOverPowerShell()
+    {
+        // Exe has priority over PowerShell
+        var action = new ActionDefinition
+        {
+            Exe = "notepad.exe",
+            PowerShell = "Get-Date"
+        };
+
+        var result = action.GetActionType();
+
+        Assert.Equal(ActionType.Executable, result);
+    }
+
+    [Fact]
+    public void GetActionType_ExePriorityOverPowerShellScript()
+    {
+        // Exe has priority over PowerShellScript
+        var action = new ActionDefinition
+        {
+            Exe = "calc.exe",
+            PowerShellScript = "~/script.ps1"
+        };
+
+        var result = action.GetActionType();
+
+        Assert.Equal(ActionType.Executable, result);
+    }
+
+    [Fact]
+    public void GetActionType_PythonPriorityOverPowerShell()
+    {
+        // Python has priority over PowerShell
+        var action = new ActionDefinition
+        {
+            Python = new List<string> { "-c", "print('test')" },
+            PowerShell = "Get-Date"
+        };
+
+        var result = action.GetActionType();
+
+        Assert.Equal(ActionType.Python, result);
+    }
+
+    [Fact]
+    public void GetActionType_FullPriorityChain_ReturnsKeypress()
+    {
+        // Test full priority chain: Keypress > Python > Exe > PowerShell > PowerShellScript > Builtin
+        var action = new ActionDefinition
+        {
+            Keypress = "^v",
+            Python = new List<string> { "-c", "print('test')" },
+            Exe = "notepad.exe",
+            PowerShell = "Get-Date",
+            PowerShellScript = "~/script.ps1",
+            Builtin = "quit()"
+        };
+
+        var result = action.GetActionType();
+
+        Assert.Equal(ActionType.Keypress, result);
+    }
+
+    [Fact]
+    public void PowerShellParameters_CanBeSet()
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "DeviceIndex", 0 },
+            { "Mute", true }
+        };
+
+        var action = new ActionDefinition
+        {
+            PowerShellScript = "~/scripts/toggle-mic.ps1",
+            PowerShellParameters = parameters
+        };
+
+        Assert.NotNull(action.PowerShellParameters);
+        Assert.Equal(2, action.PowerShellParameters.Count);
+        Assert.Equal(0, action.PowerShellParameters["DeviceIndex"]);
+        Assert.Equal(true, action.PowerShellParameters["Mute"]);
+    }
+
+    [Fact]
+    public void PowerShellParameters_CanBeNull()
+    {
+        var action = new ActionDefinition
+        {
+            PowerShell = "Get-Process",
+            PowerShellParameters = null
+        };
+
+        Assert.Null(action.PowerShellParameters);
+    }
+
+    [Theory]
+    [InlineData("Get-Date")]
+    [InlineData("Get-Process | Select-Object -First 5")]
+    [InlineData("Write-Output 'Hello, World!'")]
+    public void GetActionType_WithValidPowerShellCommands_ReturnsPowerShell(string command)
+    {
+        var action = new ActionDefinition
+        {
+            PowerShell = command
+        };
+
+        var result = action.GetActionType();
+
+        Assert.Equal(ActionType.PowerShell, result);
+    }
+
+    [Theory]
+    [InlineData("~/scripts/test.ps1")]
+    [InlineData("C:\\Scripts\\MyScript.ps1")]
+    [InlineData("%USERPROFILE%\\scripts\\script.ps1")]
+    public void GetActionType_WithValidPowerShellScriptPaths_ReturnsPowerShellScript(string scriptPath)
+    {
+        var action = new ActionDefinition
+        {
+            PowerShellScript = scriptPath
+        };
+
+        var result = action.GetActionType();
+
+        Assert.Equal(ActionType.PowerShellScript, result);
+    }
 }
