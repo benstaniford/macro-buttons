@@ -161,8 +161,6 @@ jobs:
           - Windows 10/11
           - .NET 8 Desktop Runtime
 
-          ---
-          🤖 Generated with Claude Code
           EOF
 
       - name: Create GitHub Release
