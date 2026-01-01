@@ -348,6 +348,34 @@ public partial class ConfigEditorViewModel : ViewModelBase
         System.Windows.Application.Current.Windows.OfType<Window>()
             .FirstOrDefault(w => w.DataContext == this)?.Close();
     }
+
+    /// <summary>
+    /// Moves a tile from its current position to a target position, shifting other tiles.
+    /// </summary>
+    public void MoveTile(ButtonTileEditorViewModel sourceTile, ButtonTileEditorViewModel targetTile)
+    {
+        // Don't allow moving to/from BACK button
+        if (sourceTile.IsBackButton || targetTile.IsBackButton)
+            return;
+
+        int sourceIndex = Tiles.IndexOf(sourceTile);
+        int targetIndex = Tiles.IndexOf(targetTile);
+
+        if (sourceIndex == -1 || targetIndex == -1 || sourceIndex == targetIndex)
+            return;
+
+        // Remove the source tile
+        Tiles.RemoveAt(sourceIndex);
+
+        // Insert at the target position
+        Tiles.Insert(targetIndex, sourceTile);
+
+        // Update indices for all tiles
+        for (int i = 0; i < Tiles.Count; i++)
+        {
+            Tiles[i].Index = i;
+        }
+    }
 }
 
 /// <summary>
@@ -421,6 +449,12 @@ public partial class ButtonTileEditorViewModel : ViewModelBase
     // Selection state
     [ObservableProperty]
     private bool _isSelected;
+
+    /// <summary>
+    /// Indicates whether this tile is currently being dragged.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isDragging;
 
     /// <summary>
     /// Returns true if this is the BACK button tile (uneditable).

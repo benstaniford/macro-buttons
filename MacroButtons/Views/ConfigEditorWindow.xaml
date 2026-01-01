@@ -97,7 +97,15 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border Style="{StaticResource TileStyle}"
-                                    Background="{Binding IsSelected, Converter={StaticResource BoolToHighlightBrushConverter}}">
+                                    Background="{Binding IsSelected, Converter={StaticResource BoolToHighlightBrushConverter}}"
+                                    AllowDrop="True"
+                                    PreviewMouseLeftButtonDown="Tile_PreviewMouseLeftButtonDown"
+                                    PreviewMouseMove="Tile_PreviewMouseMove"
+                                    PreviewMouseLeftButtonUp="Tile_PreviewMouseLeftButtonUp"
+                                    Drop="Tile_Drop"
+                                    DragOver="Tile_DragOver"
+                                    DragLeave="Tile_DragLeave"
+                                    Opacity="{Binding IsDragging, Converter={StaticResource DraggingToOpacityConverter}}">
                                 <Border.InputBindings>
                                     <MouseBinding MouseAction="LeftClick"
                                                   Command="{Binding DataContext.SelectTileCommand, RelativeSource={RelativeSource AncestorType=Window}}"
@@ -105,14 +113,19 @@
                                     <MouseBinding MouseAction="LeftDoubleClick"
                                                   Command="{Binding DataContext.DrillIntoSubmenuCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
                                 </Border.InputBindings>
-                                <TextBlock Text="{Binding DisplayTitle}"
-                                           TextAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           TextWrapping="Wrap"
-                                           Foreground="#9CDCFE"
-                                           FontFamily="Consolas"
-                                           FontSize="12"
-                                           Padding="5"/>
+                                <Border x:Name="DropIndicator"
+                                        BorderBrush="#007ACC"
+                                        BorderThickness="0"
+                                        Background="Transparent">
+                                    <TextBlock Text="{Binding DisplayTitle}"
+                                               TextAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               TextWrapping="Wrap"
+                                               Foreground="#9CDCFE"
+                                               FontFamily="Consolas"
+                                               FontSize="12"
+                                               Padding="5"/>
+                                </Border>
                             </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

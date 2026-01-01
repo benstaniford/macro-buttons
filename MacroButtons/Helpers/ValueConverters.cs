@@ -87,3 +87,19 @@ public class InverseBoolToVisibilityConverter : IValueConverter
         throw new NotImplementedException();
     }
 }
+
+/// <summary>
+/// Converts dragging state to opacity (true = 0.5, false = 1.0).
+/// </summary>
+public class DraggingToOpacityConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        return value is bool isDragging && isDragging ? 0.5 : 1.0;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}

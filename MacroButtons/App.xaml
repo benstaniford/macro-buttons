@@ -8,5 +8,6 @@
         <helpers:BoolToHighlightBrushConverter x:Key="BoolToHighlightBrushConverter"/>
         <helpers:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <helpers:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
+        <helpers:DraggingToOpacityConverter x:Key="DraggingToOpacityConverter"/>
     </Application.Resources>
 </Application>
