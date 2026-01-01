@@ -1,6 +1,5 @@
 using NAudio.Wave;
 using System.IO;
-using System.Windows;
 
 namespace MacroButtons.Services;
 
@@ -55,7 +54,7 @@ public class SoundService : IDisposable
         {
             // Load the embedded sound resource
             var resourceUri = new Uri("pack://application:,,,/MacroButtons;component/Resources/button-click.mp3");
-            var resourceInfo = Application.GetResourceStream(resourceUri);
+            var resourceInfo = System.Windows.Application.GetResourceStream(resourceUri);
 
             if (resourceInfo != null)
             {
@@ -94,7 +93,7 @@ public class SoundService : IDisposable
             _soundStream.Position = 0;
 
             // Create new readers for this playback
-            _mp3Reader = new Mp3FileReader(_soundStream, waveFormat => new Mp3FileReader.Mp3FrameDecompressor(waveFormat));
+            _mp3Reader = new Mp3FileReader(_soundStream);
             _waveOut = new WaveOutEvent();
             _waveOut.Volume = _volume;
 
