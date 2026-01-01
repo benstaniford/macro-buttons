@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 
-  <!-- Directory structure for samples -->
+  <!-- Directory structure for samples in Program Files -->
   <Fragment>
     <DirectoryRef Id="SAMPLESFOLDER">
       <Directory Id="dir_ComfyUI" Name="ComfyUI" />
@@ -18,7 +18,7 @@
     </DirectoryRef>
   </Fragment>
 
-  <!-- Samples README (always install) -->
+  <!-- Samples README (always install to Program Files) -->
   <Fragment>
     <ComponentGroup Id="SamplesReadme">
       <Component Id="cmp_SamplesREADME" Directory="SAMPLESFOLDER" Guid="{A1234567-89AB-CDEF-0123-456789ABCDEF}">
@@ -27,137 +27,202 @@
     </ComponentGroup>
   </Fragment>
 
-  <!-- ComfyUI Sample -->
+  <!-- ALL SAMPLES in Program Files (always installed) -->
   <Fragment>
-    <ComponentGroup Id="Sample_ComfyUI">
-      <Component Id="cmp_ComfyUI_json" Directory="dir_ComfyUI" Guid="{B1234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_ComfyUI_json" Source="$(var.SamplesSourceDir)\ComfyUI\comfyui.json" KeyPath="yes" />
+    <ComponentGroup Id="AllSamplesInProgramFiles">
+      <!-- ComfyUI -->
+      <Component Id="cmp_PF_ComfyUI_json" Directory="dir_ComfyUI" Guid="{B1234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_ComfyUI_json" Source="$(var.SamplesSourceDir)\ComfyUI\comfyui.json" KeyPath="yes" />
       </Component>
-      <Component Id="cmp_ComfyUI_README" Directory="dir_ComfyUI" Guid="{B2234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_ComfyUI_README" Source="$(var.SamplesSourceDir)\ComfyUI\README.md" KeyPath="yes" />
+      <Component Id="cmp_PF_ComfyUI_README" Directory="dir_ComfyUI" Guid="{B2234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_ComfyUI_README" Source="$(var.SamplesSourceDir)\ComfyUI\README.md" KeyPath="yes" />
+      </Component>
+      
+      <!-- Elite Dangerous -->
+      <Component Id="cmp_PF_EliteDangerous_json" Directory="dir_EliteDangerous" Guid="{C1234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_EliteDangerous_json" Source="$(var.SamplesSourceDir)\EliteDangerous\elitedangerous.json" KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_PF_EliteDangerous_README" Directory="dir_EliteDangerous" Guid="{C2234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_EliteDangerous_README" Source="$(var.SamplesSourceDir)\EliteDangerous\README.md" KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_PF_EliteDangerous_script" Directory="dir_EliteDangerous" Guid="{C3234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_EliteDangerous_script" Source="$(var.SamplesSourceDir)\EliteDangerous\elite-status" KeyPath="yes" />
+      </Component>
+      
+      <!-- File Explorer -->
+      <Component Id="cmp_PF_FileExplorer_json" Directory="dir_FileExplorer" Guid="{D1234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_FileExplorer_json" Source="$(var.SamplesSourceDir)\FileExplorer\file-explorer.json" KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_PF_FileExplorer_README" Directory="dir_FileExplorer" Guid="{D2234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_FileExplorer_README" Source="$(var.SamplesSourceDir)\FileExplorer\README.md" KeyPath="yes" />
+      </Component>
+      
+      <!-- Firefox -->
+      <Component Id="cmp_PF_Firefox_json" Directory="dir_Firefox" Guid="{E1234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_Firefox_json" Source="$(var.SamplesSourceDir)\Firefox\firefox.json" KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_PF_Firefox_README" Directory="dir_Firefox" Guid="{E2234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_Firefox_README" Source="$(var.SamplesSourceDir)\Firefox\README.md" KeyPath="yes" />
+      </Component>
+      
+      <!-- Lightroom -->
+      <Component Id="cmp_PF_Lightroom_json" Directory="dir_Lightroom" Guid="{F1234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_Lightroom_json" Source="$(var.SamplesSourceDir)\Lightroom\lightroom.json" KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_PF_Lightroom_README" Directory="dir_Lightroom" Guid="{F2234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_Lightroom_README" Source="$(var.SamplesSourceDir)\Lightroom\README.md" KeyPath="yes" />
+      </Component>
+      
+      <!-- Photoshop -->
+      <Component Id="cmp_PF_Photoshop_json" Directory="dir_Photoshop" Guid="{10234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_Photoshop_json" Source="$(var.SamplesSourceDir)\Photoshop\photoshop.json" KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_PF_Photoshop_README" Directory="dir_Photoshop" Guid="{11234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_Photoshop_README" Source="$(var.SamplesSourceDir)\Photoshop\README.md" KeyPath="yes" />
+      </Component>
+      
+      <!-- Visual Studio -->
+      <Component Id="cmp_PF_VisualStudio_json" Directory="dir_VisualStudio" Guid="{12234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_VisualStudio_json" Source="$(var.SamplesSourceDir)\VisualStudio\visual-studio.json" KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_PF_VisualStudio_README" Directory="dir_VisualStudio" Guid="{13234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_VisualStudio_README" Source="$(var.SamplesSourceDir)\VisualStudio\README.md" KeyPath="yes" />
+      </Component>
+      
+      <!-- VS Code -->
+      <Component Id="cmp_PF_VSCode_json" Directory="dir_VSCode" Guid="{14234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_VSCode_json" Source="$(var.SamplesSourceDir)\VSCode\vscode.json" KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_PF_VSCode_README" Directory="dir_VSCode" Guid="{15234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_VSCode_README" Source="$(var.SamplesSourceDir)\VSCode\README.md" KeyPath="yes" />
+      </Component>
+      
+      <!-- Windows Calculator -->
+      <Component Id="cmp_PF_WindowsCalculator_json" Directory="dir_WindowsCalculator" Guid="{16234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_WindowsCalculator_json" Source="$(var.SamplesSourceDir)\WindowsCalculator\windows-calculator.json" KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_PF_WindowsCalculator_README" Directory="dir_WindowsCalculator" Guid="{17234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_WindowsCalculator_README" Source="$(var.SamplesSourceDir)\WindowsCalculator\README.md" KeyPath="yes" />
+      </Component>
+      
+      <!-- Windows Desktop -->
+      <Component Id="cmp_PF_WindowsDesktop_json" Directory="dir_WindowsDesktop" Guid="{18234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_WindowsDesktop_json" Source="$(var.SamplesSourceDir)\WindowsDesktop\windows-desktop.json" KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_PF_WindowsDesktop_README" Directory="dir_WindowsDesktop" Guid="{19234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_WindowsDesktop_README" Source="$(var.SamplesSourceDir)\WindowsDesktop\README.md" KeyPath="yes" />
+      </Component>
+      
+      <!-- Windows Terminal -->
+      <Component Id="cmp_PF_WindowsTerminal_json" Directory="dir_WindowsTerminal" Guid="{1A234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_WindowsTerminal_json" Source="$(var.SamplesSourceDir)\WindowsTerminal\windows-terminal.json" KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_PF_WindowsTerminal_README" Directory="dir_WindowsTerminal" Guid="{1B234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_PF_WindowsTerminal_README" Source="$(var.SamplesSourceDir)\WindowsTerminal\README.md" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
 
-  <!-- Elite Dangerous Sample -->
+  <!-- OPTIONAL User Profile copies -->
+  
+  <!-- ComfyUI User Profile -->
   <Fragment>
-    <ComponentGroup Id="Sample_EliteDangerous">
-      <Component Id="cmp_EliteDangerous_json" Directory="dir_EliteDangerous" Guid="{C1234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_EliteDangerous_json" Source="$(var.SamplesSourceDir)\EliteDangerous\elitedangerous.json" KeyPath="yes" />
-      </Component>
-      <Component Id="cmp_EliteDangerous_README" Directory="dir_EliteDangerous" Guid="{C2234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_EliteDangerous_README" Source="$(var.SamplesSourceDir)\EliteDangerous\README.md" KeyPath="yes" />
-      </Component>
-      <Component Id="cmp_EliteDangerous_script" Directory="dir_EliteDangerous" Guid="{C3234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_EliteDangerous_script" Source="$(var.SamplesSourceDir)\EliteDangerous\elite-status" KeyPath="yes" />
+    <ComponentGroup Id="Sample_ComfyUI_UserProfile">
+      <Component Id="cmp_UP_ComfyUI_json" Directory="USERPROFILEFOLDER" Guid="{2B234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_UP_ComfyUI_json" Name=".macrobuttons-comfyui.json" Source="$(var.SamplesSourceDir)\ComfyUI\comfyui.json" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
 
-  <!-- File Explorer Sample -->
+  <!-- Elite Dangerous User Profile -->
   <Fragment>
-    <ComponentGroup Id="Sample_FileExplorer">
-      <Component Id="cmp_FileExplorer_json" Directory="dir_FileExplorer" Guid="{D1234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_FileExplorer_json" Source="$(var.SamplesSourceDir)\FileExplorer\file-explorer.json" KeyPath="yes" />
+    <ComponentGroup Id="Sample_EliteDangerous_UserProfile">
+      <Component Id="cmp_UP_EliteDangerous_json" Directory="USERPROFILEFOLDER" Guid="{2C234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_UP_EliteDangerous_json" Name=".macrobuttons-elitedangerous.json" Source="$(var.SamplesSourceDir)\EliteDangerous\elitedangerous.json" KeyPath="yes" />
       </Component>
-      <Component Id="cmp_FileExplorer_README" Directory="dir_FileExplorer" Guid="{D2234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_FileExplorer_README" Source="$(var.SamplesSourceDir)\FileExplorer\README.md" KeyPath="yes" />
+      <Component Id="cmp_UP_EliteDangerous_script" Directory="USERPROFILEFOLDER" Guid="{2C334567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_UP_EliteDangerous_script" Name="elite-status" Source="$(var.SamplesSourceDir)\EliteDangerous\elite-status" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
 
-  <!-- Firefox Sample -->
+  <!-- File Explorer User Profile -->
   <Fragment>
-    <ComponentGroup Id="Sample_Firefox">
-      <Component Id="cmp_Firefox_json" Directory="dir_Firefox" Guid="{E1234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_Firefox_json" Source="$(var.SamplesSourceDir)\Firefox\firefox.json" KeyPath="yes" />
-      </Component>
-      <Component Id="cmp_Firefox_README" Directory="dir_Firefox" Guid="{E2234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_Firefox_README" Source="$(var.SamplesSourceDir)\Firefox\README.md" KeyPath="yes" />
+    <ComponentGroup Id="Sample_FileExplorer_UserProfile">
+      <Component Id="cmp_UP_FileExplorer_json" Directory="USERPROFILEFOLDER" Guid="{2D234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_UP_FileExplorer_json" Name=".macrobuttons-file-explorer.json" Source="$(var.SamplesSourceDir)\FileExplorer\file-explorer.json" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
 
-  <!-- Lightroom Sample -->
+  <!-- Firefox User Profile -->
   <Fragment>
-    <ComponentGroup Id="Sample_Lightroom">
-      <Component Id="cmp_Lightroom_json" Directory="dir_Lightroom" Guid="{F1234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_Lightroom_json" Source="$(var.SamplesSourceDir)\Lightroom\lightroom.json" KeyPath="yes" />
-      </Component>
-      <Component Id="cmp_Lightroom_README" Directory="dir_Lightroom" Guid="{F2234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_Lightroom_README" Source="$(var.SamplesSourceDir)\Lightroom\README.md" KeyPath="yes" />
+    <ComponentGroup Id="Sample_Firefox_UserProfile">
+      <Component Id="cmp_UP_Firefox_json" Directory="USERPROFILEFOLDER" Guid="{2E234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_UP_Firefox_json" Name=".macrobuttons-firefox.json" Source="$(var.SamplesSourceDir)\Firefox\firefox.json" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
 
-  <!-- Photoshop Sample -->
+  <!-- Lightroom User Profile -->
   <Fragment>
-    <ComponentGroup Id="Sample_Photoshop">
-      <Component Id="cmp_Photoshop_json" Directory="dir_Photoshop" Guid="{10234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_Photoshop_json" Source="$(var.SamplesSourceDir)\Photoshop\photoshop.json" KeyPath="yes" />
-      </Component>
-      <Component Id="cmp_Photoshop_README" Directory="dir_Photoshop" Guid="{11234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_Photoshop_README" Source="$(var.SamplesSourceDir)\Photoshop\README.md" KeyPath="yes" />
+    <ComponentGroup Id="Sample_Lightroom_UserProfile">
+      <Component Id="cmp_UP_Lightroom_json" Directory="USERPROFILEFOLDER" Guid="{2F234567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_UP_Lightroom_json" Name=".macrobuttons-lightroom.json" Source="$(var.SamplesSourceDir)\Lightroom\lightroom.json" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
 
-  <!-- Visual Studio Sample -->
+  <!-- Photoshop User Profile -->
   <Fragment>
-    <ComponentGroup Id="Sample_VisualStudio">
-      <Component Id="cmp_VisualStudio_json" Directory="dir_VisualStudio" Guid="{12234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_VisualStudio_json" Source="$(var.SamplesSourceDir)\VisualStudio\visual-studio.json" KeyPath="yes" />
-      </Component>
-      <Component Id="cmp_VisualStudio_README" Directory="dir_VisualStudio" Guid="{13234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_VisualStudio_README" Source="$(var.SamplesSourceDir)\VisualStudio\README.md" KeyPath="yes" />
+    <ComponentGroup Id="Sample_Photoshop_UserProfile">
+      <Component Id="cmp_UP_Photoshop_json" Directory="USERPROFILEFOLDER" Guid="{20334567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_UP_Photoshop_json" Name=".macrobuttons-photoshop.json" Source="$(var.SamplesSourceDir)\Photoshop\photoshop.json" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
 
-  <!-- VS Code Sample -->
+  <!-- Visual Studio User Profile -->
   <Fragment>
-    <ComponentGroup Id="Sample_VSCode">
-      <Component Id="cmp_VSCode_json" Directory="dir_VSCode" Guid="{14234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_VSCode_json" Source="$(var.SamplesSourceDir)\VSCode\vscode.json" KeyPath="yes" />
-      </Component>
-      <Component Id="cmp_VSCode_README" Directory="dir_VSCode" Guid="{15234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_VSCode_README" Source="$(var.SamplesSourceDir)\VSCode\README.md" KeyPath="yes" />
+    <ComponentGroup Id="Sample_VisualStudio_UserProfile">
+      <Component Id="cmp_UP_VisualStudio_json" Directory="USERPROFILEFOLDER" Guid="{22334567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_UP_VisualStudio_json" Name=".macrobuttons-visual-studio.json" Source="$(var.SamplesSourceDir)\VisualStudio\visual-studio.json" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
 
-  <!-- Windows Calculator Sample -->
+  <!-- VS Code User Profile -->
   <Fragment>
-    <ComponentGroup Id="Sample_WindowsCalculator">
-      <Component Id="cmp_WindowsCalculator_json" Directory="dir_WindowsCalculator" Guid="{16234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_WindowsCalculator_json" Source="$(var.SamplesSourceDir)\WindowsCalculator\windows-calculator.json" KeyPath="yes" />
-      </Component>
-      <Component Id="cmp_WindowsCalculator_README" Directory="dir_WindowsCalculator" Guid="{17234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_WindowsCalculator_README" Source="$(var.SamplesSourceDir)\WindowsCalculator\README.md" KeyPath="yes" />
+    <ComponentGroup Id="Sample_VSCode_UserProfile">
+      <Component Id="cmp_UP_VSCode_json" Directory="USERPROFILEFOLDER" Guid="{24334567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_UP_VSCode_json" Name=".macrobuttons-vscode.json" Source="$(var.SamplesSourceDir)\VSCode\vscode.json" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
 
-  <!-- Windows Desktop Sample -->
+  <!-- Windows Calculator User Profile -->
   <Fragment>
-    <ComponentGroup Id="Sample_WindowsDesktop">
-      <Component Id="cmp_WindowsDesktop_json" Directory="dir_WindowsDesktop" Guid="{18234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_WindowsDesktop_json" Source="$(var.SamplesSourceDir)\WindowsDesktop\windows-desktop.json" KeyPath="yes" />
-      </Component>
-      <Component Id="cmp_WindowsDesktop_README" Directory="dir_WindowsDesktop" Guid="{19234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_WindowsDesktop_README" Source="$(var.SamplesSourceDir)\WindowsDesktop\README.md" KeyPath="yes" />
+    <ComponentGroup Id="Sample_WindowsCalculator_UserProfile">
+      <Component Id="cmp_UP_WindowsCalculator_json" Directory="USERPROFILEFOLDER" Guid="{26334567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_UP_WindowsCalculator_json" Name=".macrobuttons-windows-calculator.json" Source="$(var.SamplesSourceDir)\WindowsCalculator\windows-calculator.json" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
 
-  <!-- Windows Terminal Sample -->
+  <!-- Windows Desktop User Profile -->
   <Fragment>
-    <ComponentGroup Id="Sample_WindowsTerminal">
-      <Component Id="cmp_WindowsTerminal_json" Directory="dir_WindowsTerminal" Guid="{1A234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_WindowsTerminal_json" Source="$(var.SamplesSourceDir)\WindowsTerminal\windows-terminal.json" KeyPath="yes" />
+    <ComponentGroup Id="Sample_WindowsDesktop_UserProfile">
+      <Component Id="cmp_UP_WindowsDesktop_json" Directory="USERPROFILEFOLDER" Guid="{28334567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_UP_WindowsDesktop_json" Name=".macrobuttons-windows-desktop.json" Source="$(var.SamplesSourceDir)\WindowsDesktop\windows-desktop.json" KeyPath="yes" />
       </Component>
-      <Component Id="cmp_WindowsTerminal_README" Directory="dir_WindowsTerminal" Guid="{1B234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_WindowsTerminal_README" Source="$(var.SamplesSourceDir)\WindowsTerminal\README.md" KeyPath="yes" />
+    </ComponentGroup>
+  </Fragment>
+
+  <!-- Windows Terminal User Profile -->
+  <Fragment>
+    <ComponentGroup Id="Sample_WindowsTerminal_UserProfile">
+      <Component Id="cmp_UP_WindowsTerminal_json" Directory="USERPROFILEFOLDER" Guid="{2A334567-89AB-CDEF-0123-456789ABCDEF}">
+        <File Id="fil_UP_WindowsTerminal_json" Name=".macrobuttons-windows-terminal.json" Source="$(var.SamplesSourceDir)\WindowsTerminal\windows-terminal.json" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>

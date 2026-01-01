@@ -28,6 +28,7 @@
       <ComponentGroupRef Id="PublishedDlls" />
       <ComponentRef Id="LicenseFile" />
       <ComponentGroupRef Id="SamplesReadme" />
+      <ComponentGroupRef Id="AllSamplesInProgramFiles" />
       <ComponentRef Id="ApplicationShortcut" />
     </Feature>
 
@@ -36,63 +37,63 @@
       <ComponentRef Id="DesktopShortcut" />
     </Feature>
 
-    <!-- Sample Profiles Feature Tree -->
-    <Feature Id="SamplesFeature" Title="Sample Profiles" Level="1" Display="expand"
-             Description="Install sample button profiles for various applications. WARNING: Installing a sample will overwrite any existing profile with the same name in the samples directory. Make backups of customized profiles before upgrading." AllowAdvertise="no">
+    <!-- Sample Profiles Feature Tree - Optional copies to user profile -->
+    <Feature Id="SamplesFeature" Title="Copy Sample Profiles to User Directory" Level="1" Display="expand"
+             Description="Copy sample button profiles to %LOCALAPPDATA%\.macrobuttons\ for immediate use. WARNING: Installing a sample will overwrite any existing profile with the same name. Make backups of customized profiles before upgrading." AllowAdvertise="no">
 
       <Feature Id="Sample_ComfyUI_Feature" Title="ComfyUI" Level="1000"
                Description="Macro buttons for ComfyUI Stable Diffusion interface" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_ComfyUI" />
+        <ComponentGroupRef Id="Sample_ComfyUI_UserProfile" />
       </Feature>
 
       <Feature Id="Sample_EliteDangerous_Feature" Title="Elite Dangerous" Level="1000"
                Description="Macro buttons for Elite Dangerous space simulator" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_EliteDangerous" />
+        <ComponentGroupRef Id="Sample_EliteDangerous_UserProfile" />
       </Feature>
 
       <Feature Id="Sample_FileExplorer_Feature" Title="File Explorer" Level="1000"
                Description="Macro buttons for Windows File Explorer" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_FileExplorer" />
+        <ComponentGroupRef Id="Sample_FileExplorer_UserProfile" />
       </Feature>
 
       <Feature Id="Sample_Firefox_Feature" Title="Firefox" Level="1000"
                Description="Macro buttons for Mozilla Firefox browser" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_Firefox" />
+        <ComponentGroupRef Id="Sample_Firefox_UserProfile" />
       </Feature>
 
       <Feature Id="Sample_Lightroom_Feature" Title="Adobe Lightroom" Level="1000"
                Description="Macro buttons for Adobe Lightroom photo editing" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_Lightroom" />
+        <ComponentGroupRef Id="Sample_Lightroom_UserProfile" />
       </Feature>
 
       <Feature Id="Sample_Photoshop_Feature" Title="Adobe Photoshop" Level="1000"
                Description="Macro buttons for Adobe Photoshop image editing" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_Photoshop" />
+        <ComponentGroupRef Id="Sample_Photoshop_UserProfile" />
       </Feature>
 
       <Feature Id="Sample_VisualStudio_Feature" Title="Visual Studio" Level="1000"
                Description="Macro buttons for Microsoft Visual Studio IDE" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_VisualStudio" />
+        <ComponentGroupRef Id="Sample_VisualStudio_UserProfile" />
       </Feature>
 
       <Feature Id="Sample_VSCode_Feature" Title="VS Code" Level="1000"
                Description="Macro buttons for Visual Studio Code editor" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_VSCode" />
+        <ComponentGroupRef Id="Sample_VSCode_UserProfile" />
       </Feature>
 
       <Feature Id="Sample_WindowsCalculator_Feature" Title="Windows Calculator" Level="1000"
                Description="Macro buttons for Windows Calculator app" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_WindowsCalculator" />
+        <ComponentGroupRef Id="Sample_WindowsCalculator_UserProfile" />
       </Feature>
 
       <Feature Id="Sample_WindowsDesktop_Feature" Title="Windows Desktop" Level="1"
                Description="Macro buttons for Windows desktop management (Recommended)" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_WindowsDesktop" />
+        <ComponentGroupRef Id="Sample_WindowsDesktop_UserProfile" />
       </Feature>
 
       <Feature Id="Sample_WindowsTerminal_Feature" Title="Windows Terminal" Level="1000"
                Description="Macro buttons for Windows Terminal" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_WindowsTerminal" />
+        <ComponentGroupRef Id="Sample_WindowsTerminal_UserProfile" />
       </Feature>
 
     </Feature>
@@ -138,6 +139,10 @@
         <Directory Id="ApplicationProgramsFolder" Name="MacroButtons"/>
       </Directory>
       <Directory Id="DesktopFolder" Name="Desktop" />
+      <!-- User profile directory for optional sample installation -->
+      <Directory Id="LocalAppDataFolder">
+        <Directory Id="USERPROFILEFOLDER" Name=".macrobuttons" />
+      </Directory>
     </Directory>
   </Fragment>
 
