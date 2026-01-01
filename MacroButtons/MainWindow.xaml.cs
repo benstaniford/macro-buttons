@@ -129,6 +129,11 @@ public partial class MainWindow : Window
         editConfigJsonItem.Click += (s, e) => OpenConfigFile();
         contextMenu.Items.Add(editConfigJsonItem);
 
+        // Open Profile Folder
+        var openProfileFolderItem = new System.Windows.Forms.ToolStripMenuItem("Open Profile Folder");
+        openProfileFolderItem.Click += (s, e) => OpenProfileFolder();
+        contextMenu.Items.Add(openProfileFolderItem);
+
         // Reload current profile
         var reloadItem = new System.Windows.Forms.ToolStripMenuItem("Reload");
         reloadItem.Click += (s, e) => ReloadCurrentProfile();
@@ -590,6 +595,39 @@ public partial class MainWindow : Window
             System.Windows.MessageBox.Show(
                 $"Failed to open configuration file: {ex.Message}",
                 "Open Config Error",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Error);
+        }
+    }
+
+    private void OpenProfileFolder()
+    {
+        try
+        {
+            var profileFolder = _profileService.GetProfileDirectory();
+
+            // Ensure the directory exists
+            if (!System.IO.Directory.Exists(profileFolder))
+            {
+                // Create it if it doesn't exist
+                System.IO.Directory.CreateDirectory(profileFolder);
+            }
+
+            // Open in Windows Explorer
+            var startInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "explorer.exe",
+                Arguments = profileFolder,
+                UseShellExecute = true
+            };
+
+            System.Diagnostics.Process.Start(startInfo);
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show(
+                $"Failed to open profile folder: {ex.Message}",
+                "Open Folder Error",
                 System.Windows.MessageBoxButton.OK,
                 System.Windows.MessageBoxImage.Error);
         }
