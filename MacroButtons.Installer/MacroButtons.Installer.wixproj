@@ -29,6 +29,7 @@
   <ItemGroup>
     <Content Include="License.rtf" />
     <Content Include="MacroButtons.ico" />
+    <Content Include="CopySamples.ps1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MacroButtons\MacroButtons.csproj">
@@ -44,6 +45,10 @@
     <WixExtension Include="WixUIExtension">
       <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
       <Name>WixUIExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixUtilExtension">
+      <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
+      <Name>WixUtilExtension</Name>
     </WixExtension>
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />

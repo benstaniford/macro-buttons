@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
   <?define ProductVersion="1.0.0.0" ?>
   <?define ProductName="MacroButtons" ?>
   <?define Manufacturer="MacroButtons" ?>
@@ -27,6 +28,7 @@
              Description="Core MacroButtons application files" AllowAdvertise="no" Absent="disallow">
       <ComponentGroupRef Id="PublishedDlls" />
       <ComponentRef Id="LicenseFile" />
+      <ComponentRef Id="CopySamplesScript" />
       <ComponentGroupRef Id="SamplesReadme" />
       <ComponentGroupRef Id="AllSamplesInProgramFiles" />
       <ComponentRef Id="ApplicationShortcut" />
@@ -40,62 +42,40 @@
 
     <!-- Sample Profiles Feature Tree - Optional copies to user profile -->
     <Feature Id="SamplesFeature" Title="Copy Sample Profiles to User Directory" Level="1" Display="expand"
-             Description="Copy sample button profiles to %LOCALAPPDATA%\.macrobuttons\ for immediate use. WARNING: Installing a sample will overwrite any existing profile with the same name. Make backups of customized profiles before upgrading." AllowAdvertise="no">
+             Description="Copy selected sample button profiles to %USERPROFILE%\.macrobuttons\ for immediate use. Sample reference files are always installed to Program Files. WARNING: This will overwrite any existing profiles with the same names." AllowAdvertise="no">
 
       <Feature Id="Sample_ComfyUI_Feature" Title="ComfyUI" Level="1000"
-               Description="Macro buttons for ComfyUI Stable Diffusion interface" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_ComfyUI_UserProfile" />
-      </Feature>
+               Description="Macro buttons for ComfyUI Stable Diffusion interface" AllowAdvertise="no" />
 
       <Feature Id="Sample_EliteDangerous_Feature" Title="Elite Dangerous" Level="1000"
-               Description="Macro buttons for Elite Dangerous space simulator" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_EliteDangerous_UserProfile" />
-      </Feature>
+               Description="Macro buttons for Elite Dangerous space simulator" AllowAdvertise="no" />
 
       <Feature Id="Sample_FileExplorer_Feature" Title="File Explorer" Level="1000"
-               Description="Macro buttons for Windows File Explorer" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_FileExplorer_UserProfile" />
-      </Feature>
+               Description="Macro buttons for Windows File Explorer" AllowAdvertise="no" />
 
       <Feature Id="Sample_Firefox_Feature" Title="Firefox" Level="1000"
-               Description="Macro buttons for Mozilla Firefox browser" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_Firefox_UserProfile" />
-      </Feature>
+               Description="Macro buttons for Mozilla Firefox browser" AllowAdvertise="no" />
 
       <Feature Id="Sample_Lightroom_Feature" Title="Adobe Lightroom" Level="1000"
-               Description="Macro buttons for Adobe Lightroom photo editing" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_Lightroom_UserProfile" />
-      </Feature>
+               Description="Macro buttons for Adobe Lightroom photo editing" AllowAdvertise="no" />
 
       <Feature Id="Sample_Photoshop_Feature" Title="Adobe Photoshop" Level="1000"
-               Description="Macro buttons for Adobe Photoshop image editing" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_Photoshop_UserProfile" />
-      </Feature>
+               Description="Macro buttons for Adobe Photoshop image editing" AllowAdvertise="no" />
 
       <Feature Id="Sample_VisualStudio_Feature" Title="Visual Studio" Level="1000"
-               Description="Macro buttons for Microsoft Visual Studio IDE" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_VisualStudio_UserProfile" />
-      </Feature>
+               Description="Macro buttons for Microsoft Visual Studio IDE" AllowAdvertise="no" />
 
       <Feature Id="Sample_VSCode_Feature" Title="VS Code" Level="1000"
-               Description="Macro buttons for Visual Studio Code editor" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_VSCode_UserProfile" />
-      </Feature>
+               Description="Macro buttons for Visual Studio Code editor" AllowAdvertise="no" />
 
       <Feature Id="Sample_WindowsCalculator_Feature" Title="Windows Calculator" Level="1000"
-               Description="Macro buttons for Windows Calculator app" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_WindowsCalculator_UserProfile" />
-      </Feature>
+               Description="Macro buttons for Windows Calculator app" AllowAdvertise="no" />
 
       <Feature Id="Sample_WindowsDesktop_Feature" Title="Windows Desktop" Level="1"
-               Description="Macro buttons for Windows desktop management (Recommended)" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_WindowsDesktop_UserProfile" />
-      </Feature>
+               Description="Macro buttons for Windows desktop management (Recommended)" AllowAdvertise="no" />
 
       <Feature Id="Sample_WindowsTerminal_Feature" Title="Windows Terminal" Level="1000"
-               Description="Macro buttons for Windows Terminal" AllowAdvertise="no">
-        <ComponentGroupRef Id="Sample_WindowsTerminal_UserProfile" />
-      </Feature>
+               Description="Macro buttons for Windows Terminal" AllowAdvertise="no" />
 
     </Feature>
 
@@ -115,8 +95,68 @@
                   Impersonate="yes"
                   Return="asyncNoWait" />
 
-    <!-- Schedule the custom action to run at the end if checkbox is checked -->
+    <!-- Property to hold the pipe-separated list of selected samples -->
+    <Property Id="SELECTED_SAMPLES" />
+
+    <!-- Build the list of selected samples using pipe delimiter (each SetProperty needs unique ID) -->
+    <SetProperty Id="AddSample_ComfyUI" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|ComfyUI" Before="SetCopySamplesCmd" Sequence="execute">
+      &amp;Sample_ComfyUI_Feature=3
+    </SetProperty>
+    <SetProperty Id="AddSample_EliteDangerous" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|EliteDangerous" Before="SetCopySamplesCmd" Sequence="execute">
+      &amp;Sample_EliteDangerous_Feature=3
+    </SetProperty>
+    <SetProperty Id="AddSample_FileExplorer" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|FileExplorer" Before="SetCopySamplesCmd" Sequence="execute">
+      &amp;Sample_FileExplorer_Feature=3
+    </SetProperty>
+    <SetProperty Id="AddSample_Firefox" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|Firefox" Before="SetCopySamplesCmd" Sequence="execute">
+      &amp;Sample_Firefox_Feature=3
+    </SetProperty>
+    <SetProperty Id="AddSample_Lightroom" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|Lightroom" Before="SetCopySamplesCmd" Sequence="execute">
+      &amp;Sample_Lightroom_Feature=3
+    </SetProperty>
+    <SetProperty Id="AddSample_Photoshop" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|Photoshop" Before="SetCopySamplesCmd" Sequence="execute">
+      &amp;Sample_Photoshop_Feature=3
+    </SetProperty>
+    <SetProperty Id="AddSample_VisualStudio" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|VisualStudio" Before="SetCopySamplesCmd" Sequence="execute">
+      &amp;Sample_VisualStudio_Feature=3
+    </SetProperty>
+    <SetProperty Id="AddSample_VSCode" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|VSCode" Before="SetCopySamplesCmd" Sequence="execute">
+      &amp;Sample_VSCode_Feature=3
+    </SetProperty>
+    <SetProperty Id="AddSample_WindowsCalculator" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|WindowsCalculator" Before="SetCopySamplesCmd" Sequence="execute">
+      &amp;Sample_WindowsCalculator_Feature=3
+    </SetProperty>
+    <SetProperty Id="AddSample_WindowsDesktop" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|WindowsDesktop" Before="SetCopySamplesCmd" Sequence="execute">
+      &amp;Sample_WindowsDesktop_Feature=3
+    </SetProperty>
+    <SetProperty Id="AddSample_WindowsTerminal" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|WindowsTerminal" Before="SetCopySamplesCmd" Sequence="execute">
+      &amp;Sample_WindowsTerminal_Feature=3
+    </SetProperty>
+
+    <!-- Set the command line for the deferred action -->
+    <!-- This is immediate so [INSTALLFOLDER] and [SELECTED_SAMPLES] get expanded -->
+    <!-- Pass SELECTED_SAMPLES directly as a parameter to PowerShell -->
+    <CustomAction Id="SetCopySamplesCmd" Property="CopySamplesToUserProfile"
+                  Value="&quot;[WindowsFolder]System32\WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File &quot;[INSTALLFOLDER]CopySamples.ps1&quot; -SelectedSamples &quot;[SELECTED_SAMPLES]&quot;"
+                  Execute="immediate" />
+
+    <!-- Custom action to copy selected samples to user profile (deferred) -->
+    <!-- Uses WixQuietExec64 from WixUtilExtension for proper deferred execution -->
+    <CustomAction Id="CopySamplesToUserProfile"
+                  BinaryKey="WixCA"
+                  DllEntry="WixQuietExec64"
+                  Execute="deferred"
+                  Impersonate="yes"
+                  Return="ignore" />
+
+    <!-- Schedule the custom actions -->
     <InstallExecuteSequence>
+      <Custom Action="SetCopySamplesCmd" Before="CopySamplesToUserProfile">
+        <![CDATA[NOT Installed AND (&Sample_ComfyUI_Feature=3 OR &Sample_EliteDangerous_Feature=3 OR &Sample_FileExplorer_Feature=3 OR &Sample_Firefox_Feature=3 OR &Sample_Lightroom_Feature=3 OR &Sample_Photoshop_Feature=3 OR &Sample_VisualStudio_Feature=3 OR &Sample_VSCode_Feature=3 OR &Sample_WindowsCalculator_Feature=3 OR &Sample_WindowsDesktop_Feature=3 OR &Sample_WindowsTerminal_Feature=3)]]>
+      </Custom>
+      <Custom Action="CopySamplesToUserProfile" After="InstallFiles">
+        <![CDATA[NOT Installed AND (&Sample_ComfyUI_Feature=3 OR &Sample_EliteDangerous_Feature=3 OR &Sample_FileExplorer_Feature=3 OR &Sample_Firefox_Feature=3 OR &Sample_Lightroom_Feature=3 OR &Sample_Photoshop_Feature=3 OR &Sample_VisualStudio_Feature=3 OR &Sample_VSCode_Feature=3 OR &Sample_WindowsCalculator_Feature=3 OR &Sample_WindowsDesktop_Feature=3 OR &Sample_WindowsTerminal_Feature=3)]]>
+      </Custom>
       <Custom Action="LaunchApplication" After="InstallFinalize">
         NOT Installed AND NOT REMOVE AND WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1
       </Custom>
@@ -158,11 +198,16 @@
   </Fragment>
 
   <Fragment>
-    <!-- License file (manually defined since it's not in the publish output) -->
+    <!-- License file and PowerShell script (manually defined since they're not in the publish output) -->
     <DirectoryRef Id="INSTALLFOLDER">
       <Component Id="LicenseFile" Guid="{F6A7B8C9-D0E1-2345-6789-012345678901}">
         <File Id="LicenseTxt"
               Source="$(var.ProjectDir)..\LICENSE"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="CopySamplesScript" Guid="{1C2D3E4F-5A6B-7C8D-9E0F-1A2B3C4D5E6F}">
+        <File Id="CopySamplesPs1"
+              Source="$(var.ProjectDir)CopySamples.ps1"
               KeyPath="yes" />
       </Component>
     </DirectoryRef>
