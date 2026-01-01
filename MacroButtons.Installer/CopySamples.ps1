@@ -1,7 +1,7 @@
-# Copy selected sample profiles to user's .macrobuttons directory
+# Copy sample profiles to user's .macrobuttons directory
+# This script copies all available samples from the installation directory
 param(
-    [string]$InstallFolder,
-    [string]$SelectedSamples = ""
+    [string]$InstallFolder
 )
 
 $ErrorActionPreference = 'SilentlyContinue'
@@ -17,19 +17,8 @@ if (-not (Test-Path $samplesDir)) {
     exit 0
 }
 
-# Parse selected samples list (semicolon-separated)
-$selectedList = @()
-if ($SelectedSamples) {
-    $selectedList = $SelectedSamples -split ';' | Where-Object { $_ -and $_.Trim() } | ForEach-Object { $_.Trim() }
-}
-
-# If no samples specified, copy all (backwards compatibility)
-if ($selectedList.Count -eq 0) {
-    $selectedList = Get-ChildItem -Path $samplesDir -Directory | ForEach-Object { $_.Name }
-}
-
-# Copy selected JSON files from sample subdirectories
-Get-ChildItem -Path $samplesDir -Directory | Where-Object { $selectedList -contains $_.Name } | ForEach-Object {
+# Copy all JSON files from sample subdirectories
+Get-ChildItem -Path $samplesDir -Directory | ForEach-Object {
     $sampleDir = $_
     $sampleName = $sampleDir.Name
 

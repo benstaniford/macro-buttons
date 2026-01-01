@@ -39,44 +39,9 @@
       <ComponentRef Id="DesktopShortcut" />
     </Feature>
 
-    <!-- Sample Profiles Feature Tree - Optional copies to user profile -->
-    <Feature Id="SamplesFeature" Title="Copy Sample Profiles to User Directory" Level="1" Display="expand"
-             Description="Copy sample button profiles to %USERPROFILE%\.macrobuttons\ for immediate use. WARNING: Installing a sample will overwrite any existing profile with the same name. Make backups of customized profiles before upgrading." AllowAdvertise="no">
-
-      <Feature Id="Sample_ComfyUI_Feature" Title="ComfyUI" Level="1000"
-               Description="Macro buttons for ComfyUI Stable Diffusion interface" AllowAdvertise="no" />
-
-      <Feature Id="Sample_EliteDangerous_Feature" Title="Elite Dangerous" Level="1000"
-               Description="Macro buttons for Elite Dangerous space simulator" AllowAdvertise="no" />
-
-      <Feature Id="Sample_FileExplorer_Feature" Title="File Explorer" Level="1000"
-               Description="Macro buttons for Windows File Explorer" AllowAdvertise="no" />
-
-      <Feature Id="Sample_Firefox_Feature" Title="Firefox" Level="1000"
-               Description="Macro buttons for Mozilla Firefox browser" AllowAdvertise="no" />
-
-      <Feature Id="Sample_Lightroom_Feature" Title="Adobe Lightroom" Level="1000"
-               Description="Macro buttons for Adobe Lightroom photo editing" AllowAdvertise="no" />
-
-      <Feature Id="Sample_Photoshop_Feature" Title="Adobe Photoshop" Level="1000"
-               Description="Macro buttons for Adobe Photoshop image editing" AllowAdvertise="no" />
-
-      <Feature Id="Sample_VisualStudio_Feature" Title="Visual Studio" Level="1000"
-               Description="Macro buttons for Microsoft Visual Studio IDE" AllowAdvertise="no" />
-
-      <Feature Id="Sample_VSCode_Feature" Title="VS Code" Level="1000"
-               Description="Macro buttons for Visual Studio Code editor" AllowAdvertise="no" />
-
-      <Feature Id="Sample_WindowsCalculator_Feature" Title="Windows Calculator" Level="1000"
-               Description="Macro buttons for Windows Calculator app" AllowAdvertise="no" />
-
-      <Feature Id="Sample_WindowsDesktop_Feature" Title="Windows Desktop" Level="1"
-               Description="Macro buttons for Windows desktop management (Recommended)" AllowAdvertise="no" />
-
-      <Feature Id="Sample_WindowsTerminal_Feature" Title="Windows Terminal" Level="1000"
-               Description="Macro buttons for Windows Terminal" AllowAdvertise="no" />
-
-    </Feature>
+    <!-- Sample Profiles Feature - Optional copy to user profile -->
+    <Feature Id="SamplesFeature" Title="Copy Sample Profiles to User Directory" Level="1000"
+             Description="Copy all sample button profiles to %USERPROFILE%\.macrobuttons\ for immediate use. Includes samples for ComfyUI, Elite Dangerous, File Explorer, Firefox, Lightroom, Photoshop, Visual Studio, VS Code, Windows Calculator, Windows Desktop, and Windows Terminal. Sample reference files are always installed to Program Files. WARNING: This will overwrite any existing profiles with the same names." AllowAdvertise="no" />
 
     <!-- UI configuration -->
     <UIRef Id="WixUI_FeatureTree" />
@@ -94,62 +59,26 @@
                   Impersonate="yes"
                   Return="asyncNoWait" />
 
-    <!-- Custom action to set command line for copying samples (immediate) -->
-    <CustomAction Id="SetCopySamplesCmd" Property="CopySamplesToUserProfile"
-                  Value="&quot;[WindowsFolder]System32\WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File &quot;[INSTALLFOLDER]CopySamples.ps1&quot; -InstallFolder &quot;[INSTALLFOLDER]&quot; -SelectedSamples &quot;[SELECTED_SAMPLES_LIST]&quot;"
+    <!-- Custom action to set install folder for deferred action (immediate) -->
+    <CustomAction Id="SetCopySamplesData" Property="CopySamplesToUserProfile"
+                  Value="[INSTALLFOLDER]"
                   Execute="immediate" />
 
     <!-- Custom action to copy selected samples to user profile (deferred) -->
+    <!-- Note: Uses CustomActionData which contains the install folder path -->
     <CustomAction Id="CopySamplesToUserProfile"
-                  BinaryKey="WixCA"
-                  DllEntry="WixQuietExec"
+                  ExeCommand="cmd.exe /c &quot;powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File &quot;[CustomActionData]CopySamples.ps1&quot; -InstallFolder &quot;[CustomActionData]&quot;&quot;"
                   Execute="deferred"
                   Impersonate="yes"
                   Return="ignore" />
 
-    <!-- Properties to track which samples are selected -->
-    <!-- Each SetProperty needs a unique Id but they all set the same Property -->
-    <SetProperty Id="SetSample_ComfyUI" Property="SELECTED_SAMPLES_LIST" Value="ComfyUI" Before="SetCopySamplesCmd" Sequence="execute">
-      &amp;Sample_ComfyUI_Feature=3
-    </SetProperty>
-    <SetProperty Id="SetSample_EliteDangerous" Property="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];EliteDangerous" Before="SetCopySamplesCmd" Sequence="execute">
-      &amp;Sample_EliteDangerous_Feature=3
-    </SetProperty>
-    <SetProperty Id="SetSample_FileExplorer" Property="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];FileExplorer" Before="SetCopySamplesCmd" Sequence="execute">
-      &amp;Sample_FileExplorer_Feature=3
-    </SetProperty>
-    <SetProperty Id="SetSample_Firefox" Property="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];Firefox" Before="SetCopySamplesCmd" Sequence="execute">
-      &amp;Sample_Firefox_Feature=3
-    </SetProperty>
-    <SetProperty Id="SetSample_Lightroom" Property="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];Lightroom" Before="SetCopySamplesCmd" Sequence="execute">
-      &amp;Sample_Lightroom_Feature=3
-    </SetProperty>
-    <SetProperty Id="SetSample_Photoshop" Property="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];Photoshop" Before="SetCopySamplesCmd" Sequence="execute">
-      &amp;Sample_Photoshop_Feature=3
-    </SetProperty>
-    <SetProperty Id="SetSample_VisualStudio" Property="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];VisualStudio" Before="SetCopySamplesCmd" Sequence="execute">
-      &amp;Sample_VisualStudio_Feature=3
-    </SetProperty>
-    <SetProperty Id="SetSample_VSCode" Property="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];VSCode" Before="SetCopySamplesCmd" Sequence="execute">
-      &amp;Sample_VSCode_Feature=3
-    </SetProperty>
-    <SetProperty Id="SetSample_WindowsCalculator" Property="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];WindowsCalculator" Before="SetCopySamplesCmd" Sequence="execute">
-      &amp;Sample_WindowsCalculator_Feature=3
-    </SetProperty>
-    <SetProperty Id="SetSample_WindowsDesktop" Property="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];WindowsDesktop" Before="SetCopySamplesCmd" Sequence="execute">
-      &amp;Sample_WindowsDesktop_Feature=3
-    </SetProperty>
-    <SetProperty Id="SetSample_WindowsTerminal" Property="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];WindowsTerminal" Before="SetCopySamplesCmd" Sequence="execute">
-      &amp;Sample_WindowsTerminal_Feature=3
-    </SetProperty>
-
     <!-- Schedule the custom actions -->
     <InstallExecuteSequence>
-      <Custom Action="SetCopySamplesCmd" Before="CopySamplesToUserProfile">
-        <![CDATA[NOT Installed AND (&Sample_ComfyUI_Feature=3 OR &Sample_EliteDangerous_Feature=3 OR &Sample_FileExplorer_Feature=3 OR &Sample_Firefox_Feature=3 OR &Sample_Lightroom_Feature=3 OR &Sample_Photoshop_Feature=3 OR &Sample_VisualStudio_Feature=3 OR &Sample_VSCode_Feature=3 OR &Sample_WindowsCalculator_Feature=3 OR &Sample_WindowsDesktop_Feature=3 OR &Sample_WindowsTerminal_Feature=3)]]>
+      <Custom Action="SetCopySamplesData" Before="CopySamplesToUserProfile">
+        NOT Installed AND &amp;SamplesFeature=3
       </Custom>
       <Custom Action="CopySamplesToUserProfile" After="InstallFiles">
-        <![CDATA[NOT Installed AND (&Sample_ComfyUI_Feature=3 OR &Sample_EliteDangerous_Feature=3 OR &Sample_FileExplorer_Feature=3 OR &Sample_Firefox_Feature=3 OR &Sample_Lightroom_Feature=3 OR &Sample_Photoshop_Feature=3 OR &Sample_VisualStudio_Feature=3 OR &Sample_VSCode_Feature=3 OR &Sample_WindowsCalculator_Feature=3 OR &Sample_WindowsDesktop_Feature=3 OR &Sample_WindowsTerminal_Feature=3)]]>
+        NOT Installed AND &amp;SamplesFeature=3
       </Custom>
       <Custom Action="LaunchApplication" After="InstallFinalize">
         NOT Installed AND NOT REMOVE AND WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1
