@@ -61,7 +61,7 @@ jobs:
           Set-Content "MacroButtons.Installer\Product.wxs" -Value $productWxs
 
       - name: Restore dependencies
-        run: dotnet restore MacroButtons/MacroButtons.csproj
+        run: dotnet restore MacroButtons/MacroButtons.csproj -r win-x64
 
       - name: Restore test dependencies
         run: dotnet restore MacroButtons.Tests/MacroButtons.Tests.csproj
@@ -70,7 +70,7 @@ jobs:
         run: dotnet test MacroButtons.Tests/MacroButtons.Tests.csproj --configuration Release --no-restore --verbosity normal
 
       - name: Publish MacroButtons application
-        run: dotnet publish MacroButtons/MacroButtons.csproj -c Release /p:Platform=x64 --no-restore -o MacroButtons/bin/x64/Release/net8.0-windows
+        run: dotnet publish MacroButtons/MacroButtons.csproj -c Release -r win-x64 --self-contained false --no-restore -o MacroButtons/bin/x64/Release/net8.0-windows
 
       - name: Copy PowerShell dependencies
         shell: powershell
