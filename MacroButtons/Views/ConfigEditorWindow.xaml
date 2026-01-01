@@ -27,14 +27,13 @@
 
         <!-- Tile Style -->
         <Style x:Key="TileStyle" TargetType="Border">
-            <Setter Property="Background" Value="#252526"/>
             <Setter Property="BorderBrush" Value="#3E3E42"/>
-            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="Margin" Value="2"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#2D2D30"/>
+                    <Setter Property="BorderBrush" Value="#007ACC"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -96,7 +95,8 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Style="{StaticResource TileStyle}">
+                            <Border Style="{StaticResource TileStyle}"
+                                    Background="{Binding IsSelected, Converter={StaticResource BoolToHighlightBrushConverter}}">
                                 <Border.InputBindings>
                                     <MouseBinding MouseAction="LeftClick"
                                                   Command="{Binding DataContext.SelectTileCommand, RelativeSource={RelativeSource AncestorType=Window}}"
@@ -139,30 +139,70 @@
                                FontStyle="Italic"
                                Opacity="0.6"/>
 
-                    <!-- Property editor will go here -->
+                    <!-- Property editor -->
                     <StackPanel Visibility="{Binding SelectedTile, Converter={StaticResource NotNullToVisibilityConverter}}">
+                        <TextBlock Text="Tile Index:" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding SelectedTile.Index, StringFormat='Position: {0}'}" Opacity="0.7" Margin="0,0,0,10"/>
+
                         <TextBlock Text="Title:"/>
-                        <TextBox Text="{Binding SelectedTile.DisplayTitle, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Text="{Binding SelectedTile.Title, UpdateSourceTrigger=PropertyChanged}"
+                                 ToolTip="The text displayed on the button"/>
 
                         <TextBlock Text="Action Type:"/>
-                        <ComboBox SelectedIndex="0" Margin="0,0,0,10">
-                            <ComboBoxItem Content="None"/>
-                            <ComboBoxItem Content="Keypress"/>
-                            <ComboBoxItem Content="Executable"/>
-                            <ComboBoxItem Content="Python"/>
-                            <ComboBoxItem Content="PowerShell"/>
-                            <ComboBoxItem Content="PowerShell Script"/>
+                        <ComboBox ItemsSource="{Binding SelectedTile.ActionTypes}"
+                                  SelectedItem="{Binding SelectedTile.SelectedActionType, UpdateSourceTrigger=PropertyChanged}"
+                                  Margin="0,0,0,10"
+                                  ToolTip="The type of action to perform when clicked">
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="ComboBoxItem">
+                                    <Setter Property="Background" Value="#2D2D30"/>
+                                    <Setter Property="Foreground" Value="#F1F1F1"/>
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
                         </ComboBox>
 
                         <TextBlock Text="Action Value:"/>
-                        <TextBox Height="60" TextWrapping="Wrap" AcceptsReturn="True"/>
+                        <TextBlock Text="Examples:" FontSize="11" Opacity="0.6" Margin="0,0,0,2"/>
+                        <TextBlock FontSize="11" Opacity="0.6" Margin="0,0,0,5">
+                            <Run Text="• Keypress: ^v (Ctrl+V), +{Enter} (Shift+Enter)"/>
+                            <LineBreak/>
+                            <Run Text="• Executable: notepad.exe, calc.exe"/>
+                            <LineBreak/>
+                            <Run Text="• Python: -c print('hello')"/>
+                            <LineBreak/>
+                            <Run Text="• PowerShell: Get-Date -Format 'HH:mm:ss'"/>
+                            <LineBreak/>
+                            <Run Text="• PowerShell Script: ~/scripts/my-script.ps1"/>
+                        </TextBlock>
+                        <TextBox Text="{Binding SelectedTile.ActionValue, UpdateSourceTrigger=PropertyChanged}"
+                                 Height="80"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 VerticalScrollBarVisibility="Auto"/>
 
                         <TextBlock Text="Theme:"/>
-                        <ComboBox SelectedIndex="0" Margin="0,0,0,10">
-                            <ComboBoxItem Content="Default"/>
-                            <ComboBoxItem Content="Prominent"/>
-                            <ComboBoxItem Content="Toggled"/>
+                        <ComboBox ItemsSource="{Binding SelectedTile.Themes}"
+                                  SelectedItem="{Binding SelectedTile.SelectedTheme, UpdateSourceTrigger=PropertyChanged}"
+                                  Margin="0,0,0,10"
+                                  ToolTip="Color theme for this button">
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="ComboBoxItem">
+                                    <Setter Property="Background" Value="#2D2D30"/>
+                                    <Setter Property="Foreground" Value="#F1F1F1"/>
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
                         </ComboBox>
+
+                        <Separator Margin="0,10" Background="#3E3E42"/>
+
+                        <Button Content="Clear This Tile"
+                                Command="{Binding DataContext.ClearTileCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                Background="#C42B1C"
+                                Margin="0,5,0,10"
+                                ToolTip="Remove all content from this tile"/>
+
+                        <TextBlock Text="Status:" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding SelectedTile.IsEmpty, StringFormat='Empty: {0}'}" Opacity="0.7"/>
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>

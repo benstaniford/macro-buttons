@@ -154,12 +154,42 @@ public partial class ConfigEditorViewModel : ViewModelBase
     [RelayCommand]
     private void SelectTile(ButtonTileEditorViewModel tile)
     {
+        // Deselect previous tile
+        if (SelectedTile != null)
+        {
+            SelectedTile.IsSelected = false;
+        }
+
         SelectedTile = tile;
+
+        // Select new tile
+        if (SelectedTile != null)
+        {
+            SelectedTile.IsSelected = true;
+        }
+    }
+
+    [RelayCommand]
+    private void ClearTile()
+    {
+        if (SelectedTile != null)
+        {
+            SelectedTile.Title = string.Empty;
+            SelectedTile.SelectedActionType = "None";
+            SelectedTile.ActionValue = string.Empty;
+            SelectedTile.SelectedTheme = "default";
+        }
     }
 
     [RelayCommand]
     private void Save()
     {
+        // Save all tiles to their ButtonItems first
+        foreach (var tile in Tiles)
+        {
+            tile.SaveToButtonItem();
+        }
+
         // Collect non-empty tiles back into config.Items
         _config.Items.Clear();
         foreach (var tile in Tiles)
@@ -174,6 +204,10 @@ public partial class ConfigEditorViewModel : ViewModelBase
         _configService.SaveConfiguration(_config, _profileName);
 
         MessageBox.Show("Configuration saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+        // Close the window
+        Application.Current.Windows.OfType<Window>()
+            .FirstOrDefault(w => w.DataContext == this)?.Close();
     }
 
     [RelayCommand]
@@ -195,28 +229,209 @@ public partial class ButtonTileEditorViewModel : ViewModelBase
     [ObservableProperty]
     private int _index;
 
-    [ObservableProperty]
     private ButtonItem? _buttonItem;
 
     [ObservableProperty]
-    private string _displayTitle;
+    private string _displayTitle = string.Empty;
 
     [ObservableProperty]
     private bool _isEmpty;
 
+    // Title properties
+    private string _title = string.Empty;
+    public string Title
+    {
+        get => _title;
+        set
+        {
+            if (SetProperty(ref _title, value))
+            {
+                // Update display title immediately as user types
+                DisplayTitle = value;
+            }
+        }
+    }
+
+    // Action properties
+    [ObservableProperty]
+    private string _selectedActionType = "None";
+
+    [ObservableProperty]
+    private string _actionValue = string.Empty;
+
+    // Theme
+    [ObservableProperty]
+    private string _selectedTheme = "default";
+
+    // Selection state
+    [ObservableProperty]
+    private bool _isSelected;
+
+    public ButtonItem? ButtonItem
+    {
+        get => _buttonItem;
+        set
+        {
+            _buttonItem = value;
+            LoadFromButtonItem();
+        }
+    }
+
+    public string[] ActionTypes { get; } = new[]
+    {
+        "None",
+        "Keypress",
+        "Executable",
+        "Python",
+        "PowerShell",
+        "PowerShell Script",
+        "Submenu"
+    };
+
+    public string[] Themes { get; } = new[]
+    {
+        "default",
+        "prominent",
+        "toggled"
+    };
+
     public ButtonTileEditorViewModel(int index, ButtonItem? item, MacroButtonConfig rootConfig)
     {
         _index = index;
-        _buttonItem = item;
         _rootConfig = rootConfig;
-        _isEmpty = item == null;
-        _displayTitle = item?.GetStaticTitle() ?? string.Empty;
+        _buttonItem = item;
+        LoadFromButtonItem();
     }
 
-    public void UpdateFromItem(ButtonItem? item)
+    private void LoadFromButtonItem()
     {
-        ButtonItem = item;
-        IsEmpty = item == null;
-        DisplayTitle = item?.GetStaticTitle() ?? string.Empty;
+        if (_buttonItem == null)
+        {
+            IsEmpty = true;
+            DisplayTitle = string.Empty;
+            Title = string.Empty;
+            SelectedActionType = "None";
+            ActionValue = string.Empty;
+            SelectedTheme = "default";
+        }
+        else
+        {
+            IsEmpty = false;
+            DisplayTitle = _buttonItem.GetStaticTitle();
+            Title = _buttonItem.IsStaticTitle ? _buttonItem.GetStaticTitle() : string.Empty;
+            SelectedTheme = _buttonItem.Theme ?? "default";
+
+            // Load action
+            if (_buttonItem.Action != null)
+            {
+                var actionType = _buttonItem.Action.GetActionType();
+                switch (actionType)
+                {
+                    case ActionType.Keypress:
+                        SelectedActionType = "Keypress";
+                        ActionValue = _buttonItem.Action.Keypress ?? string.Empty;
+                        break;
+                    case ActionType.Executable:
+                        SelectedActionType = "Executable";
+                        ActionValue = _buttonItem.Action.Exe ?? string.Empty;
+                        break;
+                    case ActionType.Python:
+                        SelectedActionType = "Python";
+                        ActionValue = _buttonItem.Action.Python != null ? string.Join(" ", _buttonItem.Action.Python) : string.Empty;
+                        break;
+                    case ActionType.PowerShell:
+                        SelectedActionType = "PowerShell";
+                        ActionValue = _buttonItem.Action.PowerShell ?? string.Empty;
+                        break;
+                    case ActionType.PowerShellScript:
+                        SelectedActionType = "PowerShell Script";
+                        ActionValue = _buttonItem.Action.PowerShellScript ?? string.Empty;
+                        break;
+                    default:
+                        SelectedActionType = "None";
+                        ActionValue = string.Empty;
+                        break;
+                }
+            }
+            else if (_buttonItem.HasSubmenu)
+            {
+                SelectedActionType = "Submenu";
+                ActionValue = $"({_buttonItem.Items?.Count ?? 0} items)";
+            }
+            else
+            {
+                SelectedActionType = "None";
+                ActionValue = string.Empty;
+            }
+        }
+    }
+
+    public void SaveToButtonItem()
+    {
+        // If title is empty and action is None, set ButtonItem to null
+        if (string.IsNullOrWhiteSpace(Title) && SelectedActionType == "None")
+        {
+            _buttonItem = null;
+            IsEmpty = true;
+            DisplayTitle = string.Empty;
+            return;
+        }
+
+        // Create or update ButtonItem
+        if (_buttonItem == null)
+        {
+            _buttonItem = new ButtonItem();
+        }
+
+        // Set title
+        _buttonItem.Title = string.IsNullOrWhiteSpace(Title) ? "Untitled" : Title;
+        DisplayTitle = Title;
+
+        // Set theme
+        _buttonItem.Theme = SelectedTheme == "default" ? null : SelectedTheme;
+
+        // Set action
+        if (SelectedActionType == "None")
+        {
+            _buttonItem.Action = null;
+        }
+        else
+        {
+            if (_buttonItem.Action == null)
+            {
+                _buttonItem.Action = new ActionDefinition();
+            }
+
+            // Clear all action properties first
+            _buttonItem.Action.Keypress = null;
+            _buttonItem.Action.Exe = null;
+            _buttonItem.Action.Python = null;
+            _buttonItem.Action.PowerShell = null;
+            _buttonItem.Action.PowerShellScript = null;
+
+            switch (SelectedActionType)
+            {
+                case "Keypress":
+                    _buttonItem.Action.Keypress = ActionValue;
+                    break;
+                case "Executable":
+                    _buttonItem.Action.Exe = ActionValue;
+                    break;
+                case "Python":
+                    // Split by spaces for simple cases
+                    _buttonItem.Action.Python = string.IsNullOrWhiteSpace(ActionValue)
+                        ? new List<string>()
+                        : ActionValue.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
+                    break;
+                case "PowerShell":
+                    _buttonItem.Action.PowerShell = ActionValue;
+                    break;
+                case "PowerShell Script":
+                    _buttonItem.Action.PowerShellScript = ActionValue;
+                    break;
+            }
+        }
+
+        IsEmpty = false;
     }
 }
