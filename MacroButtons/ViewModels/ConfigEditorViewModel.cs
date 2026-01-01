@@ -8,6 +8,15 @@ using System.Windows;
 namespace MacroButtons.ViewModels;
 
 /// <summary>
+/// Stores navigation context when drilling into submenus.
+/// </summary>
+internal class NavigationContext
+{
+    public List<ButtonItem> Items { get; set; } = new();
+    public string ParentTitle { get; set; } = "";
+}
+
+/// <summary>
 /// View model for the configuration editor window.
 /// </summary>
 public partial class ConfigEditorViewModel : ViewModelBase
@@ -15,6 +24,10 @@ public partial class ConfigEditorViewModel : ViewModelBase
     private readonly ConfigurationService _configService;
     private readonly ProfileService _profileService;
     private string _profileName;
+
+    // Navigation state for submenu editing
+    private Stack<NavigationContext> _navigationStack = new();
+    private List<ButtonItem> _currentItems;
 
     [ObservableProperty]
     private MacroButtonConfig _config;
@@ -31,12 +44,20 @@ public partial class ConfigEditorViewModel : ViewModelBase
     [ObservableProperty]
     private int _columns;
 
+    [ObservableProperty]
+    private string _breadcrumb = "Root Menu";
+
+    public bool IsAtRootLevel => _navigationStack.Count == 0;
+
     public ConfigEditorViewModel(ProfileService profileService, ConfigurationService configService, string profileName)
     {
         _profileService = profileService;
         _configService = configService;
         _profileName = profileName;
         _config = configService.LoadConfiguration(profileName);
+
+        // Initialize at root level
+        _currentItems = _config.Items;
 
         LoadConfiguration();
     }
@@ -46,16 +67,19 @@ public partial class ConfigEditorViewModel : ViewModelBase
         Tiles.Clear();
 
         // Calculate grid dimensions based on item count
-        int itemCount = Math.Max(_config.Items.Count, 15); // Minimum 3x5
+        int itemCount = Math.Max(_currentItems.Count, 15); // Minimum 3x5
         CalculateGridLayout(itemCount);
 
         // Create tile view models for all grid positions
         for (int i = 0; i < Rows * Columns; i++)
         {
-            ButtonItem? item = i < _config.Items.Count ? _config.Items[i] : null;
+            ButtonItem? item = i < _currentItems.Count ? _currentItems[i] : null;
             var tile = new ButtonTileEditorViewModel(i, item, _config);
             Tiles.Add(tile);
         }
+
+        // Update breadcrumb
+        UpdateBreadcrumb();
     }
 
     private void CalculateGridLayout(int itemCount)
@@ -94,62 +118,17 @@ public partial class ConfigEditorViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void AddRow()
+    private void AddItem()
     {
-        Rows++;
-        RefreshGrid();
+        // Add a new empty tile
+        var newTile = new ButtonTileEditorViewModel(Tiles.Count, null, _config);
+        Tiles.Add(newTile);
+        
+        // Recalculate grid layout based on new item count
+        CalculateGridLayout(Tiles.Count);
     }
 
-    [RelayCommand]
-    private void DeleteRow()
-    {
-        if (Rows > 3)
-        {
-            Rows--;
-            RefreshGrid();
-        }
-    }
 
-    [RelayCommand]
-    private void AddColumn()
-    {
-        Columns++;
-        RefreshGrid();
-    }
-
-    [RelayCommand]
-    private void DeleteColumn()
-    {
-        if (Columns > 5)
-        {
-            Columns--;
-            RefreshGrid();
-        }
-    }
-
-    private void RefreshGrid()
-    {
-        int newCount = Rows * Columns;
-        int currentCount = Tiles.Count;
-
-        if (newCount > currentCount)
-        {
-            // Add new tiles
-            for (int i = currentCount; i < newCount; i++)
-            {
-                var tile = new ButtonTileEditorViewModel(i, null, _config);
-                Tiles.Add(tile);
-            }
-        }
-        else if (newCount < currentCount)
-        {
-            // Remove excess tiles
-            while (Tiles.Count > newCount)
-            {
-                Tiles.RemoveAt(Tiles.Count - 1);
-            }
-        }
-    }
 
     [RelayCommand]
     private void SelectTile(ButtonTileEditorViewModel tile)
@@ -166,6 +145,66 @@ public partial class ConfigEditorViewModel : ViewModelBase
         if (SelectedTile != null)
         {
             SelectedTile.IsSelected = true;
+        }
+
+        // Check if double-click on submenu - if so, drill down
+        // For now, we'll add a separate command for drilling down
+    }
+
+    [RelayCommand]
+    private void DrillIntoSubmenu()
+    {
+        if (SelectedTile == null || !SelectedTile.IsSubmenu)
+            return;
+
+        // Save current state to navigation stack
+        _navigationStack.Push(new NavigationContext
+        {
+            Items = _currentItems,
+            ParentTitle = SelectedTile.Title
+        });
+
+        // Get submenu items (create if needed)
+        if (SelectedTile.ButtonItem?.Items == null)
+        {
+            SelectedTile.ButtonItem.Items = new List<ButtonItem>();
+        }
+
+        // Navigate to submenu
+        _currentItems = SelectedTile.ButtonItem.Items;
+
+        // Reload configuration with new items
+        LoadConfiguration();
+    }
+
+    [RelayCommand]
+    private void NavigateBack()
+    {
+        if (_navigationStack.Count == 0)
+            return;
+
+        // Pop previous level from stack
+        var context = _navigationStack.Pop();
+        _currentItems = context.Items;
+
+        // Reload configuration
+        LoadConfiguration();
+    }
+
+    private void UpdateBreadcrumb()
+    {
+        if (_navigationStack.Count == 0)
+        {
+            Breadcrumb = "Root Menu";
+        }
+        else
+        {
+            var path = new List<string> { "Root" };
+            foreach (var ctx in _navigationStack.Reverse())
+            {
+                path.Add(ctx.ParentTitle);
+            }
+            Breadcrumb = string.Join(" > ", path);
         }
     }
 
@@ -190,25 +229,72 @@ public partial class ConfigEditorViewModel : ViewModelBase
             tile.SaveToButtonItem();
         }
 
-        // Collect non-empty tiles back into config.Items
-        _config.Items.Clear();
+        // Collect all tiles back into current items list
+        // Empty tiles will have "" title to maintain grid positioning
+        _currentItems.Clear();
         foreach (var tile in Tiles)
         {
             if (tile.ButtonItem != null)
             {
-                _config.Items.Add(tile.ButtonItem);
+                _currentItems.Add(tile.ButtonItem);
+            }
+            else
+            {
+                // Add empty item with "" title to maintain grid structure
+                _currentItems.Add(new ButtonItem { Title = "" });
             }
         }
 
-        // Save configuration
-        _configService.SaveConfiguration(_config, _profileName);
+        // Only save to file if at root level
+        if (IsAtRootLevel)
+        {
+            _configService.SaveConfiguration(_config, _profileName);
+        }
+    }
 
-        System.Windows.MessageBox.Show("Configuration saved successfully!", "Success",
-            System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+    [RelayCommand]
+    private void SaveAndClose()
+    {
+        // Navigate back to root if in submenu
+        while (!IsAtRootLevel)
+        {
+            // Save current submenu level
+            SaveCurrentLevel();
+            
+            // Pop back
+            var context = _navigationStack.Pop();
+            _currentItems = context.Items;
+        }
+
+        // Save at root level (writes to file)
+        Save();
 
         // Close the window
         System.Windows.Application.Current.Windows.OfType<Window>()
             .FirstOrDefault(w => w.DataContext == this)?.Close();
+    }
+
+    private void SaveCurrentLevel()
+    {
+        // Save all tiles to their ButtonItems
+        foreach (var tile in Tiles)
+        {
+            tile.SaveToButtonItem();
+        }
+
+        // Update current items list
+        _currentItems.Clear();
+        foreach (var tile in Tiles)
+        {
+            if (tile.ButtonItem != null)
+            {
+                _currentItems.Add(tile.ButtonItem);
+            }
+            else
+            {
+                _currentItems.Add(new ButtonItem { Title = "" });
+            }
+        }
     }
 
     [RelayCommand]
@@ -254,11 +340,27 @@ public partial class ButtonTileEditorViewModel : ViewModelBase
     }
 
     // Action properties
-    [ObservableProperty]
     private string _selectedActionType = "None";
+    public string SelectedActionType
+    {
+        get => _selectedActionType;
+        set
+        {
+            if (SetProperty(ref _selectedActionType, value))
+            {
+                OnPropertyChanged(nameof(IsActionValueEnabled));
+            }
+        }
+    }
 
     [ObservableProperty]
     private string _actionValue = string.Empty;
+
+    /// <summary>
+    /// Returns true if the action value textbox should be enabled.
+    /// Disabled for submenu action type.
+    /// </summary>
+    public bool IsActionValueEnabled => SelectedActionType != "Submenu";
 
     // Theme
     [ObservableProperty]
@@ -267,6 +369,11 @@ public partial class ButtonTileEditorViewModel : ViewModelBase
     // Selection state
     [ObservableProperty]
     private bool _isSelected;
+
+    /// <summary>
+    /// Returns true if this tile represents a submenu.
+    /// </summary>
+    public bool IsSubmenu => _buttonItem?.HasSubmenu == true || SelectedActionType == "Submenu";
 
     public ButtonItem? ButtonItem
     {
@@ -391,13 +498,28 @@ public partial class ButtonTileEditorViewModel : ViewModelBase
         // Set theme
         _buttonItem.Theme = SelectedTheme == "default" ? null : SelectedTheme;
 
-        // Set action
-        if (SelectedActionType == "None")
+        // Set action or submenu
+        if (SelectedActionType == "Submenu")
+        {
+            // Ensure Items list exists for submenu
+            if (_buttonItem.Items == null)
+            {
+                _buttonItem.Items = new List<ButtonItem>();
+            }
+            // Clear action when it's a submenu
+            _buttonItem.Action = null;
+        }
+        else if (SelectedActionType == "None")
         {
             _buttonItem.Action = null;
+            // Clear submenu if switching away from submenu
+            _buttonItem.Items = null;
         }
         else
         {
+            // Clear submenu if it's not a submenu action
+            _buttonItem.Items = null;
+
             if (_buttonItem.Action == null)
             {
                 _buttonItem.Action = new ActionDefinition();

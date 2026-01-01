@@ -6,5 +6,7 @@
         <helpers:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
         <helpers:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter"/>
         <helpers:BoolToHighlightBrushConverter x:Key="BoolToHighlightBrushConverter"/>
+        <helpers:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <helpers:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
     </Application.Resources>
 </Application>

@@ -73,14 +73,15 @@
             </Grid.RowDefinitions>
 
             <!-- Title -->
-            <TextBlock Grid.Row="0" Text="Button Grid Layout" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock Grid.Row="0" Text="Button Grid Layout" FontSize="18" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBlock Grid.Row="0" Text="{Binding Breadcrumb}" FontSize="12" Opacity="0.7" Margin="0,25,0,10"/>
 
             <!-- Grid Controls -->
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
-                <Button Content="+ Row" Command="{Binding AddRowCommand}"/>
-                <Button Content="- Row" Command="{Binding DeleteRowCommand}"/>
-                <Button Content="+ Column" Command="{Binding AddColumnCommand}"/>
-                <Button Content="- Column" Command="{Binding DeleteColumnCommand}"/>
+                <Button Content="← Back" 
+                        Command="{Binding NavigateBackCommand}"
+                        Visibility="{Binding IsAtRootLevel, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+                <Button Content="+ Item" Command="{Binding AddItemCommand}"/>
                 <TextBlock Text="{Binding Rows, StringFormat='Grid: {0}'}" VerticalAlignment="Center" Margin="15,0,0,0"/>
                 <TextBlock Text="{Binding Columns, StringFormat=' x {0}'}" VerticalAlignment="Center"/>
             </StackPanel>
@@ -101,6 +102,8 @@
                                     <MouseBinding MouseAction="LeftClick"
                                                   Command="{Binding DataContext.SelectTileCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                   CommandParameter="{Binding}"/>
+                                    <MouseBinding MouseAction="LeftDoubleClick"
+                                                  Command="{Binding DataContext.DrillIntoSubmenuCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
                                 </Border.InputBindings>
                                 <TextBlock Text="{Binding DisplayTitle}"
                                            TextAlignment="Center"
@@ -178,7 +181,8 @@
                                  Height="80"
                                  TextWrapping="Wrap"
                                  AcceptsReturn="True"
-                                 VerticalScrollBarVisibility="Auto"/>
+                                 VerticalScrollBarVisibility="Auto"
+                                 IsEnabled="{Binding SelectedTile.IsActionValueEnabled}"/>
 
                         <TextBlock Text="Theme:"/>
                         <ComboBox ItemsSource="{Binding SelectedTile.Themes}"
@@ -195,6 +199,13 @@
 
                         <Separator Margin="0,10" Background="#3E3E42"/>
 
+                        <Button Content="Edit Submenu Items"
+                                Command="{Binding DataContext.DrillIntoSubmenuCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                Visibility="{Binding IsSubmenu, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Background="#0E639C"
+                                Margin="0,5,0,10"
+                                ToolTip="Open submenu for editing"/>
+
                         <Button Content="Clear This Tile"
                                 Command="{Binding DataContext.ClearTileCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                 Background="#C42B1C"
@@ -210,6 +221,7 @@
             <!-- Action Buttons -->
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
                 <Button Content="Save" Command="{Binding SaveCommand}" Width="80"/>
+                <Button Content="Save and Close" Command="{Binding SaveAndCloseCommand}" Width="120"/>
                 <Button Content="Cancel" Command="{Binding CancelCommand}" Width="80"/>
             </StackPanel>
         </Grid>
