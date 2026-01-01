@@ -29,6 +29,7 @@
   <ItemGroup>
     <Content Include="License.rtf" />
     <Content Include="MacroButtons.ico" />
+    <Content Include="CopySamples.ps1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MacroButtons\MacroButtons.csproj">
