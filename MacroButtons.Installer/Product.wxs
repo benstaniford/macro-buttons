@@ -30,6 +30,7 @@
       <ComponentGroupRef Id="SamplesReadme" />
       <ComponentGroupRef Id="AllSamplesInProgramFiles" />
       <ComponentRef Id="ApplicationShortcut" />
+      <ComponentRef Id="UserProfileCleanup" />
     </Feature>
 
     <Feature Id="DesktopShortcutFeature" Title="Desktop Shortcut" Level="1"
@@ -144,6 +145,16 @@
         <Directory Id="USERPROFILEFOLDER" Name=".macrobuttons" />
       </Directory>
     </Directory>
+  </Fragment>
+
+  <Fragment>
+    <!-- Clean up user profile folder on uninstall -->
+    <DirectoryRef Id="USERPROFILEFOLDER">
+      <Component Id="UserProfileCleanup" Guid="{3A334567-89AB-CDEF-0123-456789ABCDEF}">
+        <RemoveFolder Id="RemoveUserProfileFolder" Directory="USERPROFILEFOLDER" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\MacroButtons" Name="UserProfileFolder" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
   </Fragment>
 
   <Fragment>

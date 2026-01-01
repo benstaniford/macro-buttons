@@ -129,7 +129,8 @@
   <Fragment>
     <ComponentGroup Id="Sample_ComfyUI_UserProfile">
       <Component Id="cmp_UP_ComfyUI_json" Directory="USERPROFILEFOLDER" Guid="{2B234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_UP_ComfyUI_json" Name=".macrobuttons-comfyui.json" Source="$(var.SamplesSourceDir)\ComfyUI\comfyui.json" KeyPath="yes" />
+        <File Id="fil_UP_ComfyUI_json" Name=".macrobuttons-comfyui.json" Source="$(var.SamplesSourceDir)\ComfyUI\comfyui.json" />
+        <RegistryValue Root="HKCU" Key="Software\MacroButtons\Samples" Name="ComfyUI" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
@@ -138,10 +139,12 @@
   <Fragment>
     <ComponentGroup Id="Sample_EliteDangerous_UserProfile">
       <Component Id="cmp_UP_EliteDangerous_json" Directory="USERPROFILEFOLDER" Guid="{2C234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_UP_EliteDangerous_json" Name=".macrobuttons-elitedangerous.json" Source="$(var.SamplesSourceDir)\EliteDangerous\elitedangerous.json" KeyPath="yes" />
+        <File Id="fil_UP_EliteDangerous_json" Name=".macrobuttons-elitedangerous.json" Source="$(var.SamplesSourceDir)\EliteDangerous\elitedangerous.json" />
+        <RegistryValue Root="HKCU" Key="Software\MacroButtons\Samples" Name="EliteDangerous" Type="integer" Value="1" KeyPath="yes" />
       </Component>
       <Component Id="cmp_UP_EliteDangerous_script" Directory="USERPROFILEFOLDER" Guid="{2C334567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_UP_EliteDangerous_script" Name="elite-status" Source="$(var.SamplesSourceDir)\EliteDangerous\elite-status" KeyPath="yes" />
+        <File Id="fil_UP_EliteDangerous_script" Name="elite-status" Source="$(var.SamplesSourceDir)\EliteDangerous\elite-status" />
+        <RegistryValue Root="HKCU" Key="Software\MacroButtons\Samples" Name="EliteDangerousScript" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
@@ -150,7 +153,8 @@
   <Fragment>
     <ComponentGroup Id="Sample_FileExplorer_UserProfile">
       <Component Id="cmp_UP_FileExplorer_json" Directory="USERPROFILEFOLDER" Guid="{2D234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_UP_FileExplorer_json" Name=".macrobuttons-file-explorer.json" Source="$(var.SamplesSourceDir)\FileExplorer\file-explorer.json" KeyPath="yes" />
+        <File Id="fil_UP_FileExplorer_json" Name=".macrobuttons-file-explorer.json" Source="$(var.SamplesSourceDir)\FileExplorer\file-explorer.json" />
+        <RegistryValue Root="HKCU" Key="Software\MacroButtons\Samples" Name="FileExplorer" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
@@ -159,7 +163,8 @@
   <Fragment>
     <ComponentGroup Id="Sample_Firefox_UserProfile">
       <Component Id="cmp_UP_Firefox_json" Directory="USERPROFILEFOLDER" Guid="{2E234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_UP_Firefox_json" Name=".macrobuttons-firefox.json" Source="$(var.SamplesSourceDir)\Firefox\firefox.json" KeyPath="yes" />
+        <File Id="fil_UP_Firefox_json" Name=".macrobuttons-firefox.json" Source="$(var.SamplesSourceDir)\Firefox\firefox.json" />
+        <RegistryValue Root="HKCU" Key="Software\MacroButtons\Samples" Name="Firefox" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
@@ -168,7 +173,8 @@
   <Fragment>
     <ComponentGroup Id="Sample_Lightroom_UserProfile">
       <Component Id="cmp_UP_Lightroom_json" Directory="USERPROFILEFOLDER" Guid="{2F234567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_UP_Lightroom_json" Name=".macrobuttons-lightroom.json" Source="$(var.SamplesSourceDir)\Lightroom\lightroom.json" KeyPath="yes" />
+        <File Id="fil_UP_Lightroom_json" Name=".macrobuttons-lightroom.json" Source="$(var.SamplesSourceDir)\Lightroom\lightroom.json" />
+        <RegistryValue Root="HKCU" Key="Software\MacroButtons\Samples" Name="Lightroom" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
@@ -177,7 +183,8 @@
   <Fragment>
     <ComponentGroup Id="Sample_Photoshop_UserProfile">
       <Component Id="cmp_UP_Photoshop_json" Directory="USERPROFILEFOLDER" Guid="{20334567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_UP_Photoshop_json" Name=".macrobuttons-photoshop.json" Source="$(var.SamplesSourceDir)\Photoshop\photoshop.json" KeyPath="yes" />
+        <File Id="fil_UP_Photoshop_json" Name=".macrobuttons-photoshop.json" Source="$(var.SamplesSourceDir)\Photoshop\photoshop.json" />
+        <RegistryValue Root="HKCU" Key="Software\MacroButtons\Samples" Name="Photoshop" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
@@ -186,7 +193,8 @@
   <Fragment>
     <ComponentGroup Id="Sample_VisualStudio_UserProfile">
       <Component Id="cmp_UP_VisualStudio_json" Directory="USERPROFILEFOLDER" Guid="{22334567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_UP_VisualStudio_json" Name=".macrobuttons-visual-studio.json" Source="$(var.SamplesSourceDir)\VisualStudio\visual-studio.json" KeyPath="yes" />
+        <File Id="fil_UP_VisualStudio_json" Name=".macrobuttons-visual-studio.json" Source="$(var.SamplesSourceDir)\VisualStudio\visual-studio.json" />
+        <RegistryValue Root="HKCU" Key="Software\MacroButtons\Samples" Name="VisualStudio" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
@@ -195,7 +203,8 @@
   <Fragment>
     <ComponentGroup Id="Sample_VSCode_UserProfile">
       <Component Id="cmp_UP_VSCode_json" Directory="USERPROFILEFOLDER" Guid="{24334567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_UP_VSCode_json" Name=".macrobuttons-vscode.json" Source="$(var.SamplesSourceDir)\VSCode\vscode.json" KeyPath="yes" />
+        <File Id="fil_UP_VSCode_json" Name=".macrobuttons-vscode.json" Source="$(var.SamplesSourceDir)\VSCode\vscode.json" />
+        <RegistryValue Root="HKCU" Key="Software\MacroButtons\Samples" Name="VSCode" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
@@ -204,7 +213,8 @@
   <Fragment>
     <ComponentGroup Id="Sample_WindowsCalculator_UserProfile">
       <Component Id="cmp_UP_WindowsCalculator_json" Directory="USERPROFILEFOLDER" Guid="{26334567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_UP_WindowsCalculator_json" Name=".macrobuttons-windows-calculator.json" Source="$(var.SamplesSourceDir)\WindowsCalculator\windows-calculator.json" KeyPath="yes" />
+        <File Id="fil_UP_WindowsCalculator_json" Name=".macrobuttons-windows-calculator.json" Source="$(var.SamplesSourceDir)\WindowsCalculator\windows-calculator.json" />
+        <RegistryValue Root="HKCU" Key="Software\MacroButtons\Samples" Name="WindowsCalculator" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
@@ -213,7 +223,8 @@
   <Fragment>
     <ComponentGroup Id="Sample_WindowsDesktop_UserProfile">
       <Component Id="cmp_UP_WindowsDesktop_json" Directory="USERPROFILEFOLDER" Guid="{28334567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_UP_WindowsDesktop_json" Name=".macrobuttons-windows-desktop.json" Source="$(var.SamplesSourceDir)\WindowsDesktop\windows-desktop.json" KeyPath="yes" />
+        <File Id="fil_UP_WindowsDesktop_json" Name=".macrobuttons-windows-desktop.json" Source="$(var.SamplesSourceDir)\WindowsDesktop\windows-desktop.json" />
+        <RegistryValue Root="HKCU" Key="Software\MacroButtons\Samples" Name="WindowsDesktop" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
@@ -222,7 +233,8 @@
   <Fragment>
     <ComponentGroup Id="Sample_WindowsTerminal_UserProfile">
       <Component Id="cmp_UP_WindowsTerminal_json" Directory="USERPROFILEFOLDER" Guid="{2A334567-89AB-CDEF-0123-456789ABCDEF}">
-        <File Id="fil_UP_WindowsTerminal_json" Name=".macrobuttons-windows-terminal.json" Source="$(var.SamplesSourceDir)\WindowsTerminal\windows-terminal.json" KeyPath="yes" />
+        <File Id="fil_UP_WindowsTerminal_json" Name=".macrobuttons-windows-terminal.json" Source="$(var.SamplesSourceDir)\WindowsTerminal\windows-terminal.json" />
+        <RegistryValue Root="HKCU" Key="Software\MacroButtons\Samples" Name="WindowsTerminal" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
