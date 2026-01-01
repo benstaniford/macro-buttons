@@ -38,6 +38,7 @@ public class MainViewModel : ViewModelBase, IDisposable
     private readonly PowerShellService _powershellService;
     private readonly DynamicSubmenuService _dynamicSubmenuService;
     private readonly LoggingService _loggingService;
+    private readonly SoundService _soundService;
     private KeystrokeService _keystrokeService;
     private readonly WindowHelper _windowHelper;
 
@@ -75,6 +76,7 @@ public class MainViewModel : ViewModelBase, IDisposable
         _commandService = new CommandExecutionService();
         _powershellService = new PowerShellService(_loggingService);
         _dynamicSubmenuService = new DynamicSubmenuService(_commandService, _powershellService, _loggingService);
+        _soundService = new SoundService(_loggingService);
         _windowHelper = windowHelper ?? new WindowHelper();
 
         _loggingService.LogInfo("========== MacroButtons Started ==========");
@@ -90,6 +92,10 @@ public class MainViewModel : ViewModelBase, IDisposable
 
             // Create keystroke service with configured sendKeys settings
             _keystrokeService = new KeystrokeService(_windowHelper, Config.Global.SendKeys);
+
+            // Configure sound service from global config
+            _soundService.SoundEnabled = Config.Global.SoundEnabled;
+            _soundService.Volume = Config.Global.SoundVolume;
 
             // Initialize base profile to the starting profile
             // This ensures that if we auto-switch, we know where to return to
@@ -114,7 +120,7 @@ public class MainViewModel : ViewModelBase, IDisposable
             // Set minimal defaults
             Rows = 3;
             Columns = 5;
-            var errorTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _powershellService, _loggingService, _windowHelper, _dynamicSubmenuService)
+            var errorTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _powershellService, _loggingService, _soundService, _windowHelper, _dynamicSubmenuService)
             {
                 DisplayTitle = "Config Error"
             };
@@ -152,7 +158,7 @@ public class MainViewModel : ViewModelBase, IDisposable
             // Set minimal defaults
             Rows = 3;
             Columns = 5;
-            var errorTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _powershellService, _loggingService, _windowHelper, _dynamicSubmenuService)
+            var errorTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _powershellService, _loggingService, _soundService, _windowHelper, _dynamicSubmenuService)
             {
                 DisplayTitle = "Config Error"
             };
@@ -222,6 +228,7 @@ public class MainViewModel : ViewModelBase, IDisposable
                 _keystrokeService,
                 _powershellService,
                 _loggingService,
+                _soundService,
                 _windowHelper,
                 _dynamicSubmenuService,
                 NavigateToSubmenu,
@@ -232,7 +239,7 @@ public class MainViewModel : ViewModelBase, IDisposable
         // Fill remaining slots with empty tiles
         for (int i = itemCount; i < totalTiles; i++)
         {
-            var emptyTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _powershellService, _loggingService, _windowHelper, _dynamicSubmenuService);
+            var emptyTile = new ButtonTileViewModel(Config, _commandService, _keystrokeService, _powershellService, _loggingService, _soundService, _windowHelper, _dynamicSubmenuService);
             Tiles.Add(emptyTile);
         }
     }

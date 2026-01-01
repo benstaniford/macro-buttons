@@ -23,6 +23,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
     private readonly KeystrokeService _keystrokeService;
     private readonly PowerShellService _powershellService;
     private readonly LoggingService _loggingService;
+    private readonly SoundService _soundService;
     private readonly WindowHelper _windowHelper;
     private readonly BuiltinService _builtinService;
     private readonly DynamicSubmenuService _dynamicSubmenuService;
@@ -48,7 +49,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
     /// <summary>
     /// Creates an empty tile (placeholder).
     /// </summary>
-    public ButtonTileViewModel(MacroButtonConfig rootConfig, CommandExecutionService commandService, KeystrokeService keystrokeService, PowerShellService powershellService, LoggingService loggingService, WindowHelper windowHelper, DynamicSubmenuService dynamicSubmenuService)
+    public ButtonTileViewModel(MacroButtonConfig rootConfig, CommandExecutionService commandService, KeystrokeService keystrokeService, PowerShellService powershellService, LoggingService loggingService, SoundService soundService, WindowHelper windowHelper, DynamicSubmenuService dynamicSubmenuService)
     {
         _config = null;
         _rootConfig = rootConfig;
@@ -56,6 +57,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         _keystrokeService = keystrokeService;
         _powershellService = powershellService;
         _loggingService = loggingService;
+        _soundService = soundService;
         _windowHelper = windowHelper;
         _builtinService = new BuiltinService();
         _dynamicSubmenuService = dynamicSubmenuService;
@@ -83,6 +85,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         KeystrokeService keystrokeService,
         PowerShellService powershellService,
         LoggingService loggingService,
+        SoundService soundService,
         WindowHelper windowHelper,
         DynamicSubmenuService dynamicSubmenuService,
         Action<List<ButtonItem>>? onNavigateToSubmenu = null,
@@ -94,6 +97,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         _keystrokeService = keystrokeService;
         _powershellService = powershellService;
         _loggingService = loggingService;
+        _soundService = soundService;
         _windowHelper = windowHelper;
         _builtinService = new BuiltinService();
         _dynamicSubmenuService = dynamicSubmenuService;
@@ -172,6 +176,9 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         // Restore cursor to the position it was before touching the screen
         // Do this IMMEDIATELY, before executing the action
         _windowHelper.RestorePreviousCursorPosition();
+
+        // Play button click sound
+        _soundService.PlayButtonClick();
 
         try
         {

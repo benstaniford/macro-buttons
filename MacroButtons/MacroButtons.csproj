@@ -18,9 +18,11 @@
     <PackageReference Include="InputSimulatorPlus" Version="1.0.7" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.4.7" />
+    <PackageReference Include="NAudio" Version="2.2.1" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\DefaultConfig.json" />
+    <Resource Include="Resources\button-click.mp3" />
   </ItemGroup>
 </Project>

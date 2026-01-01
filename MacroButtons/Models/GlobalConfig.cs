@@ -40,6 +40,16 @@ public class GlobalConfig
     public string? ActiveWindow { get; set; }
 
     /// <summary>
+    /// Enable or disable button click sound effects.
+    /// </summary>
+    public bool SoundEnabled { get; set; } = true;
+
+    /// <summary>
+    /// Sound volume (0.0 to 1.0). Default is 0.5 (50%).
+    /// </summary>
+    public float SoundVolume { get; set; } = 0.5f;
+
+    /// <summary>
     /// Parses the refresh interval string into a TimeSpan.
     /// </summary>
     public TimeSpan GetRefreshInterval()
