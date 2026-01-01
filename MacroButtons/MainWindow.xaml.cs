@@ -119,13 +119,13 @@ public partial class MainWindow : Window
 
         contextMenu.Items.Add(new System.Windows.Forms.ToolStripSeparator());
 
-        // Edit Config (Visual Editor)
-        var editConfigVisualItem = new System.Windows.Forms.ToolStripMenuItem("Edit Config");
+        // Edit Profile (Visual Editor)
+        var editConfigVisualItem = new System.Windows.Forms.ToolStripMenuItem("Edit Profile");
         editConfigVisualItem.Click += (s, e) => OpenConfigEditor();
         contextMenu.Items.Add(editConfigVisualItem);
 
-        // Edit Config JSON
-        var editConfigJsonItem = new System.Windows.Forms.ToolStripMenuItem("Edit Config JSON");
+        // Edit Profile JSON
+        var editConfigJsonItem = new System.Windows.Forms.ToolStripMenuItem("Edit Profile JSON");
         editConfigJsonItem.Click += (s, e) => OpenConfigFile();
         contextMenu.Items.Add(editConfigJsonItem);
 
