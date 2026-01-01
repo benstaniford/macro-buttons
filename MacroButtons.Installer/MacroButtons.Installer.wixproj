@@ -23,7 +23,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Product.wxs" />
-    <Compile Include="SamplesAuto.wxs" />
+    <Compile Include="Samples.wxs" />
     <Compile Include="DllsAuto.wxs" />
   </ItemGroup>
   <ItemGroup>
@@ -52,21 +52,7 @@
     <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
   </Target>
 
-  <!-- Auto-harvest samples directory before build -->
-  <Target Name="HarvestSamples" BeforeTargets="BeforeBuild">
-    <HeatDirectory Directory="$(ProjectDir)..\samples"
-                   DirectoryRefId="SAMPLESFOLDER"
-                   ComponentGroupName="SamplesComponents"
-                   OutputFile="SamplesAuto.wxs"
-                   SuppressFragments="true"
-                   SuppressRegistry="true"
-                   SuppressRootDirectory="true"
-                   AutogenerateGuids="true"
-                   GenerateGuidsNow="true"
-                   ToolPath="$(WixToolPath)"
-                   PreprocessorVariable="var.SamplesSourceDir" />
-  </Target>
-
+  <!-- Samples are now manually defined in Samples.wxs for granular feature selection -->
   <!-- Auto-harvest DLLs from publish directory before build -->
   <Target Name="HarvestDlls" BeforeTargets="BeforeBuild">
     <HeatDirectory Directory="$(ProjectDir)..\MacroButtons\bin\x64\Release\net8.0-windows"
