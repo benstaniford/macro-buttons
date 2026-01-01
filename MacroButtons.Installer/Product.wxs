@@ -59,15 +59,15 @@
                   Impersonate="yes"
                   Return="asyncNoWait" />
 
-    <!-- Custom action to set install folder for deferred action (immediate) -->
+    <!-- Custom action to set data for deferred action (immediate) -->
     <CustomAction Id="SetCopySamplesData" Property="CopySamplesToUserProfile"
                   Value="[INSTALLFOLDER]"
                   Execute="immediate" />
 
     <!-- Custom action to copy selected samples to user profile (deferred) -->
-    <!-- Note: Uses CustomActionData which contains the install folder path -->
     <CustomAction Id="CopySamplesToUserProfile"
-                  ExeCommand="cmd.exe /c &quot;powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File &quot;[CustomActionData]CopySamples.ps1&quot; -InstallFolder &quot;[CustomActionData]&quot;&quot;"
+                  Directory="TARGETDIR"
+                  ExeCommand="cmd.exe /c powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File &quot;[CustomActionData]CopySamples.ps1&quot; -InstallFolder &quot;[CustomActionData]&quot;"
                   Execute="deferred"
                   Impersonate="yes"
                   Return="ignore" />
