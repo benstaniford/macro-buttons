@@ -181,6 +181,8 @@
                             <LineBreak/>
                             <Run Text="• PowerShell Script: ~/scripts/my-script.ps1"/>
                             <LineBreak/>
+                            <Run Text="• Builtin: quit(), clock()"/>
+                            <LineBreak/>
                             <Run Text="• Dynamic Submenu: JSON object with command"/>
                         </TextBlock>
                         <TextBox Text="{Binding SelectedTile.ActionValue, UpdateSourceTrigger=PropertyChanged}"

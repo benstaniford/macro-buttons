@@ -451,6 +451,7 @@ public partial class ButtonTileEditorViewModel : ViewModelBase
         "Python",
         "PowerShell",
         "PowerShell Script",
+        "Builtin",
         "Submenu",
         "Dynamic Submenu"
     };
@@ -536,6 +537,10 @@ public partial class ButtonTileEditorViewModel : ViewModelBase
                     case ActionType.PowerShellScript:
                         SelectedActionType = "PowerShell Script";
                         ActionValue = _buttonItem.Action.PowerShellScript ?? string.Empty;
+                        break;
+                    case ActionType.Builtin:
+                        SelectedActionType = "Builtin";
+                        ActionValue = _buttonItem.Action.Builtin ?? string.Empty;
                         break;
                     default:
                         SelectedActionType = "None";
@@ -661,6 +666,7 @@ public partial class ButtonTileEditorViewModel : ViewModelBase
             _buttonItem.Action.Python = null;
             _buttonItem.Action.PowerShell = null;
             _buttonItem.Action.PowerShellScript = null;
+            _buttonItem.Action.Builtin = null;
 
             switch (SelectedActionType)
             {
@@ -681,6 +687,9 @@ public partial class ButtonTileEditorViewModel : ViewModelBase
                     break;
                 case "PowerShell Script":
                     _buttonItem.Action.PowerShellScript = ActionValue;
+                    break;
+                case "Builtin":
+                    _buttonItem.Action.Builtin = ActionValue;
                     break;
             }
         }
