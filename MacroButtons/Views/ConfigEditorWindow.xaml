@@ -149,7 +149,11 @@
 
                         <TextBlock Text="Title:"/>
                         <TextBox Text="{Binding SelectedTile.Title, UpdateSourceTrigger=PropertyChanged}"
-                                 ToolTip="The text displayed on the button"/>
+                                 Height="80"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 VerticalScrollBarVisibility="Auto"
+                                 ToolTip="The text displayed on the button (or JSON for dynamic titles)"/>
 
                         <TextBlock Text="Action Type:"/>
                         <ComboBox ItemsSource="{Binding SelectedTile.ActionTypes}"

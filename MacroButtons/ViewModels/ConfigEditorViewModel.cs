@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MacroButtons.Models;
 using MacroButtons.Services;
+using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Windows;
 
@@ -66,14 +67,33 @@ public partial class ConfigEditorViewModel : ViewModelBase
     {
         Tiles.Clear();
 
-        // Calculate grid dimensions based on item count
-        int itemCount = Math.Max(_currentItems.Count, 15); // Minimum 3x5
+        int startIndex = 0;
+        
+        // If in a submenu, add a BACK button as the first tile
+        if (!IsAtRootLevel)
+        {
+            var backButton = new ButtonItem
+            {
+                Title = "← BACK",
+                Action = null,
+                Theme = "prominent"
+            };
+            var backTile = new ButtonTileEditorViewModel(0, backButton, _config);
+            backTile.IsBackButton = true;
+            Tiles.Add(backTile);
+            startIndex = 1;
+        }
+
+        // Calculate grid dimensions based on item count (including BACK button if present)
+        int totalItems = _currentItems.Count + (IsAtRootLevel ? 0 : 1);
+        int itemCount = Math.Max(totalItems, 15); // Minimum 3x5
         CalculateGridLayout(itemCount);
 
         // Create tile view models for all grid positions
-        for (int i = 0; i < Rows * Columns; i++)
+        for (int i = startIndex; i < Rows * Columns; i++)
         {
-            ButtonItem? item = i < _currentItems.Count ? _currentItems[i] : null;
+            int itemIndex = i - startIndex;
+            ButtonItem? item = itemIndex < _currentItems.Count ? _currentItems[itemIndex] : null;
             var tile = new ButtonTileEditorViewModel(i, item, _config);
             Tiles.Add(tile);
         }
@@ -133,6 +153,14 @@ public partial class ConfigEditorViewModel : ViewModelBase
     [RelayCommand]
     private void SelectTile(ButtonTileEditorViewModel tile)
     {
+        // Don't allow selecting BACK button
+        if (tile.IsBackButton)
+        {
+            // Clicking BACK button should navigate back
+            NavigateBack();
+            return;
+        }
+        
         // Deselect previous tile
         if (SelectedTile != null)
         {
@@ -223,9 +251,12 @@ public partial class ConfigEditorViewModel : ViewModelBase
     [RelayCommand]
     private void Save()
     {
-        // Save all tiles to their ButtonItems first
+        // Save all tiles to their ButtonItems first (skip BACK button if present)
         foreach (var tile in Tiles)
         {
+            if (tile.IsBackButton)
+                continue;
+            
             tile.SaveToButtonItem();
         }
 
@@ -234,6 +265,9 @@ public partial class ConfigEditorViewModel : ViewModelBase
         _currentItems.Clear();
         foreach (var tile in Tiles)
         {
+            if (tile.IsBackButton)
+                continue;
+                
             if (tile.ButtonItem != null)
             {
                 _currentItems.Add(tile.ButtonItem);
@@ -276,9 +310,12 @@ public partial class ConfigEditorViewModel : ViewModelBase
 
     private void SaveCurrentLevel()
     {
-        // Save all tiles to their ButtonItems
+        // Save all tiles to their ButtonItems (skip BACK button if present)
         foreach (var tile in Tiles)
         {
+            if (tile.IsBackButton)
+                continue;
+                
             tile.SaveToButtonItem();
         }
 
@@ -286,6 +323,9 @@ public partial class ConfigEditorViewModel : ViewModelBase
         _currentItems.Clear();
         foreach (var tile in Tiles)
         {
+            if (tile.IsBackButton)
+                continue;
+                
             if (tile.ButtonItem != null)
             {
                 _currentItems.Add(tile.ButtonItem);
@@ -333,8 +373,16 @@ public partial class ButtonTileEditorViewModel : ViewModelBase
         {
             if (SetProperty(ref _title, value))
             {
-                // Update display title immediately as user types
-                DisplayTitle = value;
+                // Update display title based on whether it looks like JSON
+                string trimmed = value?.Trim() ?? "";
+                if (trimmed.StartsWith("{") && trimmed.Contains("\""))
+                {
+                    DisplayTitle = "[Dynamic Title]";
+                }
+                else
+                {
+                    DisplayTitle = value;
+                }
             }
         }
     }
@@ -369,6 +417,12 @@ public partial class ButtonTileEditorViewModel : ViewModelBase
     // Selection state
     [ObservableProperty]
     private bool _isSelected;
+
+    /// <summary>
+    /// Returns true if this is the BACK button tile (uneditable).
+    /// </summary>
+    [ObservableProperty]
+    private bool _isBackButton;
 
     /// <summary>
     /// Returns true if this tile represents a submenu.
@@ -425,8 +479,31 @@ public partial class ButtonTileEditorViewModel : ViewModelBase
         else
         {
             IsEmpty = false;
-            DisplayTitle = _buttonItem.GetStaticTitle();
-            Title = _buttonItem.IsStaticTitle ? _buttonItem.GetStaticTitle() : string.Empty;
+            
+            // Handle dynamic titles - serialize to JSON
+            if (_buttonItem.IsDynamicTitle)
+            {
+                var titleDef = _buttonItem.Title as TitleDefinition;
+                if (titleDef != null)
+                {
+                    // Serialize the TitleDefinition object to JSON for display/editing
+                    var titleJson = Newtonsoft.Json.JsonConvert.SerializeObject(titleDef, Newtonsoft.Json.Formatting.Indented);
+                    Title = titleJson;
+                    DisplayTitle = "[Dynamic Title]";
+                }
+                else
+                {
+                    Title = string.Empty;
+                    DisplayTitle = string.Empty;
+                }
+            }
+            else
+            {
+                // Static title
+                DisplayTitle = _buttonItem.GetStaticTitle();
+                Title = _buttonItem.GetStaticTitle();
+            }
+            
             SelectedTheme = _buttonItem.Theme ?? "default";
 
             // Load action
@@ -491,9 +568,30 @@ public partial class ButtonTileEditorViewModel : ViewModelBase
             _buttonItem = new ButtonItem();
         }
 
-        // Set title
-        _buttonItem.Title = string.IsNullOrWhiteSpace(Title) ? "Untitled" : Title;
-        DisplayTitle = Title;
+        // Set title - try to parse as JSON (dynamic title), otherwise treat as static
+        string trimmedTitle = Title?.Trim() ?? "";
+        if (trimmedTitle.StartsWith("{") && trimmedTitle.Contains("\""))
+        {
+            // Looks like JSON - try to parse as TitleDefinition
+            try
+            {
+                var titleDef = Newtonsoft.Json.JsonConvert.DeserializeObject<TitleDefinition>(trimmedTitle);
+                _buttonItem.Title = titleDef;
+                DisplayTitle = "[Dynamic Title]";
+            }
+            catch
+            {
+                // Failed to parse as JSON, treat as static title
+                _buttonItem.Title = string.IsNullOrWhiteSpace(Title) ? "Untitled" : Title;
+                DisplayTitle = Title;
+            }
+        }
+        else
+        {
+            // Static title
+            _buttonItem.Title = string.IsNullOrWhiteSpace(Title) ? "Untitled" : Title;
+            DisplayTitle = Title;
+        }
 
         // Set theme
         _buttonItem.Theme = SelectedTheme == "default" ? null : SelectedTheme;
