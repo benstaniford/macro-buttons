@@ -80,9 +80,10 @@ public class PowerShellService
         {
             try
             {
-                // Create lightweight initial session state (Core cmdlets only)
-                // Use CreateDefault2() for faster startup (~50ms vs ~100ms)
-                var initialState = InitialSessionState.CreateDefault2();
+                // Create initial session state with standard PowerShell modules
+                // Use CreateDefault() to include ConvertTo-Json and other utility cmdlets
+                // (CreateDefault2() is faster but lacks standard modules)
+                var initialState = InitialSessionState.CreateDefault();
 
                 // Create isolated runspace for this execution
                 using var runspace = RunspaceFactory.CreateRunspace(initialState);
