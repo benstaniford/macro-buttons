@@ -141,7 +141,7 @@
       </Directory>
       <Directory Id="DesktopFolder" Name="Desktop" />
       <!-- User profile directory for optional sample installation -->
-      <Directory Id="LocalAppDataFolder">
+      <Directory Id="UserProfileFolder">
         <Directory Id="USERPROFILEFOLDER" Name=".macrobuttons" />
       </Directory>
     </Directory>
