@@ -108,37 +108,38 @@
                   Return="ignore" />
 
     <!-- Properties to track which samples are selected -->
-    <SetProperty Id="SELECTED_SAMPLES_LIST" Value="ComfyUI" Before="SetCopySamplesCmd" Sequence="execute">
+    <!-- Each SetProperty needs a unique Id but they all set the same Property -->
+    <SetProperty Id="SetSample_ComfyUI" Property="SELECTED_SAMPLES_LIST" Value="ComfyUI" Before="SetCopySamplesCmd" Sequence="execute">
       &amp;Sample_ComfyUI_Feature=3
     </SetProperty>
-    <SetProperty Id="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];EliteDangerous" Before="SetCopySamplesCmd" Sequence="execute">
+    <SetProperty Id="SetSample_EliteDangerous" Property="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];EliteDangerous" Before="SetCopySamplesCmd" Sequence="execute">
       &amp;Sample_EliteDangerous_Feature=3
     </SetProperty>
-    <SetProperty Id="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];FileExplorer" Before="SetCopySamplesCmd" Sequence="execute">
+    <SetProperty Id="SetSample_FileExplorer" Property="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];FileExplorer" Before="SetCopySamplesCmd" Sequence="execute">
       &amp;Sample_FileExplorer_Feature=3
     </SetProperty>
-    <SetProperty Id="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];Firefox" Before="SetCopySamplesCmd" Sequence="execute">
+    <SetProperty Id="SetSample_Firefox" Property="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];Firefox" Before="SetCopySamplesCmd" Sequence="execute">
       &amp;Sample_Firefox_Feature=3
     </SetProperty>
-    <SetProperty Id="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];Lightroom" Before="SetCopySamplesCmd" Sequence="execute">
+    <SetProperty Id="SetSample_Lightroom" Property="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];Lightroom" Before="SetCopySamplesCmd" Sequence="execute">
       &amp;Sample_Lightroom_Feature=3
     </SetProperty>
-    <SetProperty Id="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];Photoshop" Before="SetCopySamplesCmd" Sequence="execute">
+    <SetProperty Id="SetSample_Photoshop" Property="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];Photoshop" Before="SetCopySamplesCmd" Sequence="execute">
       &amp;Sample_Photoshop_Feature=3
     </SetProperty>
-    <SetProperty Id="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];VisualStudio" Before="SetCopySamplesCmd" Sequence="execute">
+    <SetProperty Id="SetSample_VisualStudio" Property="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];VisualStudio" Before="SetCopySamplesCmd" Sequence="execute">
       &amp;Sample_VisualStudio_Feature=3
     </SetProperty>
-    <SetProperty Id="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];VSCode" Before="SetCopySamplesCmd" Sequence="execute">
+    <SetProperty Id="SetSample_VSCode" Property="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];VSCode" Before="SetCopySamplesCmd" Sequence="execute">
       &amp;Sample_VSCode_Feature=3
     </SetProperty>
-    <SetProperty Id="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];WindowsCalculator" Before="SetCopySamplesCmd" Sequence="execute">
+    <SetProperty Id="SetSample_WindowsCalculator" Property="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];WindowsCalculator" Before="SetCopySamplesCmd" Sequence="execute">
       &amp;Sample_WindowsCalculator_Feature=3
     </SetProperty>
-    <SetProperty Id="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];WindowsDesktop" Before="SetCopySamplesCmd" Sequence="execute">
+    <SetProperty Id="SetSample_WindowsDesktop" Property="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];WindowsDesktop" Before="SetCopySamplesCmd" Sequence="execute">
       &amp;Sample_WindowsDesktop_Feature=3
     </SetProperty>
-    <SetProperty Id="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];WindowsTerminal" Before="SetCopySamplesCmd" Sequence="execute">
+    <SetProperty Id="SetSample_WindowsTerminal" Property="SELECTED_SAMPLES_LIST" Value="[SELECTED_SAMPLES_LIST];WindowsTerminal" Before="SetCopySamplesCmd" Sequence="execute">
       &amp;Sample_WindowsTerminal_Feature=3
     </SetProperty>
 
