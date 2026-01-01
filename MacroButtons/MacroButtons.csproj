@@ -17,7 +17,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="InputSimulatorPlus" Version="1.0.7" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="System.Management.Automation" Version="7.4.7" />
+    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.4.7" />
   </ItemGroup>
 
   <ItemGroup>
