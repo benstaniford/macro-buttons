@@ -182,7 +182,11 @@ public partial class ConfigEditorViewModel : ViewModelBase
     [RelayCommand]
     private void DrillIntoSubmenu()
     {
-        if (SelectedTile == null || !SelectedTile.IsSubmenu)
+        if (SelectedTile == null || SelectedTile.SelectedActionType != "Submenu")
+            return;
+
+        // Only allow drilling into static submenus, not dynamic ones
+        if (SelectedTile.ButtonItem?.HasStaticSubmenu != true)
             return;
 
         // Save current state to navigation stack
@@ -406,7 +410,7 @@ public partial class ButtonTileEditorViewModel : ViewModelBase
 
     /// <summary>
     /// Returns true if the action value textbox should be enabled.
-    /// Disabled for submenu action type.
+    /// Disabled for submenu action type (but enabled for Dynamic Submenu).
     /// </summary>
     public bool IsActionValueEnabled => SelectedActionType != "Submenu";
 
@@ -425,9 +429,9 @@ public partial class ButtonTileEditorViewModel : ViewModelBase
     private bool _isBackButton;
 
     /// <summary>
-    /// Returns true if this tile represents a submenu.
+    /// Returns true if this tile represents a static submenu that can be drilled into.
     /// </summary>
-    public bool IsSubmenu => _buttonItem?.HasSubmenu == true || SelectedActionType == "Submenu";
+    public bool IsStaticSubmenu => SelectedActionType == "Submenu";
 
     public ButtonItem? ButtonItem
     {
@@ -447,7 +451,8 @@ public partial class ButtonTileEditorViewModel : ViewModelBase
         "Python",
         "PowerShell",
         "PowerShell Script",
-        "Submenu"
+        "Submenu",
+        "Dynamic Submenu"
     };
 
     public string[] Themes { get; } = new[]
@@ -538,7 +543,14 @@ public partial class ButtonTileEditorViewModel : ViewModelBase
                         break;
                 }
             }
-            else if (_buttonItem.HasSubmenu)
+            else if (_buttonItem.HasDynamicSubmenu)
+            {
+                // Dynamic submenu - serialize to JSON for editing
+                SelectedActionType = "Dynamic Submenu";
+                var dynamicSubmenuJson = JsonConvert.SerializeObject(_buttonItem.DynamicSubmenu, Formatting.Indented);
+                ActionValue = dynamicSubmenuJson;
+            }
+            else if (_buttonItem.HasStaticSubmenu)
             {
                 SelectedActionType = "Submenu";
                 ActionValue = $"({_buttonItem.Items?.Count ?? 0} items)";
@@ -604,19 +616,39 @@ public partial class ButtonTileEditorViewModel : ViewModelBase
             {
                 _buttonItem.Items = new List<ButtonItem>();
             }
-            // Clear action when it's a submenu
+            // Clear action and dynamic submenu when it's a static submenu
             _buttonItem.Action = null;
+            _buttonItem.DynamicSubmenu = null;
+        }
+        else if (SelectedActionType == "Dynamic Submenu")
+        {
+            // Parse JSON to DynamicSubmenuDefinition
+            try
+            {
+                var dynamicSubmenu = JsonConvert.DeserializeObject<DynamicSubmenuDefinition>(ActionValue);
+                _buttonItem.DynamicSubmenu = dynamicSubmenu;
+            }
+            catch
+            {
+                // If JSON parsing fails, create empty DynamicSubmenuDefinition
+                _buttonItem.DynamicSubmenu = new DynamicSubmenuDefinition();
+            }
+            // Clear action and static submenu
+            _buttonItem.Action = null;
+            _buttonItem.Items = null;
         }
         else if (SelectedActionType == "None")
         {
             _buttonItem.Action = null;
             // Clear submenu if switching away from submenu
             _buttonItem.Items = null;
+            _buttonItem.DynamicSubmenu = null;
         }
         else
         {
             // Clear submenu if it's not a submenu action
             _buttonItem.Items = null;
+            _buttonItem.DynamicSubmenu = null;
 
             if (_buttonItem.Action == null)
             {

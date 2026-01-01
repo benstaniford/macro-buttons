@@ -180,6 +180,8 @@
                             <Run Text="• PowerShell: Get-Date -Format 'HH:mm:ss'"/>
                             <LineBreak/>
                             <Run Text="• PowerShell Script: ~/scripts/my-script.ps1"/>
+                            <LineBreak/>
+                            <Run Text="• Dynamic Submenu: JSON object with command"/>
                         </TextBlock>
                         <TextBox Text="{Binding SelectedTile.ActionValue, UpdateSourceTrigger=PropertyChanged}"
                                  Height="80"
@@ -205,7 +207,7 @@
 
                         <Button Content="Edit Submenu Items"
                                 Command="{Binding DataContext.DrillIntoSubmenuCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                Visibility="{Binding IsSubmenu, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Visibility="{Binding IsStaticSubmenu, Converter={StaticResource BoolToVisibilityConverter}}"
                                 Background="#0E639C"
                                 Margin="0,5,0,10"
                                 ToolTip="Open submenu for editing"/>
