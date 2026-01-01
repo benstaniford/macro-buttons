@@ -95,7 +95,7 @@
                   Return="asyncNoWait" />
 
     <!-- Property to hold the semicolon-separated list of selected samples -->
-    <Property Id="SELECTED_SAMPLES" Value="" />
+    <Property Id="SELECTED_SAMPLES" />
 
     <!-- Build the list of selected samples (each SetProperty needs unique ID) -->
     <SetProperty Id="AddSample_ComfyUI" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES];ComfyUI" Before="SetCopySamplesData" Sequence="execute">
