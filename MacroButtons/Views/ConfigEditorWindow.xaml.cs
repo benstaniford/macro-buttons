@@ -49,8 +49,8 @@ public partial class ConfigEditorWindow : Window
                 _isDragging = true;
                 _draggedTile.IsDragging = true;
 
-                DataObject dragData = new DataObject("TileData", _draggedTile);
-                DragDrop.DoDragDrop((DependencyObject)sender, dragData, DragDropEffects.Move);
+                System.Windows.DataObject dragData = new System.Windows.DataObject("TileData", _draggedTile);
+                System.Windows.DragDrop.DoDragDrop((DependencyObject)sender, dragData, System.Windows.DragDropEffects.Move);
                 
                 _draggedTile.IsDragging = false;
                 _isDragging = false;
@@ -102,11 +102,11 @@ public partial class ConfigEditorWindow : Window
                 dropIndicator.BorderThickness = new Thickness(3);
             }
 
-            e.Effects = DragDropEffects.Move;
+            e.Effects = System.Windows.DragDropEffects.Move;
         }
         else
         {
-            e.Effects = DragDropEffects.None;
+            e.Effects = System.Windows.DragDropEffects.None;
         }
         e.Handled = true;
     }
