@@ -42,8 +42,11 @@ public class DynamicSubmenuService
                 return new List<ButtonItem>(); // Empty array -> submenu with only BACK button
             }
 
-            // 3. Parse JSON array of ButtonItem objects
-            _loggingService.LogInfo($"Parsing dynamic submenu JSON output (length: {output.Length} chars)");
+            // 3. Log the JSON output for debugging
+            _loggingService.LogInfo($"Dynamic submenu JSON output (length: {output.Length} chars):");
+            _loggingService.LogInfo(output);
+
+            // 4. Parse JSON array of ButtonItem objects
             var items = JsonConvert.DeserializeObject<List<ButtonItem>>(output);
 
             if (items == null)
