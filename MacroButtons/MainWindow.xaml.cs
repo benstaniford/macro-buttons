@@ -119,10 +119,15 @@ public partial class MainWindow : Window
 
         contextMenu.Items.Add(new System.Windows.Forms.ToolStripSeparator());
 
-        // Edit Config
-        var editConfigItem = new System.Windows.Forms.ToolStripMenuItem("Edit Config");
-        editConfigItem.Click += (s, e) => OpenConfigFile();
-        contextMenu.Items.Add(editConfigItem);
+        // Edit Config (Visual Editor)
+        var editConfigVisualItem = new System.Windows.Forms.ToolStripMenuItem("Edit Config");
+        editConfigVisualItem.Click += (s, e) => OpenConfigEditor();
+        contextMenu.Items.Add(editConfigVisualItem);
+
+        // Edit Config JSON
+        var editConfigJsonItem = new System.Windows.Forms.ToolStripMenuItem("Edit Config JSON");
+        editConfigJsonItem.Click += (s, e) => OpenConfigFile();
+        contextMenu.Items.Add(editConfigJsonItem);
 
         // Reload current profile
         var reloadItem = new System.Windows.Forms.ToolStripMenuItem("Reload");
@@ -764,5 +769,86 @@ public partial class MainWindow : Window
         _cursorTrackingTimer?.Stop();
         _notifyIcon?.Dispose();
         _viewModel?.Dispose();
+    }
+
+    private void OpenConfigEditor()
+    {
+        try
+        {
+            var currentProfile = _viewModel.CurrentProfileName;
+            var configService = new ConfigurationService(_profileService);
+            var viewModel = new ConfigEditorViewModel(_profileService, configService, currentProfile);
+            var editorWindow = new ConfigEditorWindow(viewModel);
+            editorWindow.ShowDialog();
+
+            // Reload the profile after editing
+            ReloadCurrentProfile();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Failed to open config editor: {ex.Message}", "Error",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void OpenConfigFile()
+    {
+        try
+        {
+            var currentProfile = _viewModel.CurrentProfileName;
+            var configPath = _profileService.GetProfilePath(currentProfile);
+
+            if (System.IO.File.Exists(configPath))
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = "notepad.exe",
+                    Arguments = configPath,
+                    UseShellExecute = true
+                });
+            }
+            else
+            {
+                MessageBox.Show($"Config file not found: {configPath}", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Failed to open config file: {ex.Message}", "Error",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void ReloadCurrentProfile()
+    {
+        try
+        {
+            // Get the current app instance
+            var app = (App)Application.Current;
+
+            // Release the single instance mutex so the new instance can start
+            app.ReleaseSingleInstanceMutex();
+
+            // Start a new instance
+            var exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName;
+            if (!string.IsNullOrEmpty(exePath))
+            {
+                System.Diagnostics.Process.Start(exePath);
+            }
+
+            // Shutdown this instance
+            Application.Current.Shutdown();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Failed to reload: {ex.Message}", "Error",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void QuitApplication()
+    {
+        Application.Current.Shutdown();
     }
 }
