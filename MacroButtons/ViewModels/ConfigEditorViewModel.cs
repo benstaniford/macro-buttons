@@ -203,10 +203,11 @@ public partial class ConfigEditorViewModel : ViewModelBase
         // Save configuration
         _configService.SaveConfiguration(_config, _profileName);
 
-        MessageBox.Show("Configuration saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        System.Windows.MessageBox.Show("Configuration saved successfully!", "Success",
+            System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
 
         // Close the window
-        Application.Current.Windows.OfType<Window>()
+        System.Windows.Application.Current.Windows.OfType<Window>()
             .FirstOrDefault(w => w.DataContext == this)?.Close();
     }
 
@@ -214,7 +215,7 @@ public partial class ConfigEditorViewModel : ViewModelBase
     private void Cancel()
     {
         // Close window without saving
-        Application.Current.Windows.OfType<Window>()
+        System.Windows.Application.Current.Windows.OfType<Window>()
             .FirstOrDefault(w => w.DataContext == this)?.Close();
     }
 }

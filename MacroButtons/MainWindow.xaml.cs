@@ -786,8 +786,8 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Failed to open config editor: {ex.Message}", "Error",
-                MessageBoxButton.OK, MessageBoxImage.Error);
+            System.Windows.MessageBox.Show($"Failed to open config editor: {ex.Message}", "Error",
+                System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
         }
     }
 }
