@@ -25,4 +25,8 @@
     <EmbeddedResource Include="Resources\DefaultConfig.json" />
     <Resource Include="Resources\button-click.mp3" />
   </ItemGroup>
+
+  <Target Name="CopyDefaultConfig" BeforeTargets="PreBuildEvent">
+    <Copy SourceFiles="..\samples\WindowsDesktop\windows-desktop.json" DestinationFiles="Resources\DefaultConfig.json" />
+  </Target>
 </Project>
