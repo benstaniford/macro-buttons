@@ -490,18 +490,25 @@ public partial class ButtonTileEditorViewModel : ViewModelBase
         "Dynamic Submenu"
     };
 
-    public string[] Themes { get; } = new[]
-    {
-        "default",
-        "prominent",
-        "toggled"
-    };
+    public string[] Themes { get; private set; }
 
     public ButtonTileEditorViewModel(int index, ButtonItem? item, MacroButtonConfig rootConfig)
     {
         _index = index;
         _rootConfig = rootConfig;
         _buttonItem = item;
+
+        // Populate Themes array from rootConfig
+        if (rootConfig?.Themes != null && rootConfig.Themes.Count > 0)
+        {
+            Themes = rootConfig.Themes.Select(t => t.Name).ToArray();
+        }
+        else
+        {
+            // Fallback to default theme names if config has no themes
+            Themes = new[] { "default", "prominent", "toggled" };
+        }
+
         LoadFromButtonItem();
     }
 
