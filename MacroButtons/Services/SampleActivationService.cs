@@ -32,7 +32,7 @@ public class SampleActivationService
                 return;
             }
 
-            _loggingService.Log($"Found {pendingSamples.Count} pending sample(s) to activate");
+            _loggingService.LogInfo($"Found {pendingSamples.Count} pending sample(s) to activate");
 
             var installPath = GetInstallPath();
             if (string.IsNullOrEmpty(installPath))
@@ -57,7 +57,7 @@ public class SampleActivationService
             }
 
             DeleteRegistryKey();
-            _loggingService.Log("Sample activation completed, registry key deleted");
+            _loggingService.LogInfo("Sample activation completed, registry key deleted");
         }
         catch (Exception ex)
         {
@@ -88,7 +88,7 @@ public class SampleActivationService
             var destFile = Path.Combine(destDir, destFileName);
 
             File.Copy(sourceFile, destFile, true);
-            _loggingService.Log($"Activated sample: {sampleName} -> {destFileName}");
+            _loggingService.LogInfo($"Activated sample: {sampleName} -> {destFileName}");
 
             if (sampleName == "EliteDangerous")
             {
@@ -97,7 +97,7 @@ public class SampleActivationService
                 {
                     var destScript = Path.Combine(destDir, "elite-status");
                     File.Copy(scriptFile, destScript, true);
-                    _loggingService.Log("Copied elite-status script");
+                    _loggingService.LogInfo("Copied elite-status script");
                 }
             }
         }
