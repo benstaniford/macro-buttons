@@ -6,6 +6,7 @@
     <DirectoryRef Id="SAMPLESFOLDER">
       <Directory Id="dir_ComfyUI" Name="ComfyUI" />
       <Directory Id="dir_EliteDangerous" Name="EliteDangerous" />
+      <Directory Id="dir_Excel" Name="Excel" />
       <Directory Id="dir_FileExplorer" Name="FileExplorer" />
       <Directory Id="dir_Firefox" Name="Firefox" />
       <Directory Id="dir_Lightroom" Name="Lightroom" />
@@ -15,6 +16,7 @@
       <Directory Id="dir_WindowsCalculator" Name="WindowsCalculator" />
       <Directory Id="dir_WindowsDesktop" Name="WindowsDesktop" />
       <Directory Id="dir_WindowsTerminal" Name="WindowsTerminal" />
+      <Directory Id="dir_Word" Name="Word" />
     </DirectoryRef>
   </Fragment>
 
@@ -48,7 +50,15 @@
       <Component Id="cmp_PF_EliteDangerous_script" Directory="dir_EliteDangerous" Guid="{C3234567-89AB-CDEF-0123-456789ABCDEF}">
         <File Id="fil_PF_EliteDangerous_script" Source="$(var.SamplesSourceDir)\EliteDangerous\elite-status" KeyPath="yes" />
       </Component>
-      
+
+      <!-- Excel -->
+      <Component Id="cmp_PF_Excel_json" Directory="dir_Excel" Guid="{3D4E5F6A-7B8C-9D0E-1F2A-3B4C5D6E7F8A}">
+        <File Id="fil_PF_Excel_json" Source="$(var.SamplesSourceDir)\Excel\microsoft-excel.json" KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_PF_Excel_README" Directory="dir_Excel" Guid="{4E5F6A7B-8C9D-0E1F-2A3B-4C5D6E7F8A9B}">
+        <File Id="fil_PF_Excel_README" Source="$(var.SamplesSourceDir)\Excel\README.md" KeyPath="yes" />
+      </Component>
+
       <!-- File Explorer -->
       <Component Id="cmp_PF_FileExplorer_json" Directory="dir_FileExplorer" Guid="{D1234567-89AB-CDEF-0123-456789ABCDEF}">
         <File Id="fil_PF_FileExplorer_json" Source="$(var.SamplesSourceDir)\FileExplorer\file-explorer.json" KeyPath="yes" />
@@ -119,6 +129,14 @@
       </Component>
       <Component Id="cmp_PF_WindowsTerminal_README" Directory="dir_WindowsTerminal" Guid="{1B234567-89AB-CDEF-0123-456789ABCDEF}">
         <File Id="fil_PF_WindowsTerminal_README" Source="$(var.SamplesSourceDir)\WindowsTerminal\README.md" KeyPath="yes" />
+      </Component>
+
+      <!-- Word -->
+      <Component Id="cmp_PF_Word_json" Directory="dir_Word" Guid="{5F6A7B8C-9D0E-1F2A-3B4C-5D6E7F8A9B0C}">
+        <File Id="fil_PF_Word_json" Source="$(var.SamplesSourceDir)\Word\microsoft-word.json" KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_PF_Word_README" Directory="dir_Word" Guid="{6A7B8C9D-0E1F-2A3B-4C5D-6E7F8A9B0C1D}">
+        <File Id="fil_PF_Word_README" Source="$(var.SamplesSourceDir)\Word\README.md" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
@@ -235,6 +253,26 @@
       <Component Id="cmp_UP_WindowsTerminal_json" Directory="USERPROFILEFOLDER" Guid="{2A334567-89AB-CDEF-0123-456789ABCDEF}">
         <File Id="fil_UP_WindowsTerminal_json" Name=".macrobuttons-windows-terminal.json" Source="$(var.SamplesSourceDir)\WindowsTerminal\windows-terminal.json" />
         <RegistryValue Root="HKCU" Key="Software\MacroButtons\Samples" Name="WindowsTerminal" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+  <!-- Excel User Profile -->
+  <Fragment>
+    <ComponentGroup Id="Sample_Excel_UserProfile">
+      <Component Id="cmp_UP_Excel_json" Directory="USERPROFILEFOLDER" Guid="{7B8C9D0E-1F2A-3B4C-5D6E-7F8A9B0C1D2E}">
+        <File Id="fil_UP_Excel_json" Name=".macrobuttons-excel.json" Source="$(var.SamplesSourceDir)\Excel\microsoft-excel.json" />
+        <RegistryValue Root="HKCU" Key="Software\MacroButtons\Samples" Name="Excel" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+  <!-- Word User Profile -->
+  <Fragment>
+    <ComponentGroup Id="Sample_Word_UserProfile">
+      <Component Id="cmp_UP_Word_json" Directory="USERPROFILEFOLDER" Guid="{8C9D0E1F-2A3B-4C5D-6E7F-8A9B0C1D2E3F}">
+        <File Id="fil_UP_Word_json" Name=".macrobuttons-word.json" Source="$(var.SamplesSourceDir)\Word\microsoft-word.json" />
+        <RegistryValue Root="HKCU" Key="Software\MacroButtons\Samples" Name="Word" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>

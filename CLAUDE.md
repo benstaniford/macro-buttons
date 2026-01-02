@@ -454,6 +454,131 @@ const int MIN_COLS = 5;
 3. Pass to `ButtonTileViewModel` constructors if needed
 4. Follow dependency injection pattern (constructor parameters)
 
+### Adding a New Sample Profile to the Installer
+
+When creating a new sample profile (e.g., Excel, Word, Photoshop), you must update the WiX installer to include it. This involves changes to two installer files.
+
+**Step 1: Create the sample files**
+
+Create a new directory under `samples/` with the application name:
+```bash
+samples/
+├── YourApp/
+│   ├── your-app.json      # The profile configuration
+│   └── README.md           # Documentation for the sample
+```
+
+**Step 2: Update Product.wxs**
+
+File: `MacroButtons.Installer/Product.wxs`
+
+Add two entries:
+
+1. **Add a Feature definition** (in the `SamplesFeature` section, around line 96-101):
+   ```xml
+   <Feature Id="Sample_YourApp_Feature" Title="Your App Name" Level="1000"
+            Description="Macro buttons for Your Application description" AllowAdvertise="no">
+     <ComponentRef Id="Sample_YourApp_Registry" />
+   </Feature>
+   ```
+
+   **Notes:**
+   - `Level="1000"` means optional (not selected by default)
+   - `Level="1"` means selected by default (use sparingly, only for truly universal samples)
+   - The Feature Id must match the pattern `Sample_{Name}_Feature`
+
+2. **Add a Registry component** (in the DirectoryRef section, around line 258-260):
+   ```xml
+   <Component Id="Sample_YourApp_Registry" Guid="{NEW-GUID-HERE}">
+     <RegistryValue Root="HKCU" Key="Software\MacroButtons\PendingSamples" Name="YourApp" Type="string" Value="1" KeyPath="yes" />
+   </Component>
+   ```
+
+   **Generate a new GUID** using PowerShell:
+   ```powershell
+   [Guid]::NewGuid()
+   ```
+
+**Step 3: Update Samples.wxs**
+
+File: `MacroButtons.Installer/Samples.wxs`
+
+Add three sections:
+
+1. **Add directory definition** (DirectoryRef section, around line 6-19):
+   ```xml
+   <Directory Id="dir_YourApp" Name="YourApp" />
+   ```
+
+   **Note:** Keep directories in alphabetical order for maintainability.
+
+2. **Add Program Files components** (AllSamplesInProgramFiles section, around line 32-142):
+   ```xml
+   <!-- Your App -->
+   <Component Id="cmp_PF_YourApp_json" Directory="dir_YourApp" Guid="{NEW-GUID-1}">
+     <File Id="fil_PF_YourApp_json" Source="$(var.SamplesSourceDir)\YourApp\your-app.json" KeyPath="yes" />
+   </Component>
+   <Component Id="cmp_PF_YourApp_README" Directory="dir_YourApp" Guid="{NEW-GUID-2}">
+     <File Id="fil_PF_YourApp_README" Source="$(var.SamplesSourceDir)\YourApp\README.md" KeyPath="yes" />
+   </Component>
+   ```
+
+   **If your sample includes additional files** (like scripts):
+   ```xml
+   <Component Id="cmp_PF_YourApp_script" Directory="dir_YourApp" Guid="{NEW-GUID-3}">
+     <File Id="fil_PF_YourApp_script" Source="$(var.SamplesSourceDir)\YourApp\your-script.py" KeyPath="yes" />
+   </Component>
+   ```
+
+3. **Add User Profile component** (after WindowsTerminal section, around line 250-258):
+   ```xml
+   <!-- Your App User Profile -->
+   <Fragment>
+     <ComponentGroup Id="Sample_YourApp_UserProfile">
+       <Component Id="cmp_UP_YourApp_json" Directory="USERPROFILEFOLDER" Guid="{NEW-GUID-4}">
+         <File Id="fil_UP_YourApp_json" Name=".macrobuttons-your-app.json" Source="$(var.SamplesSourceDir)\YourApp\your-app.json" />
+         <RegistryValue Root="HKCU" Key="Software\MacroButtons\Samples" Name="YourApp" Type="integer" Value="1" KeyPath="yes" />
+       </Component>
+     </ComponentGroup>
+   </Fragment>
+   ```
+
+**Important GUID Requirements:**
+- **Every GUID must be unique** across the entire installer
+- Generate a new GUID for each Component using `[Guid]::NewGuid()` in PowerShell
+- **NEVER reuse GUIDs** - this will cause installer conflicts
+- **NEVER change GUIDs after release** - this breaks upgrades
+
+**Naming Conventions:**
+- Feature Id: `Sample_{Name}_Feature`
+- Registry Component Id: `Sample_{Name}_Registry`
+- Directory Id: `dir_{Name}`
+- Program Files Component Id: `cmp_PF_{Name}_{filetype}`
+- User Profile Component Id: `cmp_UP_{Name}_{filetype}`
+- File Id: `fil_PF_{Name}_{filetype}` or `fil_UP_{Name}_{filetype}`
+- Registry Name: Use the sample name without "Sample_" prefix
+
+**Testing the Installer:**
+
+After making changes, build and test the installer:
+
+```bash
+# Build the application first
+dotnet build MacroButtons/MacroButtons.csproj -c Release
+
+# Build the installer
+msbuild MacroButtons.Installer/MacroButtons.Installer.wixproj /p:Configuration=Release /p:Platform=x64
+
+# Test the MSI
+# Install: MacroButtons.Installer/bin/x64/Release/MacroButtons.msi
+# Verify your sample appears in the installer feature tree
+# Verify files are installed to C:\Program Files\MacroButtons\samples\YourApp\
+```
+
+**Example: Adding Excel Sample**
+
+See the Excel sample additions in Product.wxs (lines 101-104, 261-263) and Samples.wxs (lines 9, 54-60, 260-268) for a complete working example.
+
 ## Common Issues and Solutions
 
 ### Issue: Window Steals Focus

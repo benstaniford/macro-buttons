@@ -98,6 +98,16 @@
         <ComponentRef Id="Sample_WindowsTerminal_Registry" />
       </Feature>
 
+      <Feature Id="Sample_Excel_Feature" Title="Microsoft Excel" Level="1000"
+               Description="Macro buttons for Microsoft Excel spreadsheet application" AllowAdvertise="no">
+        <ComponentRef Id="Sample_Excel_Registry" />
+      </Feature>
+
+      <Feature Id="Sample_Word_Feature" Title="Microsoft Word" Level="1000"
+               Description="Macro buttons for Microsoft Word word processor" AllowAdvertise="no">
+        <ComponentRef Id="Sample_Word_Registry" />
+      </Feature>
+
     </Feature>
 
     <!-- UI configuration -->
@@ -247,6 +257,12 @@
       </Component>
       <Component Id="Sample_WindowsTerminal_Registry" Guid="{F1A2B3C4-D5E6-F7A8-B9C0-D1E2F3A4B5C6}">
         <RegistryValue Root="HKCU" Key="Software\MacroButtons\PendingSamples" Name="WindowsTerminal" Type="string" Value="1" KeyPath="yes" />
+      </Component>
+      <Component Id="Sample_Excel_Registry" Guid="{1C2D3E4F-5A6B-7C8D-9E0F-1A2B3C4D5E6F}">
+        <RegistryValue Root="HKCU" Key="Software\MacroButtons\PendingSamples" Name="Excel" Type="string" Value="1" KeyPath="yes" />
+      </Component>
+      <Component Id="Sample_Word_Registry" Guid="{2D3E4F5A-6B7C-8D9E-0F1A-2B3C4D5E6F7A}">
+        <RegistryValue Root="HKCU" Key="Software\MacroButtons\PendingSamples" Name="Word" Type="string" Value="1" KeyPath="yes" />
       </Component>
     </DirectoryRef>
   </Fragment>
