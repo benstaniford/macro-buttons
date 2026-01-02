@@ -1,0 +1,141 @@
+{
+  "global": {
+    "monitorIndex": 0,
+    "activeWindow": "Excel",
+    "refresh": "1s"
+  },
+  "themes": [
+    {
+      "name": "default",
+      "foreground": "green",
+      "background": "black"
+    },
+    {
+      "name": "prominent",
+      "foreground": "black",
+      "background": "green"
+    }
+  ],
+  "items": [
+    {
+      "title": {
+        "builtin": "clock()",
+        "refresh": "1s",
+        "theme": "prominent"
+      }
+    },
+    {
+      "title": "Insert Function\n(Shift+F3)",
+      "action": { "keypress": "+{F3}" }
+    },
+    {
+      "title": "Auto Sum\n(Alt+=)",
+      "action": { "keypress": "!=" }
+    },
+    {
+      "title": "Format Cells\n(Ctrl+1)",
+      "action": { "keypress": "^1" }
+    },
+    {
+      "title": "Fill Down\n(Ctrl+D)",
+      "action": { "keypress": "^d" }
+    },
+    {
+      "title": "Fill Right\n(Ctrl+R)",
+      "action": { "keypress": "^r" }
+    },
+    {
+      "title": "Create Table\n(Ctrl+T)",
+      "action": { "keypress": "^t" }
+    },
+    {
+      "title": "Toggle Absolute Ref\n(F4)",
+      "action": { "keypress": "{F4}" }
+    },
+    {
+      "title": "Show Formulas\n(Ctrl+`)",
+      "action": { "keypress": "^`" }
+    },
+    {
+      "title": "Go To\n(Ctrl+G)",
+      "action": { "keypress": "^g" }
+    },
+    {
+      "title": "Insert Date\n(Ctrl+;)",
+      "action": { "keypress": "^;" }
+    },
+    {
+      "title": "Insert Time\n(Ctrl+Shift+:)",
+      "action": { "keypress": "^+:" }
+    },
+    {
+      "title": "Currency Format\n(Ctrl+Shift+$)",
+      "action": { "keypress": "^+4" }
+    },
+    {
+      "title": "Percent Format\n(Ctrl+Shift+%)",
+      "action": { "keypress": "^+5" }
+    },
+    {
+      "title": "Date Format\n(Ctrl+Shift+#)",
+      "action": { "keypress": "^+3" }
+    },
+    {
+      "title": "New Line in Cell\n(Alt+Enter)",
+      "action": { "keypress": "!{Enter}" }
+    },
+    {
+      "title": "Edit Cell\n(F2)",
+      "action": { "keypress": "{F2}" }
+    },
+    {
+      "title": "Next Sheet\n(Ctrl+Page Down)",
+      "action": { "keypress": "^{PgDn}" }
+    },
+    {
+      "title": "Previous Sheet\n(Ctrl+Page Up)",
+      "action": { "keypress": "^{PgUp}" }
+    },
+    {
+      "title": "Create Chart\n(F11)",
+      "action": { "keypress": "{F11}" }
+    },
+    {
+      "title": "Table Operations",
+      "items": [
+        {
+          "title": "Delete Row\n(Shift+Space, Ctrl+-)",
+          "action": { "keypress": "+{Space}^{-}" }
+        },
+        {
+          "title": "Delete Column\n(Ctrl+Space, Ctrl+-)",
+          "action": { "keypress": "^{Space}^{-}" }
+        },
+        {
+          "title": "Insert Row\n(Shift+Space, Ctrl++)",
+          "action": { "keypress": "+{Space}^{+}" }
+        },
+        {
+          "title": "Insert Column\n(Ctrl+Space, Ctrl++)",
+          "action": { "keypress": "^{Space}^{+}" }
+        },
+        {
+          "title": "Hide Row\n(Ctrl+9)",
+          "action": { "keypress": "^9" }
+        },
+        {
+          "title": "Hide Column\n(Ctrl+0)",
+          "action": { "keypress": "^0" }
+        },
+        {
+          "title": "Unhide Rows\n(Ctrl+Shift+9)",
+          "action": { "keypress": "^+9" }
+        },
+        {
+          "title": "Unhide Columns\n(Ctrl+Shift+0)",
+          "action": { "keypress": "^+0" }
+        }
+      ]
+    }
+  ]
+}

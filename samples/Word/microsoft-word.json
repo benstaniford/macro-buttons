@@ -1,0 +1,108 @@
+{
+  "global": {
+    "monitorIndex": 0,
+    "activeWindow": "Word",
+    "refresh": "1s"
+  },
+  "themes": [
+    {
+      "name": "default",
+      "foreground": "green",
+      "background": "black"
+    },
+    {
+      "name": "prominent",
+      "foreground": "black",
+      "background": "green"
+    }
+  ],
+  "items": [
+    {
+      "title": {
+        "builtin": "clock()",
+        "refresh": "1s",
+        "theme": "prominent"
+      }
+    },
+    {
+      "title": "Heading 1\n(Ctrl+Alt+1)",
+      "action": { "keypress": "^!1" }
+    },
+    {
+      "title": "Heading 2\n(Ctrl+Alt+2)",
+      "action": { "keypress": "^!2" }
+    },
+    {
+      "title": "Heading 3\n(Ctrl+Alt+3)",
+      "action": { "keypress": "^!3" }
+    },
+    {
+      "title": "Normal Style\n(Ctrl+Shift+N)",
+      "action": { "keypress": "^+n" }
+    },
+    {
+      "title": "Apply Style\n(Ctrl+Shift+S)",
+      "action": { "keypress": "^+s" }
+    },
+    {
+      "title": "Font Dialog\n(Ctrl+D)",
+      "action": { "keypress": "^d" }
+    },
+    {
+      "title": "Increase Font Size\n(Ctrl+])",
+      "action": { "keypress": "^]" }
+    },
+    {
+      "title": "Decrease Font Size\n(Ctrl+[)",
+      "action": { "keypress": "^[" }
+    },
+    {
+      "title": "Change Case\n(Shift+F3)",
+      "action": { "keypress": "+{F3}" }
+    },
+    {
+      "title": "Copy Format\n(Ctrl+Shift+C)",
+      "action": { "keypress": "^+c" }
+    },
+    {
+      "title": "Paste Format\n(Ctrl+Shift+V)",
+      "action": { "keypress": "^+v" }
+    },
+    {
+      "title": "Bullet List\n(Ctrl+Shift+L)",
+      "action": { "keypress": "^+l" }
+    },
+    {
+      "title": "Center Align\n(Ctrl+E)",
+      "action": { "keypress": "^e" }
+    },
+    {
+      "title": "Left Align\n(Ctrl+L)",
+      "action": { "keypress": "^l" }
+    },
+    {
+      "title": "Right Align\n(Ctrl+R)",
+      "action": { "keypress": "^r" }
+    },
+    {
+      "title": "Justify\n(Ctrl+J)",
+      "action": { "keypress": "^j" }
+    },
+    {
+      "title": "Insert Comment\n(Ctrl+Alt+M)",
+      "action": { "keypress": "^!m" }
+    },
+    {
+      "title": "Track Changes\n(Ctrl+Shift+E)",
+      "action": { "keypress": "^+e" }
+    },
+    {
+      "title": "Insert Hyperlink\n(Ctrl+K)",
+      "action": { "keypress": "^k" }
+    },
+    {
+      "title": "Go To\n(Ctrl+G)",
+      "action": { "keypress": "^g" }
+    }
+  ]
+}
