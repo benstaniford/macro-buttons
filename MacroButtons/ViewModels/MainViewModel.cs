@@ -39,6 +39,7 @@ public class MainViewModel : ViewModelBase, IDisposable
     private readonly DynamicSubmenuService _dynamicSubmenuService;
     private readonly LoggingService _loggingService;
     private readonly SoundService _soundService;
+    private readonly SettingsService _settingsService;
     private KeystrokeService _keystrokeService;
     private readonly WindowHelper _windowHelper;
 
@@ -68,7 +69,7 @@ public class MainViewModel : ViewModelBase, IDisposable
     /// </summary>
     public string CurrentProfileName => _currentProfileName;
 
-    public MainViewModel(WindowHelper? windowHelper = null, ProfileService? profileService = null)
+    public MainViewModel(WindowHelper? windowHelper = null, ProfileService? profileService = null, SettingsService? settingsService = null)
     {
         _profileService = profileService ?? new ProfileService();
         _configService = new ConfigurationService(_profileService);
@@ -77,6 +78,7 @@ public class MainViewModel : ViewModelBase, IDisposable
         _powershellService = new PowerShellService(_loggingService);
         _dynamicSubmenuService = new DynamicSubmenuService(_commandService, _powershellService, _loggingService);
         _soundService = new SoundService(_loggingService);
+        _settingsService = settingsService ?? new SettingsService();
         _windowHelper = windowHelper ?? new WindowHelper();
 
         _loggingService.LogInfo("========== MacroButtons Started ==========");
@@ -391,6 +393,12 @@ public class MainViewModel : ViewModelBase, IDisposable
     /// </summary>
     public void HandleActiveWindowChange(IntPtr activeWindowHandle)
     {
+        // Skip auto-switching if in Fixed profile mode
+        if (_settingsService.GetProfileMode() == ProfileMode.Fixed)
+        {
+            return;
+        }
+
         // Get all available profiles
         var allProfiles = _profileService.ListProfiles();
 

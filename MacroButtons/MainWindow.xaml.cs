@@ -117,6 +117,11 @@ public partial class MainWindow : Window
         BuildMonitorSubmenu(monitorMenuItem);
         contextMenu.Items.Add(monitorMenuItem);
 
+        // Mode submenu
+        var modeMenuItem = new System.Windows.Forms.ToolStripMenuItem("Mode");
+        BuildModeSubmenu(modeMenuItem);
+        contextMenu.Items.Add(modeMenuItem);
+
         contextMenu.Items.Add(new System.Windows.Forms.ToolStripSeparator());
 
         // Edit Profile (Visual Editor)
@@ -224,6 +229,44 @@ public partial class MainWindow : Window
             monitorItem.Click += (s, e) => SwitchToMonitor(capturedIndex);
 
             monitorMenuItem.DropDownItems.Add(monitorItem);
+        }
+    }
+
+    private void BuildModeSubmenu(System.Windows.Forms.ToolStripMenuItem modeMenuItem)
+    {
+        modeMenuItem.DropDownItems.Clear();
+
+        var currentMode = _settingsService.GetProfileMode();
+
+        // Auto profile mode
+        var autoItem = new System.Windows.Forms.ToolStripMenuItem("Auto profile");
+        autoItem.Checked = (currentMode == ProfileMode.Auto);
+        autoItem.Click += (s, e) => SwitchToMode(ProfileMode.Auto);
+        modeMenuItem.DropDownItems.Add(autoItem);
+
+        // Fixed profile mode
+        var fixedItem = new System.Windows.Forms.ToolStripMenuItem("Fixed profile");
+        fixedItem.Checked = (currentMode == ProfileMode.Fixed);
+        fixedItem.Click += (s, e) => SwitchToMode(ProfileMode.Fixed);
+        modeMenuItem.DropDownItems.Add(fixedItem);
+    }
+
+    private void SwitchToMode(ProfileMode mode)
+    {
+        try
+        {
+            _settingsService.SetProfileMode(mode);
+
+            // Rebuild tray menu to update checkmarks
+            BuildTrayContextMenu();
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show(
+                $"Failed to switch mode: {ex.Message}",
+                "Mode Switch Error",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Error);
         }
     }
 
