@@ -111,8 +111,10 @@
                                 <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3"
                                           SelectedItem="{Binding Style, UpdateSourceTrigger=PropertyChanged}"
                                           ToolTip="Visual style: retro (monospace, square) or modern (sans-serif, rounded)">
-                                    <ComboBoxItem Content="retro"/>
-                                    <ComboBoxItem Content="modern"/>
+                                    <ComboBox.Items>
+                                        <System:String xmlns:System="clr-namespace:System;assembly=mscorlib">retro</System:String>
+                                        <System:String xmlns:System="clr-namespace:System;assembly=mscorlib">modern</System:String>
+                                    </ComboBox.Items>
                                     <ComboBox.ItemContainerStyle>
                                         <Style TargetType="ComboBoxItem">
                                             <Setter Property="Background" Value="#2D2D30"/>
