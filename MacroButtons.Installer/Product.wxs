@@ -107,15 +107,16 @@
     <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch MacroButtons" />
     <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
 
-    <!-- Custom action to launch the application -->
-    <CustomAction Id="LaunchApplication"
-                  Directory="INSTALLFOLDER"
-                  ExeCommand="&quot;[INSTALLFOLDER]MacroButtons.exe&quot;"
-                  Execute="commit"
-                  Impersonate="yes"
-                  Return="asyncNoWait" />
+    <!-- Property to store the full path to the executable -->
+    <Property Id="WixShellExecTarget" Value="[#MacroButtons.exe]" />
 
-    <!-- Schedule the custom actions -->
+    <!-- Custom action to launch the application using WixShellExec -->
+    <CustomAction Id="LaunchApplication"
+                  BinaryKey="WixCA"
+                  DllEntry="WixShellExec"
+                  Impersonate="yes" />
+
+    <!-- Schedule the custom action -->
     <InstallExecuteSequence>
       <Custom Action="LaunchApplication" After="InstallFinalize">
         NOT Installed AND NOT REMOVE AND WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1
