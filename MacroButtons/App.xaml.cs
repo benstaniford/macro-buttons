@@ -1,4 +1,5 @@
 using System.Windows;
+using MacroButtons.Services;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 
@@ -24,6 +25,10 @@ public partial class App : Application
             Shutdown();
             return;
         }
+
+        var loggingService = new LoggingService();
+        var sampleActivationService = new SampleActivationService(loggingService);
+        sampleActivationService.ProcessPendingSamples();
 
         var mainWindow = new MainWindow();
         mainWindow.Show();
