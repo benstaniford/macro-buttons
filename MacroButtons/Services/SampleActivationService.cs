@@ -84,7 +84,7 @@ public class SampleActivationService
             }
 
             var sourceFile = jsonFiles[0];
-            var destFileName = $".macrobuttons-{sampleName.ToLower()}.json";
+            var destFileName = $"{sampleName.ToLower()}.json";
             var destFile = Path.Combine(destDir, destFileName);
 
             File.Copy(sourceFile, destFile, true);
