@@ -109,9 +109,9 @@
 
     <!-- Custom action to launch the application -->
     <CustomAction Id="LaunchApplication"
-                  FileKey="MacroButtons.exe"
-                  ExeCommand=""
-                  Execute="immediate"
+                  Directory="INSTALLFOLDER"
+                  ExeCommand="&quot;[INSTALLFOLDER]MacroButtons.exe&quot;"
+                  Execute="commit"
                   Impersonate="yes"
                   Return="asyncNoWait" />
 
