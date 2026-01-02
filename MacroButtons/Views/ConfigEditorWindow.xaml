@@ -78,10 +78,11 @@
 
             <!-- Grid Controls -->
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
-                <Button Content="← Back" 
+                <Button Content="← Back"
                         Command="{Binding NavigateBackCommand}"
                         Visibility="{Binding IsAtRootLevel, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
                 <Button Content="+ Item" Command="{Binding AddItemCommand}"/>
+                <Button Content="Themes" Command="{Binding EditThemesCommand}"/>
                 <TextBlock Text="{Binding Rows, StringFormat='Grid: {0}'}" VerticalAlignment="Center" Margin="15,0,0,0"/>
                 <TextBlock Text="{Binding Columns, StringFormat=' x {0}'}" VerticalAlignment="Center"/>
             </StackPanel>

@@ -143,9 +143,37 @@ public partial class ConfigEditorViewModel : ViewModelBase
         // Add a new empty tile
         var newTile = new ButtonTileEditorViewModel(Tiles.Count, null, _config);
         Tiles.Add(newTile);
-        
+
         // Recalculate grid layout based on new item count
         CalculateGridLayout(Tiles.Count);
+    }
+
+    [RelayCommand]
+    private void EditThemes()
+    {
+        var viewModel = new ThemeEditorViewModel(_config);
+        var window = new Views.ThemeEditorWindow(viewModel);
+        window.ShowDialog();
+
+        // If user clicked OK, reload tiles to refresh theme dropdowns
+        if (viewModel.DialogResult)
+        {
+            // Update theme arrays in all tile view models
+            foreach (var tile in Tiles)
+            {
+                if (_config?.Themes != null && _config.Themes.Count > 0)
+                {
+                    tile.Themes = _config.Themes.Select(t => t.Name).ToArray();
+                }
+                else
+                {
+                    tile.Themes = new[] { "default", "prominent", "toggled" };
+                }
+            }
+
+            // Force UI update by recreating tiles
+            LoadConfiguration();
+        }
     }
 
 
