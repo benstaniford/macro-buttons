@@ -1,208 +1,221 @@
 {
-  "global": {
-    "refresh": "1s"
-  },
-  "items": [
+  "Items": [
     {
-      "title": {
-        "builtin": "clock()",
-        "refresh": "1s",
-        "theme": "prominent"
+      "Title": "Audio\nSettings",
+      "Items": [
+        {
+          "Title": {
+            "PowerShell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; $device = Get-AudioDevice -Recording; if ($device.Device.AudioEndpointVolume.Mute) { '{\"text\": \"MIC\nMUTED\", \"theme\": \"toggled\"}' } else { 'MIC\nACTIVE' }",
+            "Refresh": "1s"
+          },
+          "Action": {
+            "PowerShell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; Set-AudioDevice -RecordingMuteToggle"
+          }
+        },
+        {
+          "Title": {
+            "PowerShell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; $device = Get-AudioDevice -Playback; if ($device.Device.AudioEndpointVolume.Mute) { '{\"text\": \"AUDIO\nMUTED\", \"theme\": \"toggled\"}' } else { 'AUDIO\nACTIVE' }",
+            "Refresh": "1s"
+          },
+          "Action": {
+            "PowerShell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; Set-AudioDevice -PlaybackMuteToggle"
+          }
+        },
+        {
+          "Title": "Select\nMicrophone",
+          "DynamicSubmenu": {
+            "PowerShell": "Import-Module AudioDeviceCmdlets -ErrorAction Stop; Get-AudioDevice -List | Where-Object Type -eq 'Recording' | ForEach-Object { @{title=$_.Name; action=@{powershell=\"Import-Module AudioDeviceCmdlets; Set-AudioDevice -Index $($_.Index)\"}} } | ConvertTo-Json -AsArray"
+          }
+        },
+        {
+          "Title": "Select\nSpeaker",
+          "DynamicSubmenu": {
+            "PowerShell": "Import-Module AudioDeviceCmdlets -ErrorAction Stop; Get-AudioDevice -List | Where-Object Type -eq 'Playback' | ForEach-Object { @{title=$_.Name; action=@{powershell=\"Import-Module AudioDeviceCmdlets; Set-AudioDevice -Index $($_.Index)\"}} } | ConvertTo-Json -AsArray"
+          }
+        }
+      ],
+      "Theme": "utility"
+    },
+    {
+      "Title": "Device Manager",
+      "Action": {
+        "Exe": "devmgmt.msc"
+      },
+      "Theme": "utility"
+    },
+    {
+      "Title": "Control Panel",
+      "Action": {
+        "Exe": "control.exe"
+      },
+      "Theme": "utility"
+    },
+    {
+      "Title": "Calculator",
+      "Action": {
+        "Exe": "calc.exe"
+      },
+      "Theme": "utility"
+    },
+    {
+      "Title": {
+        "Builtin": "clock()",
+        "Refresh": "1s",
+        "Theme": "prominent"
       }
     },
     {
-      "items": [
-        {
-          "action": {
-            "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; Set-AudioDevice -RecordingMuteToggle"
-          },
-          "title": {
-            "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; $device = Get-AudioDevice -Recording; if ($device.Device.AudioEndpointVolume.Mute) { '{\"text\": \"MIC\nMUTED\", \"theme\": \"toggled\"}' } else { 'MIC\nACTIVE' }",
-            "refresh": "1s"
-          }
-        },
-        {
-          "action": {
-            "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; Set-AudioDevice -PlaybackMuteToggle"
-          },
-          "title": {
-            "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction SilentlyContinue; $device = Get-AudioDevice -Playback; if ($device.Device.AudioEndpointVolume.Mute) { '{\"text\": \"AUDIO\nMUTED\", \"theme\": \"toggled\"}' } else { 'AUDIO\nACTIVE' }",
-            "refresh": "1s"
-          }
-        },
-        {
-          "dynamicSubmenu": {
-            "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction Stop; Get-AudioDevice -List | Where-Object Type -eq 'Recording' | ForEach-Object { @{title=$_.Name; action=@{powershell=\"Import-Module AudioDeviceCmdlets; Set-AudioDevice -Index $($_.Index)\"}} } | ConvertTo-Json -AsArray"
-          },
-          "title": "Select\nMicrophone"
-        },
-        {
-          "dynamicSubmenu": {
-            "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction Stop; Get-AudioDevice -List | Where-Object Type -eq 'Playback' | ForEach-Object { @{title=$_.Name; action=@{powershell=\"Import-Module AudioDeviceCmdlets; Set-AudioDevice -Index $($_.Index)\"}} } | ConvertTo-Json -AsArray"
-          },
-          "title": "Select\nSpeaker"
-        }
-      ],
-      "theme": "utility",
-      "title": "Audio\nSettings"
+      "Title": "Task Manager\n(Ctrl+Shift+Esc)",
+      "Action": {
+        "Keypress": "^+{Esc}"
+      }
     },
     {
-      "action": {
-        "keypress": "#i"
-      },
-      "title": "Settings\n(Win+I)"
+      "Title": "Show Desktop\n(Win+D)",
+      "Action": {
+        "Keypress": "#d"
+      }
     },
     {
-      "action": {
-        "keypress": "#e"
-      },
-      "title": "File Explorer\n(Win+E)"
+      "Title": "Task View\n(Win+Tab)",
+      "Action": {
+        "Keypress": "#{Tab}"
+      }
     },
     {
-      "action": {
-        "keypress": "#r"
-      },
-      "title": "Run Dialog\n(Win+R)"
+      "Title": "Screenshot\n(Win+Shift+S)",
+      "Action": {
+        "Keypress": "#+s"
+      }
     },
     {
-      "action": {
-        "keypress": "^+{Esc}"
-      },
-      "theme": "utility",
-      "title": "Task Manager\n(Ctrl+Shift+Esc)"
+      "Title": "Clipboard History\n(Win+V)",
+      "Action": {
+        "Keypress": "#v"
+      }
     },
     {
-      "action": {
-        "keypress": "#l"
-      },
-      "title": "Lock Computer\n(Win+L)"
+      "Title": "Emoji Picker\n(Win+.)",
+      "Action": {
+        "Keypress": "#."
+      }
     },
     {
-      "action": {
-        "keypress": "#d"
-      },
-      "title": "Show Desktop\n(Win+D)"
+      "Title": "Quick Settings\n(Win+A)",
+      "Action": {
+        "Keypress": "#a"
+      }
     },
     {
-      "action": {
-        "keypress": "#{Tab}"
-      },
-      "title": "Task View\n(Win+Tab)"
+      "Title": "Connect/Cast\n(Win+K)",
+      "Action": {
+        "Keypress": "#k"
+      }
     },
     {
-      "action": {
-        "keypress": "#+s"
-      },
-      "title": "Screenshot\n(Win+Shift+S)"
+      "Title": "Magnifier\n(Win++)",
+      "Action": {
+        "Keypress": "#{NumpadPlus}"
+      }
     },
     {
-      "action": {
-        "keypress": "#v"
-      },
-      "title": "Clipboard History\n(Win+V)"
+      "Title": "Voice Typing\n(Win+H)",
+      "Action": {
+        "Keypress": "#h"
+      }
     },
     {
-      "action": {
-        "keypress": "#."
-      },
-      "title": "Emoji Picker\n(Win+.)"
+      "Title": "New Virtual Desktop\n(Win+Ctrl+D)",
+      "Action": {
+        "Keypress": "#^d"
+      }
     },
     {
-      "action": {
-        "keypress": "#a"
-      },
-      "title": "Quick Settings\n(Win+A)"
+      "Title": "Previous Desktop\n(Win+Ctrl+Left)",
+      "Action": {
+        "Keypress": "#^{Left}"
+      }
     },
     {
-      "action": {
-        "keypress": "#k"
-      },
-      "title": "Connect/Cast\n(Win+K)"
+      "Title": "Next Desktop\n(Win+Ctrl+Right)",
+      "Action": {
+        "Keypress": "#^{Right}"
+      }
     },
     {
-      "action": {
-        "keypress": "#^d"
-      },
-      "title": "New Virtual Desktop\n(Win+Ctrl+D)"
+      "Title": "Close Desktop\n(Win+Ctrl+F4)",
+      "Action": {
+        "Keypress": "#^{F4}"
+      }
     },
     {
-      "action": {
-        "keypress": "#^{Left}"
-      },
-      "title": "Previous Desktop\n(Win+Ctrl+Left)"
+      "Title": "Lock Computer\n(Win+L)",
+      "Action": {
+        "Keypress": "#l"
+      }
     },
     {
-      "action": {
-        "keypress": "#^{Right}"
-      },
-      "title": "Next Desktop\n(Win+Ctrl+Right)"
+      "Title": "Settings\n(Win+I)",
+      "Action": {
+        "Keypress": "#i"
+      }
     },
     {
-      "action": {
-        "keypress": "#^{F4}"
-      },
-      "title": "Close Desktop\n(Win+Ctrl+F4)"
+      "Title": "Run Dialog\n(Win+R)",
+      "Action": {
+        "Keypress": "#r"
+      }
     },
     {
-      "action": {
-        "keypress": "#{NumpadPlus}"
-      },
-      "title": "Magnifier\n(Win++)"
+      "Title": "File Explorer\n(Win+E)",
+      "Action": {
+        "Keypress": "#e"
+      }
     },
     {
-      "action": {
-        "keypress": "#h"
-      },
-      "title": "Voice Typing\n(Win+H)"
+      "Title": "Reset Graphics Driver\r\n(Win+Ctrl+Shift+B)",
+      "Action": {
+        "Keypress": "#^+b"
+      }
     },
     {
-      "action": {
-        "exe": "devmgmt.msc"
-      },
-      "theme": "utility",
-      "title": "Device Manager"
-    },
-    {
-      "action": {
-        "exe": "control.exe"
-      },
-      "theme": "utility",
-      "title": "Control Panel"
-    },
-    {
-      "action": {
-        "exe": "calc.exe"
-      },
-      "theme": "utility",
-      "title": "Calculator"
-    },
-    {
-      "action": {
-        "keypress": "#^+b"
-      },
-      "title": "Reset Graphics Driver\n(Win+Ctrl+Shift+B)"
+      "Title": ""
     }
   ],
-  "themes": [
+  "Themes": [
     {
-      "background": "black",
-      "foreground": "cyan",
-      "name": "default"
+      "Name": "default",
+      "Foreground": "#FFC488",
+      "Background": "grey",
+      "Style": "System.Windows.Controls.ComboBoxItem: modern"
     },
     {
-      "background": "cyan",
-      "foreground": "black",
-      "name": "prominent"
+      "Name": "prominent",
+      "Foreground": "black",
+      "Background": "#FF8040",
+      "Style": "retro"
     },
     {
-      "background": "#001a1a",
-      "foreground": "yellow",
-      "name": "utility"
+      "Name": "utility",
+      "Foreground": "#FF8000",
+      "Background": "#001a1a",
+      "Style": "retro"
     },
     {
-      "background": "#330000",
-      "foreground": "red",
-      "name": "toggled"
+      "Name": "toggled",
+      "Foreground": "red",
+      "Background": "#330000",
+      "Style": "retro"
     }
-  ]
+  ],
+  "Global": {
+    "Refresh": "1s",
+    "SendKeys": {
+      "Delay": "30ms",
+      "Duration": "30ms"
+    },
+    "ProfileName": "windowsdesktop",
+    "SoundEnabled": true,
+    "SoundVolume": 0.5
+  }
 }
