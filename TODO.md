@@ -6,6 +6,4 @@ We should update the Readme.md with mention of the samples and the wizard in the
 
 Provide a way of minimizing the window
 
-Provide a way of pinning the current profile
-
 We should give a visual animation of buttons being pressed
