@@ -62,24 +62,24 @@ public partial class ThemeEditorViewModel : ViewModelBase
         // Don't allow deleting the last theme
         if (Themes.Count <= 1)
         {
-            MessageBox.Show(
+            System.Windows.MessageBox.Show(
                 "Cannot delete the last theme. At least one theme must exist.",
                 "Delete Theme",
-                MessageBoxButton.OK,
-                MessageBoxImage.Warning);
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Warning);
             return;
         }
 
         // Don't allow deleting the default theme
         if (theme.Name == "default")
         {
-            var result = MessageBox.Show(
+            var result = System.Windows.MessageBox.Show(
                 "Are you sure you want to delete the 'default' theme? This may cause issues if tiles reference it.",
                 "Delete Default Theme",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
+                System.Windows.MessageBoxButton.YesNo,
+                System.Windows.MessageBoxImage.Warning);
 
-            if (result != MessageBoxResult.Yes)
+            if (result != System.Windows.MessageBoxResult.Yes)
                 return;
         }
 
@@ -95,21 +95,21 @@ public partial class ThemeEditorViewModel : ViewModelBase
         {
             if (string.IsNullOrWhiteSpace(theme.Name))
             {
-                MessageBox.Show(
+                System.Windows.MessageBox.Show(
                     "All themes must have a name.",
                     "Validation Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Warning);
                 return;
             }
 
             if (names.Contains(theme.Name))
             {
-                MessageBox.Show(
+                System.Windows.MessageBox.Show(
                     $"Duplicate theme name: '{theme.Name}'. Each theme must have a unique name.",
                     "Validation Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Warning);
                 return;
             }
 
@@ -136,7 +136,7 @@ public partial class ThemeEditorViewModel : ViewModelBase
 
     private void CloseWindow()
     {
-        Application.Current.Windows.OfType<Window>()
+        System.Windows.Application.Current.Windows.OfType<Window>()
             .FirstOrDefault(w => w.DataContext == this)?.Close();
     }
 }

@@ -518,7 +518,7 @@ public partial class ButtonTileEditorViewModel : ViewModelBase
         "Dynamic Submenu"
     };
 
-    public string[] Themes { get; private set; }
+    public string[] Themes { get; set; }
 
     public ButtonTileEditorViewModel(int index, ButtonItem? item, MacroButtonConfig rootConfig)
     {
