@@ -1,21 +1,9 @@
 {
   "global": {
+    "activeWindow": "Winword",
     "monitorIndex": 0,
-    "activeWindow": "Word",
     "refresh": "1s"
   },
-  "themes": [
-    {
-      "name": "default",
-      "foreground": "green",
-      "background": "black"
-    },
-    {
-      "name": "prominent",
-      "foreground": "black",
-      "background": "green"
-    }
-  ],
   "items": [
     {
       "title": {
@@ -25,84 +13,136 @@
       }
     },
     {
-      "title": "Heading 1\n(Ctrl+Alt+1)",
-      "action": { "keypress": "^!1" }
+      "action": {
+        "keypress": "^!1"
+      },
+      "title": "Heading 1\n(Ctrl+Alt+1)"
     },
     {
-      "title": "Heading 2\n(Ctrl+Alt+2)",
-      "action": { "keypress": "^!2" }
+      "action": {
+        "keypress": "^!2"
+      },
+      "title": "Heading 2\n(Ctrl+Alt+2)"
     },
     {
-      "title": "Heading 3\n(Ctrl+Alt+3)",
-      "action": { "keypress": "^!3" }
+      "action": {
+        "keypress": "^!3"
+      },
+      "title": "Heading 3\n(Ctrl+Alt+3)"
     },
     {
-      "title": "Normal Style\n(Ctrl+Shift+N)",
-      "action": { "keypress": "^+n" }
+      "action": {
+        "keypress": "^+n"
+      },
+      "title": "Normal Style\n(Ctrl+Shift+N)"
     },
     {
-      "title": "Apply Style\n(Ctrl+Shift+S)",
-      "action": { "keypress": "^+s" }
+      "action": {
+        "keypress": "^+s"
+      },
+      "title": "Apply Style\n(Ctrl+Shift+S)"
     },
     {
-      "title": "Font Dialog\n(Ctrl+D)",
-      "action": { "keypress": "^d" }
+      "action": {
+        "keypress": "^d"
+      },
+      "title": "Font Dialog\n(Ctrl+D)"
     },
     {
-      "title": "Increase Font Size\n(Ctrl+])",
-      "action": { "keypress": "^]" }
+      "action": {
+        "keypress": "^]"
+      },
+      "title": "Increase Font Size\n(Ctrl+])"
     },
     {
-      "title": "Decrease Font Size\n(Ctrl+[)",
-      "action": { "keypress": "^[" }
+      "action": {
+        "keypress": "^["
+      },
+      "title": "Decrease Font Size\n(Ctrl+[)"
     },
     {
-      "title": "Change Case\n(Shift+F3)",
-      "action": { "keypress": "+{F3}" }
+      "action": {
+        "keypress": "+{F3}"
+      },
+      "title": "Change Case\n(Shift+F3)"
     },
     {
-      "title": "Copy Format\n(Ctrl+Shift+C)",
-      "action": { "keypress": "^+c" }
+      "action": {
+        "keypress": "^+c"
+      },
+      "title": "Copy Format\n(Ctrl+Shift+C)"
     },
     {
-      "title": "Paste Format\n(Ctrl+Shift+V)",
-      "action": { "keypress": "^+v" }
+      "action": {
+        "keypress": "^+v"
+      },
+      "title": "Paste Format\n(Ctrl+Shift+V)"
     },
     {
-      "title": "Bullet List\n(Ctrl+Shift+L)",
-      "action": { "keypress": "^+l" }
+      "action": {
+        "keypress": "^+l"
+      },
+      "title": "Bullet List\n(Ctrl+Shift+L)"
     },
     {
-      "title": "Center Align\n(Ctrl+E)",
-      "action": { "keypress": "^e" }
+      "action": {
+        "keypress": "^e"
+      },
+      "title": "Center Align\n(Ctrl+E)"
     },
     {
-      "title": "Left Align\n(Ctrl+L)",
-      "action": { "keypress": "^l" }
+      "action": {
+        "keypress": "^l"
+      },
+      "title": "Left Align\n(Ctrl+L)"
     },
     {
-      "title": "Right Align\n(Ctrl+R)",
-      "action": { "keypress": "^r" }
+      "action": {
+        "keypress": "^r"
+      },
+      "title": "Right Align\n(Ctrl+R)"
     },
     {
-      "title": "Justify\n(Ctrl+J)",
-      "action": { "keypress": "^j" }
+      "action": {
+        "keypress": "^j"
+      },
+      "title": "Justify\n(Ctrl+J)"
     },
     {
-      "title": "Insert Comment\n(Ctrl+Alt+M)",
-      "action": { "keypress": "^!m" }
+      "action": {
+        "keypress": "^!m"
+      },
+      "title": "Insert Comment\n(Ctrl+Alt+M)"
     },
     {
-      "title": "Track Changes\n(Ctrl+Shift+E)",
-      "action": { "keypress": "^+e" }
+      "action": {
+        "keypress": "^+e"
+      },
+      "title": "Track Changes\n(Ctrl+Shift+E)"
     },
     {
-      "title": "Insert Hyperlink\n(Ctrl+K)",
-      "action": { "keypress": "^k" }
+      "action": {
+        "keypress": "^k"
+      },
+      "title": "Insert Hyperlink\n(Ctrl+K)"
     },
     {
-      "title": "Go To\n(Ctrl+G)",
-      "action": { "keypress": "^g" }
+      "action": {
+        "keypress": "^g"
+      },
+      "title": "Go To\n(Ctrl+G)"
+    }
+  ],
+  "themes": [
+    {
+      "background": "black",
+      "foreground": "green",
+      "name": "default"
+    },
+    {
+      "background": "green",
+      "foreground": "black",
+      "name": "prominent"
     }
   ]
 }
