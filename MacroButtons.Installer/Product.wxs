@@ -94,54 +94,56 @@
                   Impersonate="yes"
                   Return="asyncNoWait" />
 
-    <!-- Property to hold the semicolon-separated list of selected samples -->
+    <!-- Property to hold the pipe-separated list of selected samples -->
     <Property Id="SELECTED_SAMPLES" />
 
-    <!-- Build the list of selected samples (each SetProperty needs unique ID) -->
-    <SetProperty Id="AddSample_ComfyUI" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES];ComfyUI" Before="SetCopySamplesData" Sequence="execute">
+    <!-- Build the list of selected samples using pipe delimiter (each SetProperty needs unique ID) -->
+    <SetProperty Id="AddSample_ComfyUI" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|ComfyUI" Before="SetCopySamplesData" Sequence="execute">
       &amp;Sample_ComfyUI_Feature=3
     </SetProperty>
-    <SetProperty Id="AddSample_EliteDangerous" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES];EliteDangerous" Before="SetCopySamplesData" Sequence="execute">
+    <SetProperty Id="AddSample_EliteDangerous" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|EliteDangerous" Before="SetCopySamplesData" Sequence="execute">
       &amp;Sample_EliteDangerous_Feature=3
     </SetProperty>
-    <SetProperty Id="AddSample_FileExplorer" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES];FileExplorer" Before="SetCopySamplesData" Sequence="execute">
+    <SetProperty Id="AddSample_FileExplorer" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|FileExplorer" Before="SetCopySamplesData" Sequence="execute">
       &amp;Sample_FileExplorer_Feature=3
     </SetProperty>
-    <SetProperty Id="AddSample_Firefox" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES];Firefox" Before="SetCopySamplesData" Sequence="execute">
+    <SetProperty Id="AddSample_Firefox" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|Firefox" Before="SetCopySamplesData" Sequence="execute">
       &amp;Sample_Firefox_Feature=3
     </SetProperty>
-    <SetProperty Id="AddSample_Lightroom" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES];Lightroom" Before="SetCopySamplesData" Sequence="execute">
+    <SetProperty Id="AddSample_Lightroom" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|Lightroom" Before="SetCopySamplesData" Sequence="execute">
       &amp;Sample_Lightroom_Feature=3
     </SetProperty>
-    <SetProperty Id="AddSample_Photoshop" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES];Photoshop" Before="SetCopySamplesData" Sequence="execute">
+    <SetProperty Id="AddSample_Photoshop" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|Photoshop" Before="SetCopySamplesData" Sequence="execute">
       &amp;Sample_Photoshop_Feature=3
     </SetProperty>
-    <SetProperty Id="AddSample_VisualStudio" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES];VisualStudio" Before="SetCopySamplesData" Sequence="execute">
+    <SetProperty Id="AddSample_VisualStudio" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|VisualStudio" Before="SetCopySamplesData" Sequence="execute">
       &amp;Sample_VisualStudio_Feature=3
     </SetProperty>
-    <SetProperty Id="AddSample_VSCode" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES];VSCode" Before="SetCopySamplesData" Sequence="execute">
+    <SetProperty Id="AddSample_VSCode" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|VSCode" Before="SetCopySamplesData" Sequence="execute">
       &amp;Sample_VSCode_Feature=3
     </SetProperty>
-    <SetProperty Id="AddSample_WindowsCalculator" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES];WindowsCalculator" Before="SetCopySamplesData" Sequence="execute">
+    <SetProperty Id="AddSample_WindowsCalculator" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|WindowsCalculator" Before="SetCopySamplesData" Sequence="execute">
       &amp;Sample_WindowsCalculator_Feature=3
     </SetProperty>
-    <SetProperty Id="AddSample_WindowsDesktop" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES];WindowsDesktop" Before="SetCopySamplesData" Sequence="execute">
+    <SetProperty Id="AddSample_WindowsDesktop" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|WindowsDesktop" Before="SetCopySamplesData" Sequence="execute">
       &amp;Sample_WindowsDesktop_Feature=3
     </SetProperty>
-    <SetProperty Id="AddSample_WindowsTerminal" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES];WindowsTerminal" Before="SetCopySamplesData" Sequence="execute">
+    <SetProperty Id="AddSample_WindowsTerminal" Property="SELECTED_SAMPLES" Value="[SELECTED_SAMPLES]|WindowsTerminal" Before="SetCopySamplesData" Sequence="execute">
       &amp;Sample_WindowsTerminal_Feature=3
     </SetProperty>
 
     <!-- Custom action to set data for deferred action (immediate) -->
-    <!-- Passes both install folder and selected samples list -->
+    <!-- Format: InstallFolder|Sample1|Sample2|... (pipe-delimited, first element is install folder) -->
     <CustomAction Id="SetCopySamplesData" Property="CopySamplesToUserProfile"
-                  Value="INSTALLFOLDER=[INSTALLFOLDER];SAMPLES=[SELECTED_SAMPLES]"
+                  Value="[INSTALLFOLDER][SELECTED_SAMPLES]"
                   Execute="immediate" />
 
     <!-- Custom action to copy selected samples to user profile (deferred) -->
+    <!-- CustomActionData format: InstallFolder|Sample1|Sample2|... -->
+    <!-- PowerShell extracts install folder from first element, samples from rest -->
     <CustomAction Id="CopySamplesToUserProfile"
                   Directory="TARGETDIR"
-                  ExeCommand="cmd.exe /c powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -Command &quot;&amp; {$data = '[CustomActionData]'; $pairs = $data -split ';' | Where-Object {$_ -match '='}; $params = @{}; foreach ($pair in $pairs) { $key, $value = $pair -split '=', 2; $params[$key] = $value }; &amp; $params['INSTALLFOLDER']CopySamples.ps1 -InstallFolder $params['INSTALLFOLDER'] -SelectedSamples $params['SAMPLES']}&quot;"
+                  ExeCommand="cmd.exe /c powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -Command &quot;$data='[CustomActionData]'; $parts=$data -split '\|' | Where-Object {$_}; $installFolder=$parts[0]; $samples=$parts[1..($parts.Length-1)] -join '|'; &amp; (Join-Path $installFolder 'CopySamples.ps1') -InstallFolder $installFolder -SelectedSamples $samples&quot;"
                   Execute="deferred"
                   Impersonate="yes"
                   Return="ignore" />
