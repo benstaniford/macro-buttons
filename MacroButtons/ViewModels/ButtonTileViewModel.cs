@@ -42,6 +42,18 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
     [ObservableProperty]
     private Brush _background = Brushes.Transparent;
 
+    [ObservableProperty]
+    private string _fontFamily = "Consolas";
+
+    [ObservableProperty]
+    private int _fontSize = 16;
+
+    [ObservableProperty]
+    private System.Windows.CornerRadius _cornerRadius = new System.Windows.CornerRadius(0);
+
+    [ObservableProperty]
+    private System.Windows.FontWeight _fontWeight = System.Windows.FontWeights.Normal;
+
     public bool IsEmpty { get; }
     public bool IsDynamic { get; }
     public bool HasAction { get; }
@@ -72,6 +84,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         var theme = rootConfig.GetTheme("default");
         Foreground = ColorConverter.ParseColor(theme.Foreground, Brushes.DarkGreen);
         Background = ColorConverter.ParseColor(theme.Background, Brushes.Transparent);
+        ApplyThemeStyle(theme.Style);
     }
 
     /// <summary>
@@ -124,6 +137,7 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         var theme = rootConfig.GetTheme(themeName);
         Foreground = ColorConverter.ParseColor(theme.Foreground, Brushes.DarkGreen);
         Background = ColorConverter.ParseColor(theme.Background, Brushes.Transparent);
+        ApplyThemeStyle(theme.Style);
 
         // Set initial title
         if (config.IsStaticTitle)
@@ -394,6 +408,33 @@ public partial class ButtonTileViewModel : ViewModelBase, IDisposable
         {
             // Not valid JSON or parsing failed - will fall back to plain text
             return false;
+        }
+    }
+
+    /// <summary>
+    /// Applies visual style properties based on the theme's style setting.
+    /// </summary>
+    private void ApplyThemeStyle(string style)
+    {
+        // Normalize style name (case-insensitive, default to "retro")
+        var styleName = style?.ToLowerInvariant() ?? "retro";
+
+        switch (styleName)
+        {
+            case "modern":
+                FontFamily = "Segoe UI";
+                FontSize = 14;
+                CornerRadius = new System.Windows.CornerRadius(4);
+                FontWeight = System.Windows.FontWeights.SemiBold;
+                break;
+
+            case "retro":
+            default:
+                FontFamily = "Consolas";
+                FontSize = 16;
+                CornerRadius = new System.Windows.CornerRadius(0);
+                FontWeight = System.Windows.FontWeights.Normal;
+                break;
         }
     }
 

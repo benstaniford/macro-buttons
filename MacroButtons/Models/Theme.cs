@@ -19,4 +19,11 @@ public class Theme
     /// Background color for the tile (e.g., "black", "#000000").
     /// </summary>
     public string Background { get; set; } = "black";
+
+    /// <summary>
+    /// Visual style for the theme (e.g., "retro", "modern").
+    /// "retro" uses monospace font (Consolas) with square corners.
+    /// "modern" uses sans-serif font (Segoe UI) with rounded corners.
+    /// </summary>
+    public string Style { get; set; } = "retro";
 }

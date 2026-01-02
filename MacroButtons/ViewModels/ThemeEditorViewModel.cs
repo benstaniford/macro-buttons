@@ -179,6 +179,13 @@ public partial class ThemeItemViewModel : ViewModelBase
         }
     }
 
+    private string _style = "retro";
+    public string Style
+    {
+        get => _style;
+        set => SetProperty(ref _style, value);
+    }
+
     /// <summary>
     /// Returns a Brush for previewing the foreground color.
     /// </summary>
@@ -220,6 +227,7 @@ public partial class ThemeItemViewModel : ViewModelBase
         Name = theme.Name;
         Foreground = theme.Foreground;
         Background = theme.Background;
+        Style = theme.Style;
     }
 
     [RelayCommand]
@@ -285,7 +293,8 @@ public partial class ThemeItemViewModel : ViewModelBase
         {
             Name = Name,
             Foreground = Foreground,
-            Background = Background
+            Background = Background,
+            Style = Style
         };
     }
 }

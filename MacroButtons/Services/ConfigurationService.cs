@@ -390,7 +390,7 @@ public class ConfigurationService
             },
             Themes = new List<Theme>
             {
-                new Theme { Name = "default", Foreground = "darkgreen", Background = "black" }
+                new Theme { Name = "default", Foreground = "darkgreen", Background = "black", Style = "retro" }
             },
             Global = new GlobalConfig
             {

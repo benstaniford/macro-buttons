@@ -15,7 +15,8 @@
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}">
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding Tag}">
                             <ContentPresenter HorizontalAlignment="Center"
                                             VerticalAlignment="Center"
                                             Margin="{TemplateBinding Padding}"/>
@@ -42,10 +43,12 @@
             BorderBrush="{Binding Foreground}"
             IsEnabled="{Binding HasAction}"
             Style="{StaticResource TileButtonStyle}"
+            Tag="{Binding CornerRadius}"
             Padding="10">
         <TextBlock Text="{Binding DisplayTitle}"
-                   FontFamily="Consolas"
-                   FontSize="16"
+                   FontFamily="{Binding FontFamily}"
+                   FontSize="{Binding FontSize}"
+                   FontWeight="{Binding FontWeight}"
                    Foreground="{Binding Foreground}"
                    TextWrapping="Wrap"
                    TextAlignment="Center"

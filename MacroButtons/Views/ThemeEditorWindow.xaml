@@ -67,6 +67,7 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="120"/>
@@ -105,8 +106,23 @@
                                         Command="{Binding PickBackgroundColorCommand}"
                                         Padding="8,4" Margin="0"/>
 
+                                <!-- Style -->
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Style:" VerticalAlignment="Center"/>
+                                <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3"
+                                          SelectedItem="{Binding Style, UpdateSourceTrigger=PropertyChanged}"
+                                          ToolTip="Visual style: retro (monospace, square) or modern (sans-serif, rounded)">
+                                    <ComboBoxItem Content="retro"/>
+                                    <ComboBoxItem Content="modern"/>
+                                    <ComboBox.ItemContainerStyle>
+                                        <Style TargetType="ComboBoxItem">
+                                            <Setter Property="Background" Value="#2D2D30"/>
+                                            <Setter Property="Foreground" Value="#F1F1F1"/>
+                                        </Style>
+                                    </ComboBox.ItemContainerStyle>
+                                </ComboBox>
+
                                 <!-- Delete Button -->
-                                <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4"
+                                <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4"
                                         Content="Delete This Theme"
                                         Command="{Binding DataContext.DeleteThemeCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                         CommandParameter="{Binding}"
