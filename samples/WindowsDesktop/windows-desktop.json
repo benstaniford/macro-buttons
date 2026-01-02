@@ -31,16 +31,16 @@
           }
         },
         {
-          "title": "Select\nMicrophone",
           "dynamicSubmenu": {
             "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction Stop; Get-AudioDevice -List | Where-Object Type -eq 'Recording' | ForEach-Object { @{title=$_.Name; action=@{powershell=\"Import-Module AudioDeviceCmdlets; Set-AudioDevice -Index $($_.Index)\"}} } | ConvertTo-Json -AsArray"
-          }
+          },
+          "title": "Select\nMicrophone"
         },
         {
-          "title": "Select\nSpeaker",
           "dynamicSubmenu": {
             "powershell": "Import-Module AudioDeviceCmdlets -ErrorAction Stop; Get-AudioDevice -List | Where-Object Type -eq 'Playback' | ForEach-Object { @{title=$_.Name; action=@{powershell=\"Import-Module AudioDeviceCmdlets; Set-AudioDevice -Index $($_.Index)\"}} } | ConvertTo-Json -AsArray"
-          }
+          },
+          "title": "Select\nSpeaker"
         }
       ],
       "theme": "utility",
@@ -175,6 +175,12 @@
       },
       "theme": "utility",
       "title": "Calculator"
+    },
+    {
+      "action": {
+        "keypress": "#^+b"
+      },
+      "title": "Reset Graphics Driver\n(Win+Ctrl+Shift+B)"
     }
   ],
   "themes": [
