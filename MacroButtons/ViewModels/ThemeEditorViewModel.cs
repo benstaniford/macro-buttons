@@ -35,7 +35,7 @@ public partial class ThemeEditorViewModel : ViewModelBase
         // Ensure at least a default theme exists
         if (Themes.Count == 0)
         {
-            Themes.Add(new ThemeItemViewModel(new ThemeConfig
+            Themes.Add(new ThemeItemViewModel(new Models.Theme
             {
                 Name = "default",
                 Foreground = "darkgreen",
@@ -47,7 +47,7 @@ public partial class ThemeEditorViewModel : ViewModelBase
     [RelayCommand]
     private void AddTheme()
     {
-        var newTheme = new ThemeConfig
+        var newTheme = new Models.Theme
         {
             Name = "new-theme",
             Foreground = "white",
@@ -189,17 +189,17 @@ public partial class ThemeItemViewModel : ViewModelBase
     /// <summary>
     /// Returns a Brush for previewing the foreground color.
     /// </summary>
-    public Brush ForegroundBrush
+    public System.Windows.Media.Brush ForegroundBrush
     {
         get
         {
             try
             {
-                return Helpers.ColorConverter.ParseColor(Foreground, Brushes.White);
+                return Helpers.ColorConverter.ParseColor(Foreground, System.Windows.Media.Brushes.White);
             }
             catch
             {
-                return Brushes.White;
+                return System.Windows.Media.Brushes.White;
             }
         }
     }
@@ -207,22 +207,22 @@ public partial class ThemeItemViewModel : ViewModelBase
     /// <summary>
     /// Returns a Brush for previewing the background color.
     /// </summary>
-    public Brush BackgroundBrush
+    public System.Windows.Media.Brush BackgroundBrush
     {
         get
         {
             try
             {
-                return Helpers.ColorConverter.ParseColor(Background, Brushes.Black);
+                return Helpers.ColorConverter.ParseColor(Background, System.Windows.Media.Brushes.Black);
             }
             catch
             {
-                return Brushes.Black;
+                return System.Windows.Media.Brushes.Black;
             }
         }
     }
 
-    public ThemeItemViewModel(ThemeConfig theme)
+    public ThemeItemViewModel(Models.Theme theme)
     {
         Name = theme.Name;
         Foreground = theme.Foreground;
@@ -250,25 +250,25 @@ public partial class ThemeItemViewModel : ViewModelBase
         }
     }
 
-    private Color? PickColor(string currentColorString)
+    private System.Windows.Media.Color? PickColor(string currentColorString)
     {
         // Parse current color
-        Color currentColor;
+        System.Windows.Media.Color currentColor;
         try
         {
-            var brush = Helpers.ColorConverter.ParseColor(currentColorString, Brushes.Black);
-            if (brush is SolidColorBrush solidBrush)
+            var brush = Helpers.ColorConverter.ParseColor(currentColorString, System.Windows.Media.Brushes.Black);
+            if (brush is System.Windows.Media.SolidColorBrush solidBrush)
             {
                 currentColor = solidBrush.Color;
             }
             else
             {
-                currentColor = Colors.Black;
+                currentColor = System.Windows.Media.Colors.Black;
             }
         }
         catch
         {
-            currentColor = Colors.Black;
+            currentColor = System.Windows.Media.Colors.Black;
         }
 
         // Show color picker dialog
@@ -281,15 +281,15 @@ public partial class ThemeItemViewModel : ViewModelBase
 
         if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
-            return Color.FromArgb(255, dialog.Color.R, dialog.Color.G, dialog.Color.B);
+            return System.Windows.Media.Color.FromArgb(255, dialog.Color.R, dialog.Color.G, dialog.Color.B);
         }
 
         return null;
     }
 
-    public ThemeConfig ToThemeConfig()
+    public Models.Theme ToThemeConfig()
     {
-        return new ThemeConfig
+        return new Models.Theme
         {
             Name = Name,
             Foreground = Foreground,
