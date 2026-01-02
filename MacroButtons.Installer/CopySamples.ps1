@@ -1,27 +1,33 @@
 # Copy selected sample profiles to user's .macrobuttons directory
 # Called by MSI installer deferred custom action
-# SelectedSamples is pipe-delimited list of sample folder names (e.g., "WindowsDesktop|VSCode|ComfyUI")
+# SelectedSamples is pipe-delimited list of sample folder names (e.g., "|WindowsDesktop|VSCode|ComfyUI")
 param(
-    [string]$InstallFolder,
     [string]$SelectedSamples = ""
 )
 
 $ErrorActionPreference = 'SilentlyContinue'
 
-# Log to temp file for debugging (can be removed once working)
+# Log to temp file for debugging
 $logFile = Join-Path $env:TEMP 'MacroButtons_CopySamples.log'
 "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') - Script started" | Out-File $logFile -Append
-"InstallFolder: $InstallFolder" | Out-File $logFile -Append
-"SelectedSamples: $SelectedSamples" | Out-File $logFile -Append
+"SelectedSamples parameter: $SelectedSamples" | Out-File $logFile -Append
+
+# Get install folder from script location
+$InstallFolder = Split-Path -Parent $MyInvocation.MyCommand.Path
+"InstallFolder (from script path): $InstallFolder" | Out-File $logFile -Append
 
 # Ensure destination directory exists
 $destDir = Join-Path $env:USERPROFILE '.macrobuttons'
+"Destination directory: $destDir" | Out-File $logFile -Append
 New-Item -ItemType Directory -Path $destDir -Force | Out-Null
 
 # Source samples directory
 $samplesDir = Join-Path $InstallFolder 'samples'
+"Samples directory: $samplesDir" | Out-File $logFile -Append
+"Samples dir exists: $(Test-Path $samplesDir)" | Out-File $logFile -Append
 
 if (-not (Test-Path $samplesDir)) {
+    "ERROR: Samples directory not found" | Out-File $logFile -Append
     exit 0
 }
 
@@ -40,14 +46,11 @@ if ($selectedList.Count -eq 0) {
     exit 0
 }
 
-"Destination directory: $destDir" | Out-File $logFile -Append
-"Samples directory: $samplesDir" | Out-File $logFile -Append
-"Samples dir exists: $(Test-Path $samplesDir)" | Out-File $logFile -Append
-
-# Copy only selected JSON files from sample subdirectories
+# List available sample directories
 $foundDirs = Get-ChildItem -Path $samplesDir -Directory -ErrorAction SilentlyContinue
 "Found directories in samples: $($foundDirs.Name -join ', ')" | Out-File $logFile -Append
 
+# Copy only selected JSON files from sample subdirectories
 Get-ChildItem -Path $samplesDir -Directory -ErrorAction SilentlyContinue | Where-Object { $selectedList -contains $_.Name } | ForEach-Object {
     $sampleDir = $_
     $sampleName = $sampleDir.Name
@@ -69,6 +72,8 @@ Get-ChildItem -Path $samplesDir -Directory -ErrorAction SilentlyContinue | Where
         } else {
             "FAILED to copy $destFileName" | Out-File $logFile -Append
         }
+    } else {
+        "No JSON file found in $($sampleDir.FullName)" | Out-File $logFile -Append
     }
 
     # Special handling for EliteDangerous elite-status script

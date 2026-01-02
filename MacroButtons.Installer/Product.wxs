@@ -133,10 +133,11 @@
       &amp;Sample_WindowsTerminal_Feature=3
     </SetProperty>
 
-    <!-- Custom action to set command line for deferred action (immediate) -->
-    <!-- For deferred WixQuietExec64, the property name MUST match the deferred action ID -->
+    <!-- Set the command line for the deferred action -->
+    <!-- This is immediate so [INSTALLFOLDER] and [SELECTED_SAMPLES] get expanded -->
+    <!-- Pass SELECTED_SAMPLES directly as a parameter to PowerShell -->
     <CustomAction Id="SetCopySamplesCmd" Property="CopySamplesToUserProfile"
-                  Value="&quot;[WindowsFolder]System32\WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File &quot;[INSTALLFOLDER]CopySamples.ps1&quot; -InstallFolder &quot;[INSTALLFOLDER]&quot; -SelectedSamples &quot;[SELECTED_SAMPLES]&quot;"
+                  Value="&quot;[WindowsFolder]System32\WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File &quot;[INSTALLFOLDER]CopySamples.ps1&quot; -SelectedSamples &quot;[SELECTED_SAMPLES]&quot;"
                   Execute="immediate" />
 
     <!-- Custom action to copy selected samples to user profile (deferred) -->
