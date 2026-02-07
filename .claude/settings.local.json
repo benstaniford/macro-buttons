@@ -21,7 +21,8 @@
       "WebFetch(domain:hackr.io)",
       "Bash(dotnet nuget:*)",
       "WebFetch(domain:www.nuget.org)",
-      "Bash(dotnet restore:*)"
+      "Bash(dotnet restore:*)",
+      "WebFetch(domain:productdesignonline.com)"
     ]
   }
 }
